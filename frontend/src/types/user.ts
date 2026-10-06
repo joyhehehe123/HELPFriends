@@ -1,11 +1,11 @@
 export interface User {
-    uid: string;
+    userId: string;
     email: string;
     fullName: string;
-    isVolunteer: boolean;
     studentId: string;
-    faculty: string;
-    program: string;
+    isVolunteer: boolean;
+    faculty?: string; // Users can choose to not provide faculty information
+    program?: string; // Users can choose to not provide program information
     bio?: string;
     profilePic: string; // Placeholder will be used if the user hasn't uploaded a profile picture
 }

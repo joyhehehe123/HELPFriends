@@ -1,7 +1,7 @@
 import { Timestamp } from "firebase/firestore";
 
 export interface Notification {
-    uid: string;
+    notificationId: string;
     title: string;
     message: string;
     category: 'Support Request' | 'Support Session' | 'Feedback' | 'General';

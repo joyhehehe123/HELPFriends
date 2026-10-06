@@ -1,7 +1,8 @@
 export interface Volunteer {
-    uid: string; // Same as the user's uid, used to link the volunteer to their user account
+    volunteerId: string; // Same as the userId
     preferredMode: 'Virtual' | 'Physical' | 'Both';
     rating: number;
+    ratingCount: number; // Used to calculate rating
     isActive: boolean;
     supportCategories: ('Academic' | 'Technology' | 'New Student' | 'General Student')[];
     skills: string[];

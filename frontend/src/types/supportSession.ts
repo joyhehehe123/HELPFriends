@@ -1,7 +1,7 @@
 import { Timestamp } from "firebase/firestore";
 
 export interface SupportSession {
-    uid: string;
+    sessionId: string;
     sessionDateTime: Timestamp;
     duration: number; // Duration in minutes
     status: 'Active' | 'Completed' | 'Cancelled';
