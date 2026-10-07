@@ -29,11 +29,10 @@ export const getNotification = async (uid: string): Promise<Notification | null>
 }
 
 // Get notifications by user
-export const getNotificationByUser = async (userId: string): Promise<Notification[] | null> => {
+export const getNotificationByUser = async (userId: string): Promise<Notification[]> => {
     try {
         const q = query(collection(db, 'notifications'), where('userId', '==', userId));
         const snap = await getDocs(q);
-        if (snap.empty) return null;
         return snap.docs.map(doc => (doc.data() as Notification));
     } catch (error) {
         console.error('Error fetching notifications: ', error);
@@ -43,9 +42,9 @@ export const getNotificationByUser = async (userId: string): Promise<Notificatio
 
 // ─── Update ────────────────────────────────────────────────────────────────────
 
-export const updateNotification = async (uid: string, data: Partial<Notification>): Promise<void> => {
+export const updateNotification = async (uid: string, newData: Partial<Notification>): Promise<void> => {
     try {
-        await updateDoc(doc(db, 'notifications', uid), data);
+        await updateDoc(doc(db, 'notifications', uid), newData);
     } catch (error) {
         console.error('Error updating notification: ', error);
         throw new Error('Failed to update notification: ' + error);

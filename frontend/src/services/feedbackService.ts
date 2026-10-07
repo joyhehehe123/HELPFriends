@@ -45,7 +45,7 @@ export const getFeedbackBySession = async (sessionId: string): Promise<Feedback 
 
 export const updateFeedback = async (uid: string, newData: Partial<Feedback>): Promise<void> => {
     try {
-        await updateDoc(doc(db, 'feedbacks', uid), { uid, newData });
+        await updateDoc(doc(db, 'feedbacks', uid), newData);
     } catch (error) {
         console.error('Error updating feedback: ', error);
         throw new Error('Failed to update feedback: ' + error);

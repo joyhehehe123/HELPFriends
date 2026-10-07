@@ -30,11 +30,10 @@ export const getSupportRequest = async (uid: string): Promise<SupportRequest | n
 }
 
 // Get support requests by student
-export const getSupportRequestByStudent = async (studentId: string): Promise<SupportRequest[] | null> => {
+export const getSupportRequestByStudent = async (studentId: string): Promise<SupportRequest[]> => {
     try {
         const q = query(collection(db, 'supportRequests'), where('studentId', '==', studentId));
         const snap = await getDocs(q);
-        if (snap.empty) return null;
         return snap.docs.map(doc => (doc.data() as SupportRequest));
     } catch (error) {
         console.error('Error fetching support requests: ', error);
@@ -43,11 +42,10 @@ export const getSupportRequestByStudent = async (studentId: string): Promise<Sup
 }
 
 // Get support requests by volunteer
-export const getSupportRequestByVolunteer = async (volunteerId: string): Promise<SupportRequest[] | null> => {
+export const getSupportRequestByVolunteer = async (volunteerId: string): Promise<SupportRequest[]> => {
     try {
         const q = query(collection(db, 'supportRequests'), where('volunteerid', '==', volunteerId));
         const snap = await getDocs(q);
-        if (snap.empty) return null;
         return snap.docs.map(doc => (doc.data() as SupportRequest));
     } catch (error) {
         console.error('Error fetching support requests: ', error);
@@ -57,7 +55,7 @@ export const getSupportRequestByVolunteer = async (volunteerId: string): Promise
 
 // ─── Update ────────────────────────────────────────────────────────────────────
 
-export const updateSupportRequest = async (uid: string, newData: Partial<Omit<SupportRequest, 'requestId'>>): Promise<void> => {
+export const updateSupportRequest = async (uid: string, newData: Partial<SupportRequest>): Promise<void> => {
     try {
         await updateDoc(doc(db, 'supportRequests', uid), newData);
     } catch (error) {

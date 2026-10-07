@@ -30,11 +30,10 @@ export const getSupportSession = async (uid: string): Promise<Omit<SupportSessio
 }
 
 // Get support sessions by student and status
-export const getStudentSupportSessionsByStatus = async (studentId: string, status: string): Promise<SupportSession[] | null> => {
+export const getStudentSupportSessionsByStatus = async (studentId: string, status: string): Promise<SupportSession[]> => {
     try {
         const q = query(collection(db, 'supportSessions'), where('studentId', '==', studentId), where('status', '==', status));
         const snap = await getDocs(q);
-        if (snap.empty) return null;
         return snap.docs.map(doc => (doc.data() as SupportSession));
     } catch (error) {
         console.error('Error fetching support sessions: ', error);
@@ -43,11 +42,10 @@ export const getStudentSupportSessionsByStatus = async (studentId: string, statu
 }
 
 // Get support sessions by volunteer and status
-export const getVolunteerSupportSessionsByStatus = async (volunteerId: string, status: string): Promise<SupportSession[] | null> => {
+export const getVolunteerSupportSessionsByStatus = async (volunteerId: string, status: string): Promise<SupportSession[]> => {
     try {
         const q = query(collection(db, 'supportSessions'), where('volunteerId', '==', volunteerId), where('status', '==', status));
         const snap = await getDocs(q);
-        if (snap.empty) return null;
         return snap.docs.map(doc => (doc.data() as SupportSession));
     } catch (error) {
         console.error('Error fetching support sessions: ', error);
@@ -66,21 +64,16 @@ export const isSessionRated = async (sessionId: string): Promise<boolean> => {
     }
 }
 
-// Get count of completed sessions with provided feedback
-export const getCompletedSessionsWithRatingCount = async (uid: string): Promise<number> => {
+// Get rated completed sessions
+export const getRatedSessions = async (uid: string): Promise<SupportSession[]> => {
     try {
-        let ratingCount = 0;
         const completedSessions = await getVolunteerSupportSessionsByStatus(uid, 'Completed');
-
-        if (!completedSessions) return 0;
-
+        if (!completedSessions) return completedSessions;
+        const ratedSessions = [];
         for (const session of completedSessions) {
-            if (await isSessionRated(session.uid ?? '')) {
-                ratingCount++;
-            }
+            if (await isSessionRated(session.sessionId)) ratedSessions.push(session);
         }
-
-        return ratingCount;
+        return ratedSessions;
     } catch (error) {
         console.error('Error fetching completed sessions with ratings: ', error);
         throw new Error('Failed to retrieve completed sessions with ratings: ' + error);
