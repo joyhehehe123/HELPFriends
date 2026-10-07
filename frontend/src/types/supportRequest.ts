@@ -1,13 +1,18 @@
 import { Timestamp } from 'firebase/firestore';
+import { 
+    type SupportCategory, 
+    type SupportMode, 
+    type requestStatus
+} from "./constants";
 
 export interface SupportRequest {
     requestId: string;
-    category: 'Academic' | 'Technology' | 'New Student' | 'General Student';
+    category: SupportCategory;
     supportTitle: string;
     description: string;
-    supportMode: 'Virtual' | 'Physical';
+    supportMode: SupportMode;
     proposedTimeSlots: Timestamp[];
-    status: 'pending' | 'Accepted' | 'Rejected' | 'Cancelled' | 'Scheduled';
+    status: requestStatus;
     cancelReason?: string;
     studentId: string; // Reference to the student who created the support request
     volunteerId: string; // Reference to the volunteer who accepted the support request
