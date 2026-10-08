@@ -7,12 +7,11 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     fullWidth?: boolean;
 }
 
-// App-wide button
 export default function Button({
     variant = 'primary',
     size = 'md',
     fullWidth = false,
-    type = 'button',
+    type = 'button', // Avoid submitting forms by accident
     className = '',
     ...props
 }: ButtonProps) {

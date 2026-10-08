@@ -4,8 +4,8 @@ import { type Volunteer } from './volunteer';
 export type DayName = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
 
 export interface AvailabilityTimeSlot {
-    start: string; // Format: "HH:mm" (24-hour)
-    end: string;   // Format: "HH:mm" (24-hour)
+    start: string; // Format: "HH:mm"
+    end: string;   // Format: "HH:mm"
 }
 
 export interface DayAvailability {
@@ -13,11 +13,7 @@ export interface DayAvailability {
     timeSlots: AvailabilityTimeSlot[];
 }
 
-/**
- * Everything the volunteer matching screens show about one volunteer.
- * Firestore has no joins, so this combines the `users/{uid}` document (name, faculty, bio, ...)
- * with the `volunteers/{uid}` document (skills, availability, rating, ...).
- */
+// User + Volunteer data for the matching page (Firestore has no joins)
 export type VolunteerProfile =
     Pick<User, 'fullName' | 'studentId' | 'faculty' | 'program' | 'bio' | 'profilePic'> &
     Pick<Volunteer, 'volunteerId' | 'preferredMode' | 'rating' | 'isActive' | 'supportCategories' | 'skills'> & {

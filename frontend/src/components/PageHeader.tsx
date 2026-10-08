@@ -2,12 +2,12 @@ import './PageHeader.css';
 
 interface PageHeaderProps {
     title: string;
-    breadcrumb?: string[]; // e.g. ['Request a Support', 'Volunteers Matching']
-    onBack?: () => void;   // Shows a back arrow when provided
-    backLabel?: string;    // Screen reader text for the back arrow
+    breadcrumb?: string[];
+    onBack?: () => void; // Show back arrow if given
+    backLabel?: string; // aria-label of back arrow
 }
 
-/** White bar under the navbar with the page title, optional breadcrumb and back arrow (Figures 20, 21, 25). */
+// Page title bar (Figure 20, 21)
 export default function PageHeader({ title, breadcrumb, onBack, backLabel = 'Go back' }: PageHeaderProps) {
     return (
         <header className="page-header">
