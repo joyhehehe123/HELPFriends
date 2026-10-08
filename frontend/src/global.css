@@ -4,11 +4,12 @@
   --color-secondary: #37cc96;
   --color-tertiary: #2563eb;
 
-  --color-gradient: linear-gradient(to right, var(--color-primary) 0%, var(--color-secondary) 100%);
-  --color-gradient-light: linear-gradient(to right, #d0f3ff 0%, #d4fafb 40%, #d7fff8 100%);
+  --color-gradient-horizontal: linear-gradient(to right, var(--color-primary) 0%, var(--color-secondary) 100%);
+  --color-gradient-vertical: linear-gradient(to bottom, var(--color-primary) 0%, var(--color-secondary) 100%);
+  --color-gradient-light: linear-gradient(to bottom, #d0f3ff 0%, #d4fafb 40%, #d7fff8 100%);
 
   --color-bg-primary: var(--color-gradient-light);
-  --color-bg-navbar: var(--color-gradient);
+  --color-bg-navbar: var(--color-gradient-horizontal);
   --color-bg-secondary: #ffffff;
   --color-bg-container-primary: #dff7f3;
   --color-bg-container-secondary: #f1f1f1;
@@ -16,15 +17,15 @@
   --color-bg-btn-primary: var(--color-tertiary);
   --color-bg-btn-secondary: #ffffff;
 
-  --color-border-card-horizontal: var(--color-gradient);
-  --color-border-card-vertical: var(--color-gradient);
+  --color-border-card-horizontal: var(--color-gradient-horizontal);
+  --color-border-card-vertical: var(--color-gradient-vertical);
   --color-border-btn: var(--color-tertiary);
   --color-border-input: #d9e1ec;
 
   --color-text-primary: #000000;
   --color-text-secondary: #ffffff;
   --color-text-accent-primary: var(--color-tertiary);
-  --color-text-accent-secondary: var(--color-gradient);
+  --color-text-accent-secondary: var(--color-gradient-horizontal);
   --color-text-muted-default: #808080;
   --color-text-muted-light: #bdbdbd;
 
@@ -51,7 +52,8 @@
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
   --text-md: 1rem;
-  --text-lg: 1.75rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.75rem;
 
   --weight-regular: 400;
   --weight-medium: 500;
@@ -67,7 +69,9 @@
   --radius-sm: 15px;
   --radius-md: 30px;
   --radius-lg: 50px;
+
   --shadow-card: 5px 5px 10px rgba(37, 99, 235, 0.25);
+  --shadow-card-dark: 5px 5px 30px rgb(37, 99, 235, 0.5);
 }
 
 * {
@@ -89,12 +93,12 @@
 
 body {
   margin: 0;
+  min-height: 100%;
 }
 
 .heading, .logo {
   font-family: var(--font-heading);
   font-weight: var(--weight-bold);
-  font-size: var(--text-lg);
 }
 
 /* h1,
@@ -143,4 +147,5 @@ code {
 
 .link {
   text-decoration: none;
+  color: inherit;
 }

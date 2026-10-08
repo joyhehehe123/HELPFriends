@@ -9,6 +9,19 @@
     font-family: var(--font-heading);
 }
 
+.logo {
+    font-size: var(--text-xl);
+    transition: transform 0.2s ease;
+}
+
+.logo:hover {
+    transform: translateY(-1px);
+}
+
+.logo:active {
+    transform: scale(0.98);
+}
+
 #logo-help {
     color: var(--color-tertiary);
 }
@@ -21,6 +34,7 @@
     display: flex;
     gap: 20px;
     align-items: stretch;
+    align-self: stretch;
 }
 
 .nav-link {
@@ -31,15 +45,18 @@
     border-radius: var(--radius-sm);
     color: var(--color-text-secondary);
     font-weight: var(--weight-medium);
+    transition: transform 0.2s ease;
 }
 
 .nav-link:hover {
     background-color: rgba(255, 255, 255, 50%);
+    transform: translateY(-1px);
 }
 
 .nav-link:active {
     background-color: rgba(255, 255, 255, 50%);
     color: var(--color-tertiary);
+    transform: scale(0.95);
 }
 
 #bell-and-profile {
@@ -56,15 +73,18 @@
     width: 50px;
     color: #ffffff;
     border-radius: var(--radius-sm);
+    transition: transform 0.2s ease;
 }
 
 #bell:hover {
     background-color: rgba(255, 255, 255, 50%);
+    transform: translateY(-1px);
 }
 
 #bell:active {
     background-color: rgba(255, 255, 255, 50%);
-    color: var(--color-tertiary)
+    color: var(--color-tertiary);
+    transform: scale(0.95);
 }
 
 #profile img {
@@ -76,9 +96,11 @@
 }
 
 #profile img:hover {
-    opacity: 70%;
+    transform: translateY(-1px);
+    box-shadow: 5px 5px 10px rgba(255, 255, 255, 0.5);
 }
 
 #profile img:active {
     opacity: 100%;
+    transform: scale(0.95);
 }
