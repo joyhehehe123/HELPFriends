@@ -14,7 +14,14 @@ function App() {
     return () => window.removeEventListener('popstate', handleRouteChange)
   }, [])
 
-  if (routePath === '/signup' || routePath === '/register' || routePath === '/login' || routePath === '/forgot-password') {
+  if (
+    routePath === '/signup' ||
+    routePath === '/register' ||
+    routePath === '/login' ||
+    routePath === '/forgot-password' ||
+    routePath === '/profile' ||
+    routePath === '/profile/volunteer'
+  ) {
     return <Route />
   }
 

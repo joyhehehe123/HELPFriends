@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react'
 import createLoginFlow from './Login/LoginFlow'
 import createResetPasswordFlow from './Login-ForgotPassword/ResetPasswordFlow'
+import createAccountDetailsPage from './Profile/AccountDetails'
+import createVolunteerDetailsPage from './Profile/VolunteerDetails'
 import createSignupFlow from './Signup/SignupFlow'
 
 export default function SignupRoute() {
@@ -9,6 +11,11 @@ export default function SignupRoute() {
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
+
+    const navigate = (path: string) => {
+      window.history.pushState({}, '', path)
+      window.dispatchEvent(new PopStateEvent('popstate'))
+    }
 
     const mountAuthFlow = () => {
       const currentPath = window.location.pathname
@@ -22,6 +29,16 @@ export default function SignupRoute() {
 
       if (currentPath === '/forgot-password') {
         container.appendChild(createResetPasswordFlow())
+        return
+      }
+
+      if (currentPath === '/profile') {
+        container.appendChild(createAccountDetailsPage({ navigate }))
+        return
+      }
+
+      if (currentPath === '/profile/volunteer') {
+        container.appendChild(createVolunteerDetailsPage({ navigate }))
         return
       }
 
