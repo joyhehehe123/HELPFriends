@@ -1,0 +1,79 @@
+.navbar {
+    position: relative;
+    z-index: 10;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 120px;
+    padding: 0 var(--space-5) 0 3.2rem;
+    background: linear-gradient(to right, var(--color-primary) 0%, var(--color-secondary) 100%);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.navbar-logo {
+    font-family: var(--font-heading);
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-bold);
+    text-decoration: none;
+    line-height: 1;
+}
+
+.navbar-logo-help {
+    color: var(--color-tertiary);
+}
+
+.navbar-logo-friends {
+    color: var(--color-text-secondary);
+}
+
+.navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.navbar-login {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-width: 10.5rem;
+    height: 4.9rem;
+    padding: 0 var(--space-4);
+    border: 3px solid var(--color-primary);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-btn-secondary);
+    color: var(--color-tertiary);
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+    font-weight: var(--weight-bold);
+    text-decoration: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.navbar-login:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-card);
+}
+
+.navbar-login[hidden] {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .navbar {
+        height: 72px;
+        padding: 0 var(--space-3);
+    }
+
+    .navbar-logo {
+        font-size: var(--text-xl);
+    }
+
+    .navbar-login {
+        min-width: 6rem;
+        height: 3rem;
+        font-size: var(--text-base);
+    }
+}

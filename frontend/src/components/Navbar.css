@@ -1,0 +1,81 @@
+/* Home navbar — scoped under .home-page so the signup flow's `.navbar`
+   rules (NavbarSignup.css, loaded later) can't clobber these. */
+
+.home-page .navbar {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 7.5rem;
+  padding: 0 3rem;
+  background: var(--color-bg-navbar);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.home-page .navbar__logo {
+  font-family: var(--font-heading);
+  font-size: 2.5rem;
+  font-weight: var(--weight-bold);
+  line-height: 1;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+}
+
+.home-page .navbar__logo-help {
+  color: var(--color-tertiary);
+}
+
+.home-page .navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.home-page .navbar__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 129px;
+  height: 4.5rem;
+  padding: 0 3rem;
+  font-family: var(--font-heading);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-tertiary);
+  text-decoration: none;
+  background: var(--color-bg-btn-secondary);
+  border-radius: var(--radius-md);
+}
+
+.home-page .navbar__button:hover {
+  background: var(--color-bg-container-primary);
+}
+
+.home-page .navbar__logo:focus-visible,
+.home-page .navbar__button:focus-visible {
+  outline: 3px solid var(--color-tertiary);
+  outline-offset: 3px;
+}
+
+@media (max-width: 600px) {
+  .home-page .navbar {
+    min-height: 5rem;
+    padding: 0 var(--space-4);
+  }
+
+  .home-page .navbar__logo {
+    font-size: var(--text-xl);
+  }
+
+  .home-page .navbar__actions {
+    gap: var(--space-2);
+  }
+
+  .home-page .navbar__button {
+    min-width: 0;
+    height: 3rem;
+    padding: 0 var(--space-4);
+    font-size: var(--text-base);
+  }
+}

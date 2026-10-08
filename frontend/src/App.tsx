@@ -1,121 +1,59 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
+import { useEffect, useState } from 'react'
+import Navbar from './components/Navbar'
+import catMascot from './assets/Cat_Index.png'
+import SignupRoute from './pages/SignupRoute'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [routePath, setRoutePath] = useState(() => window.location.pathname)
+
+  useEffect(() => {
+    const handleRouteChange = () => setRoutePath(window.location.pathname)
+
+    window.addEventListener('popstate', handleRouteChange)
+    return () => window.removeEventListener('popstate', handleRouteChange)
+  }, [])
+
+  if (routePath === '/signup' || routePath === '/register') {
+    return <SignupRoute />
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
+    <div className="home-page">
+      <Navbar />
+
+      <main className="home-main">
+        <section className="home-hero" aria-labelledby="home-title">
+          <h1 id="home-title" className="home-hero__logo">
+            <span className="home-hero__logo-help">HELP</span>Friends
+          </h1>
+
+          <p className="home-hero__tagline">
+            <span className="home-hero__accent">Help</span> each other,{' '}
+            <span className="home-hero__accent">Friends</span> forever
           </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
 
-      <div className="ticks"></div>
+          <p className="home-hero__text">
+            Welcome to HELPFriends — a platform where HELP University students can look for help
+            and to help others.
+          </p>
+        </section>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        <div className="home-actions">
+          <div className="home-actions__buttons">
+            <a className="home-cta" href="/signup">
+              <span className="home-cta__label">Register now</span>
+            </a>
+            <a className="home-cta" href="/login">
+              <span className="home-cta__label">Login</span>
+            </a>
+          </div>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+          {/* Decorative: the cat's arms hold up the two buttons */}
+          <img className="home-mascot" src={catMascot} alt="" aria-hidden="true" />
+        </div>
+      </main>
+    </div>
   )
 }
 

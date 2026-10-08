@@ -4,24 +4,24 @@
   --color-secondary: #37cc96;
   --color-tertiary: #2563eb;
 
-  --color-bg-primary: linear-gradient(to right, #d0f3ff 0%, #d4fafb 40%, #d7fff8 100%);
-  --color-bg-navbar: linear-gradient(to right, --color-primary 0%, --color-secondary 100%);
+  --color-bg-primary: linear-gradient(to bottom, #d0f3ff 0%, #d4fafb 40%, #d7fff8 100%);
+  --color-bg-navbar: linear-gradient(to right, var(--color-primary) 0%, var(--color-secondary) 100%);
   --color-bg-secondary: #ffffff;
   --color-bg-container-primary: #dff7f3;
   --color-bg-container-secondary: #f1f1f1;
   --color-bg-card: #ffffff;
-  --color-bg-btn-primary: --color-tertiary;
+  --color-bg-btn-primary: var(--color-tertiary);
   --color-bg-btn-secondary: #ffffff;
 
-  --color-border-card-horizontal: linear-gradient(to right, --color-primary 0%, --color-secondary 100%);
-  --color-border-card-vertical: linear-gradient(to bottom, --color-primary 0%, --color-secondary 100%);
-  --color-border-btn: --color-tertiary;
+  --color-border-card-horizontal: linear-gradient(to right, var(--color-primary) 0%, var(--color-secondary) 100%);
+  --color-border-card-vertical: linear-gradient(to bottom, var(--color-primary) 0%, var(--color-secondary) 100%);
+  --color-border-btn: var(--color-tertiary);
   --color-border-input: #d9e1ec;
 
   --color-text-primary: #000000;
   --color-text-secondary: #ffffff;
-  --color-text-accent-primary: --color-tertiary;
-  --color-text-accent-secondary: linear-gradient(to right, --color-primary 0%, --color-secondary 100%);
+  --color-text-accent-primary: var(--color-tertiary);
+  --color-text-accent-secondary: linear-gradient(to right, var(--color-primary) 0%, var(--color-secondary) 100%);
   --color-text-muted-default: #808080;
   --color-text-muted-light: #bdbdbd;
 
