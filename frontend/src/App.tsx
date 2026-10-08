@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import Navbar from './components/Navbar'
+import Navbar from './components/MainNavbar'
 import catMascot from './assets/Cat_Index.png'
-import SignupRoute from './pages/SignupRoute'
+import Route from './pages/Route'
 import './App.css'
 
 function App() {
@@ -14,8 +14,8 @@ function App() {
     return () => window.removeEventListener('popstate', handleRouteChange)
   }, [])
 
-  if (routePath === '/signup' || routePath === '/register') {
-    return <SignupRoute />
+  if (routePath === '/signup' || routePath === '/register' || routePath === '/login' || routePath === '/forgot-password') {
+    return <Route />
   }
 
   return (

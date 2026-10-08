@@ -1,0 +1,44 @@
+/* Login-specific additions. Card, input, button and link styles are shared from signup.css. */
+
+.login-card {
+    width: min(700px, 100%);
+}
+
+.login-button {
+    width: 11rem;
+}
+
+.forgot-link {
+    align-self: flex-start;
+    padding: 0;
+    border: none;
+    background: none;
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    font-weight: var(--weight-bold);
+    color: var(--color-text-primary);
+    cursor: pointer;
+}
+
+.forgot-link:hover,
+.register-link:hover {
+    text-decoration: underline;
+}
+
+.login-register {
+    margin: var(--space-3) 0 0;
+    text-align: center;
+    font-size: var(--text-base);
+    color: var(--color-text-muted-default);
+}
+
+.register-link {
+    padding: 0;
+    border: none;
+    background: none;
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    font-weight: var(--weight-bold);
+    color: var(--color-text-primary);
+    cursor: pointer;
+}

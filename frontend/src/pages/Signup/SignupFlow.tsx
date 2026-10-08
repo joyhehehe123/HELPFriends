@@ -1,11 +1,11 @@
-import './steps/signup.css';
-import { createNavbar } from '../components/Signup/NavbarSignup';
-import type { NavigateCallback } from '../components/Signup/NavbarSignup';
-import createSignupStep from './steps/signup';
-import type { SignupInfoData } from './steps/signup';
-import createTwoFactorStep from './steps/signup-2fa';
-import createSetPasswordStep from './steps/signup-password';
-import createConfirmationStep from './steps/signup-confirmation';
+import './SignupSteps/signup.css';
+import { createNavbar } from '../../components/MainNavbar.tsx';
+import type { NavigateCallback } from '../../components/MainNavbar.tsx';
+import createSignupStep from './SignupSteps/signup.tsx';
+import type { SignupInfoData } from './SignupSteps/signup.tsx';
+import createTwoFactorStep from './SignupSteps/signup-2fa.tsx';
+import createSetPasswordStep from './SignupSteps/signup-password.tsx';
+import createConfirmationStep from './SignupSteps/signup-confirmation.tsx';
 
 interface SignupFlowProps {
     initialData?: Partial<SignupInfoData>;

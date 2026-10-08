@@ -1,4 +1,4 @@
-import type { SignupInfoData } from './steps/signup';
+import type { SignupInfoData } from './SignupSteps/signup';
 
 // Placeholder endpoints: adjust the URLs/payloads to match your backend,
 // or move these into your existing services/api file.
