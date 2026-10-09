@@ -12,8 +12,8 @@ function Navbar() {
             </Link>
             <div id='nav-links'>
                 <Link to='' className='nav-link link'><p className='nav-text'>Request a Support</p></Link>
-                <Link to='' className='nav-link link'><p className='nav-text'>Support Requests</p></Link>
-                <Link to='/support-sessions' className='nav-link link'><p className='nav-text'>Support Sessions</p></Link>
+                <Link to='' className='nav-link link'><p className='nav-text'>My Support Requests</p></Link>
+                <Link to='/support-sessions' className='nav-link link'><p className='nav-text'>My Support Sessions</p></Link>
             </div>
             <div id='bell-and-profile'>
                 <Link to='' id='bell' className='bell link'><Bell /></Link>
