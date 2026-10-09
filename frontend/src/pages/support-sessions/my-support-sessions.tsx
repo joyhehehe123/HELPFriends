@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom';
-import './my-support-session.css';
+import './my-support-sessions.css';
 import happyCat from '../../assets/happycat.png';
 import goodCat from '../../assets/goodcat.png';
 import sadCat from '../../assets/sadcat.png';
 
-function MySupportSessions() {
+function SupportSessions() {
    return (
       <section className='content'>
          <div className='wrapper'>
@@ -43,4 +43,4 @@ function MySupportSessions() {
    )
 }
 
-export default MySupportSessions;
+export default SupportSessions;
