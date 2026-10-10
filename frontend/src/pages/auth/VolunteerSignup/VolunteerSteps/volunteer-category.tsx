@@ -1,4 +1,4 @@
-import './Volunteer.css';
+import './volunteer.css';
 import { icons } from './icons';
 import type { CategoryInfoData, SupportCategory } from '../Voluteer';
 

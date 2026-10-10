@@ -1,4 +1,4 @@
-import './Volunteer.css';
+import './volunteer.css';
 import { icons } from './icons';
 import {
     CATEGORY_LABELS,

@@ -1,4 +1,4 @@
-import './Volunteer.css';
+import './volunteer.css';
 import { icons } from './icons';
 import type { AvailabilityInfoData, DayKey, TimeSlot, WeeklySchedule } from '../Voluteer';
 

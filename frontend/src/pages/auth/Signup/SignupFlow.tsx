@@ -5,6 +5,7 @@ import createVolunteerCategoryStep from '../VolunteerSignup/VolunteerSteps/volun
 import createVolunteerSkillsStep from '../VolunteerSignup/VolunteerSteps/volunteer-skills';
 import createVolunteerAvailabilityStep from '../VolunteerSignup/VolunteerSteps/volunteer-availability';
 import createVolunteerModeStep from '../VolunteerSignup/VolunteerSteps/volunteer-mode';
+import '../VolunteerSignup/VolunteerSteps/volunteer.css';
 import { getAvailableSkills } from '../VolunteerSignup/Voluteer.ts';
 import type { VolunteerRegistrationData } from '../VolunteerSignup/Voluteer.ts';
 import createTwoFactorStep from './SignupSteps/signup-2fa.tsx';
@@ -103,10 +104,54 @@ export default function createSignupFlow({ initialData }: SignupFlowProps = {}):
  
     const renderStep = () => {
         content.replaceChildren();
- 
+        const isVolunteerStep = VOLUNTEER_STEPS.includes(currentStep);
+        const stepContent = document.createElement('div');
+
+        if (isVolunteerStep) {
+            container.className = 'signup-page vol-page';
+            content.className = 'vol-page-body';
+
+            const progress = document.createElement('div');
+            progress.className = 'vol-progress';
+            progress.setAttribute('role', 'progressbar');
+            progress.setAttribute('aria-valuemin', '1');
+            progress.setAttribute('aria-valuemax', String(VOLUNTEER_STEPS.length));
+            const activeStep = VOLUNTEER_STEPS.indexOf(currentStep) + 1;
+            progress.setAttribute('aria-valuenow', String(activeStep));
+
+            VOLUNTEER_STEPS.forEach((_, index) => {
+                if (index > 0) {
+                    const line = document.createElement('div');
+                    line.className = `vol-progress-line${index < activeStep ? ' is-filled' : ''}`;
+                    progress.appendChild(line);
+                }
+
+                const dot = document.createElement('div');
+                dot.className = `vol-progress-dot${index < activeStep ? ' is-active' : ''}`;
+                progress.appendChild(dot);
+            });
+
+            const progressLabel = document.createElement('p');
+            progressLabel.className = 'vol-progress-label';
+            progressLabel.textContent = `Step ${activeStep} of ${VOLUNTEER_STEPS.length}`;
+
+            const title = document.createElement('h1');
+            title.className = 'vol-title';
+            title.textContent = 'Become a Volunteer';
+
+            const card = document.createElement('div');
+            card.className = 'vol-card';
+            card.appendChild(stepContent);
+            content.append(progress, progressLabel, title, card);
+        } else {
+            container.className = 'signup-page';
+            content.className = 'signup-content';
+            content.appendChild(stepContent);
+        }
+
         switch (currentStep) {
             case 'signup':
-                content.appendChild(createSignupStep({
+                stepContent.appendChild(createSignupStep({
                     signupInfo: state.signupInfo,
                     setSignupInfo: (info) => {
                         state.signupInfo = info;
@@ -115,7 +160,7 @@ export default function createSignupFlow({ initialData }: SignupFlowProps = {}):
                 }));
                 break;
             case 'category':
-                content.appendChild(createVolunteerCategoryStep({
+                stepContent.appendChild(createVolunteerCategoryStep({
                     categoryInfo: state.volunteer.categoryInfo,
                     setCategoryInfo: (categoryInfo) => {
                         state.volunteer.categoryInfo = categoryInfo;
@@ -132,7 +177,7 @@ export default function createSignupFlow({ initialData }: SignupFlowProps = {}):
                 }));
                 break;
             case 'skills':
-                content.appendChild(createVolunteerSkillsStep({
+                stepContent.appendChild(createVolunteerSkillsStep({
                     categories: state.volunteer.categoryInfo.categories,
                     skillsInfo: state.volunteer.skillsInfo,
                     setSkillsInfo: (skillsInfo) => {
@@ -143,7 +188,7 @@ export default function createSignupFlow({ initialData }: SignupFlowProps = {}):
                 }));
                 break;
             case 'availability':
-                content.appendChild(createVolunteerAvailabilityStep({
+                stepContent.appendChild(createVolunteerAvailabilityStep({
                     availabilityInfo: state.volunteer.availabilityInfo,
                     setAvailabilityInfo: (availabilityInfo) => {
                         state.volunteer.availabilityInfo = availabilityInfo;
@@ -153,7 +198,7 @@ export default function createSignupFlow({ initialData }: SignupFlowProps = {}):
                 }));
                 break;
             case 'mode':
-                content.appendChild(createVolunteerModeStep({
+                stepContent.appendChild(createVolunteerModeStep({
                     supportModeInfo: state.volunteer.supportModeInfo,
                     setSupportModeInfo: (supportModeInfo) => {
                         state.volunteer.supportModeInfo = supportModeInfo;
@@ -163,7 +208,7 @@ export default function createSignupFlow({ initialData }: SignupFlowProps = {}):
                 }));
                 break;
             case '2fa':
-                content.appendChild(createTwoFactorStep({
+                stepContent.appendChild(createTwoFactorStep({
                     onBack: () => goTo('signup'), // "Return to registration"
                     onResend: async (): Promise<boolean> => {
                         // TODO (API): resend the OTP email here
@@ -177,7 +222,7 @@ export default function createSignupFlow({ initialData }: SignupFlowProps = {}):
                 }));
                 break;
             case 'password':
-                content.appendChild(createSetPasswordStep({
+                stepContent.appendChild(createSetPasswordStep({
                     onBack: () => goTo('signup'), // "Return to registration"
                     onNext: () => {
                         // TODO (API): create the account with the password here.
@@ -188,7 +233,7 @@ export default function createSignupFlow({ initialData }: SignupFlowProps = {}):
                 }));
                 break;
             case 'confirmation':
-                content.appendChild(createConfirmationStep({
+                stepContent.appendChild(createConfirmationStep({
                     onLogin: () => navigate('/login'),
                 }));
                 break;

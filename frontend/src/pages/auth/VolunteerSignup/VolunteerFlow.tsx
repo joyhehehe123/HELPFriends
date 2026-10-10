@@ -3,13 +3,9 @@ import createCategoryStep from './VolunteerSteps/volunteer-category';
 import createSkillsStep from './VolunteerSteps/volunteer-skills';
 import createAvailabilityStep from './VolunteerSteps/volunteer-availability';
 import createSupportModeStep from './VolunteerSteps/volunteer-mode';
-import { submitVolunteerRegistration } from '../../../services/api';
+//import { submitVolunteerRegistration } from '../../../services/api';
 import { getAvailableSkills } from './Voluteer';
-import type {
-    DayKey,
-    VolunteerRegistrationData,
-    VolunteerRegistrationPayload,
-} from './Voluteer';
+import type { VolunteerRegistrationData } from './Voluteer';
 
 // Adjust these routes to match your router.
 const REGISTRATION_ROUTE = '/registration';
@@ -18,8 +14,6 @@ const SUCCESS_ROUTE = '/volunteer-registration/success';
 interface MultiStepFormProps {
     initialData?: Partial<VolunteerRegistrationData>;
 }
-
-const dayKeys: DayKey[] = ['mon', 'tue', 'wed', 'thu', 'fri'];
 
 export default function createVolunteerMultiStepForm({ initialData }: MultiStepFormProps = {}): HTMLElement {
     const container = document.createElement('div');
@@ -105,19 +99,6 @@ export default function createVolunteerMultiStepForm({ initialData }: MultiStepF
         renderStep();
     };
 
-    const buildPayload = (): VolunteerRegistrationPayload => ({
-        supportCategories: state.categoryInfo.categories,
-        skills: [...state.skillsInfo.selectedSkills, ...state.skillsInfo.customSkills],
-        availability: dayKeys.flatMap((day) =>
-            state.availabilityInfo.schedule[day].map((slot) => ({
-                day,
-                startTime: slot.start,
-                endTime: slot.end,
-            })),
-        ),
-        supportModes: state.supportModeInfo.modes,
-    });
-
     const renderStep = (): void => {
         content.replaceChildren();
         updateProgress();
@@ -170,7 +151,7 @@ export default function createVolunteerMultiStepForm({ initialData }: MultiStepF
                     onBack: () => goTo(3),
                     onNext: async (): Promise<boolean> => {
                         try {
-                            await submitVolunteerRegistration(buildPayload());
+                            // await submitVolunteerRegistration(buildPayload());
                             currentStep = 1;
                             navigate(SUCCESS_ROUTE);
                             return true;
