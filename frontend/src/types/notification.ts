@@ -2,7 +2,7 @@ import { Timestamp } from "firebase/firestore";
 import { type NotificationCategory } from "./constants";
 
 export interface Notification {
-    notificationId: string;
+    uid: string;
     title: string;
     message: string;
     category: NotificationCategory;

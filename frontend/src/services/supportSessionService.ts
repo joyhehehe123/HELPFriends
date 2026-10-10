@@ -1,14 +1,16 @@
 import { db } from "../firebase";
-import { collection, addDoc, getDoc, getDocs, updateDoc, deleteDoc, doc, query, where } from "firebase/firestore";
+import { collection, setDoc, getDoc, getDocs, updateDoc, deleteDoc, doc, query, where } from "firebase/firestore";
 import { type SupportSession } from "../types/supportSession";
-import { getFeedbackBySession } from "./feedbackService";
+import { generateNextId } from "./counterService";
+import { getSupportRequestsByStudent } from "./supportRequestService";
+import type { SessionStatus } from "../types/constants";
 
 // ─── Create ────────────────────────────────────────────────────────────────────
 
-export const createSupportSession = async (data: Omit<SupportSession, 'sessionId'>): Promise<void> => {
+export const createSupportSession = async (data: Omit<SupportSession, 'uid'>): Promise<void> => {
     try {
-        const docRef = await addDoc(collection(db, 'supportSessions'), data);
-        await updateSupportSession(docRef.id, { sessionId: docRef.id} );
+        const nextId = 'S' + String(await generateNextId('session'));
+        await setDoc(doc(db, 'supportSessions', nextId), { ...data, uid: nextId });
     } catch (error) {
         console.error('Error creating support session: ', error);
         throw new Error('Failed to create support session: ' + error);
@@ -17,8 +19,8 @@ export const createSupportSession = async (data: Omit<SupportSession, 'sessionId
 
 // ─── Read ──────────────────────────────────────────────────────────────────────
 
-// Get support session by uid (doc id)
-export const getSupportSession = async (uid: string): Promise<Omit<SupportSession, 'sessionId'> | null> => {
+// Get support session by uid
+export const getSupportSession = async (uid: string): Promise<SupportSession | null> => {
     try {
         const supportSession = await getDoc(doc(db, 'supportSessions', uid));
         if (!supportSession.exists()) return null;
@@ -29,60 +31,47 @@ export const getSupportSession = async (uid: string): Promise<Omit<SupportSessio
     }
 }
 
-// Get support sessions by student and status
-export const getStudentSupportSessionsByStatus = async (studentId: string, status: string): Promise<SupportSession[]> => {
+// Get support sessions of a student
+export const getStudentSupportSessions = async (studentId: string, byVolunteer: boolean): Promise<SupportSession[]> => {
     try {
-        const q = query(collection(db, 'supportSessions'), where('studentId', '==', studentId), where('status', '==', status));
-        const snap = await getDocs(q);
-        return snap.docs.map(doc => (doc.data() as SupportSession));
-    } catch (error) {
-        console.error('Error fetching support sessions: ', error);
-        throw new Error('Failed to retrieve support sessions: ' + error);
-    }
-}
-
-// Get support sessions by volunteer and status
-export const getVolunteerSupportSessionsByStatus = async (volunteerId: string, status: string): Promise<SupportSession[]> => {
-    try {
-        const q = query(collection(db, 'supportSessions'), where('volunteerId', '==', volunteerId), where('status', '==', status));
-        const snap = await getDocs(q);
-        return snap.docs.map(doc => (doc.data() as SupportSession));
-    } catch (error) {
-        console.error('Error fetching support sessions: ', error);
-        throw new Error('Failed to retrieve support sessions: ' + error);
-    }
-}
-
-// Check if completed session is rated
-export const isSessionRated = async (sessionId: string): Promise<boolean> => {
-    try {
-        const feedback = await getFeedbackBySession(sessionId);
-        return !!feedback;
-    } catch (error) {
-        console.error('Error checking if session is rated: ', error);
-        throw new Error('Failed to check if session is rated: ' + error);
-    }
-}
-
-// Get rated completed sessions
-export const getRatedSessions = async (uid: string): Promise<SupportSession[]> => {
-    try {
-        const completedSessions = await getVolunteerSupportSessionsByStatus(uid, 'Completed');
-        if (!completedSessions) return completedSessions;
-        const ratedSessions = [];
-        for (const session of completedSessions) {
-            if (await isSessionRated(session.sessionId)) ratedSessions.push(session);
+        const requests = (byVolunteer) 
+            ? await getSupportRequestsByStudent(studentId, true) 
+            : await getSupportRequestsByStudent(studentId, false);
+        const sessions: SupportSession[] = [];
+        for (const request of requests) {
+            const q = query(collection(db, 'supportSessions'), where('requestId', '==', request.uid));
+            const snap = await getDocs(q);
+            if (!snap.empty) sessions.push(snap.docs[0].data() as SupportSession);
         }
-        return ratedSessions;
+        return sessions;
     } catch (error) {
-        console.error('Error fetching completed sessions with ratings: ', error);
-        throw new Error('Failed to retrieve completed sessions with ratings: ' + error);
+        console.error('Error fetching support sessions: ', error);
+        throw new Error('Failed to retrieve support sessions: ' + error);
+    }
+}
+
+// Get support sessions of a student
+export const getStudentSupportSessionsByStatus = async (studentId: string, byVolunteer: boolean, status: SessionStatus): Promise<SupportSession[]> => {
+    try {
+        const requests = (byVolunteer) 
+            ? await getSupportRequestsByStudent(studentId, true) 
+            : await getSupportRequestsByStudent(studentId, false);
+        const sessions: SupportSession[] = [];
+        for (const request of requests) {
+            const q = query(collection(db, 'supportSessions'), where('requestId', '==', request.uid), where('status', '==', status));
+            const snap = await getDocs(q);
+            if (!snap.empty) sessions.push(snap.docs[0].data() as SupportSession);
+        }
+        return sessions;
+    } catch (error) {
+        console.error('Error fetching support sessions by status: ', error);
+        throw new Error('Failed to retrieve support sessions by status: ' + error);
     }
 }
 
 // ─── Update ────────────────────────────────────────────────────────────────────
 
-export const updateSupportSession = async (uid: string, newData: Partial<SupportSession>): Promise<void> => {
+export const updateSupportSession = async (uid: string, newData: Partial<Omit<SupportSession, 'uid'>>): Promise<void> => {
     try {
         await updateDoc(doc(db, 'supportSessions', uid), newData);
     } catch (error) {

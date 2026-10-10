@@ -1,5 +1,5 @@
 export interface Feedback {
-    feedbackId: string;
+    uid: string;
     rating: number;
     comments?: string;
     sessionId: string; // Reference to the associated SupportSession

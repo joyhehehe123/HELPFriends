@@ -3,6 +3,6 @@ export type SupportCategory = 'Academic' | 'Technology' | 'New Student' | 'Gener
 export const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 export type Day = typeof DAYS[number];
 export type SupportMode = 'Virtual' | 'Physical';
-export type requestStatus = 'Pending' | 'Accepted' | 'Rejected' | 'Cancelled' | 'Scheduled';
+export type RequestStatus = 'Pending' | 'Accepted' | 'Rejected' | 'Cancelled' | 'Scheduled';
 export type SessionStatus = 'Active' | 'Completed' | 'Cancelled';
 export type NotificationCategory = 'Support Request' | 'Support Session' | 'Feedback' | 'General';

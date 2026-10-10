@@ -10,7 +10,7 @@ export interface TimeSlot {
 }
 
 export interface Volunteer {
-    volunteerId: string; // Same as the userId
+    uid: string; // Same as the userId
     preferredMode: PreferredMode;
     rating: number;
     isActive: boolean;

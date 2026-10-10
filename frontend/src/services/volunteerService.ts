@@ -1,23 +1,16 @@
 import { db } from "../firebase";
 import { collection, setDoc, getDoc, getDocs, updateDoc, deleteDoc, doc, query, where } from "firebase/firestore";
 import { type TimeSlot, type Volunteer } from "../types/volunteer";
-import { getRatedSessions } from './supportSessionService';
+import { getStudentSupportSessionsByStatus } from './supportSessionService';
 import { getFeedback } from "./feedbackService";
 import { type PreferredMode } from "../types/constants";
 import { DAYS } from '../types/constants';
 
 // ─── Create ────────────────────────────────────────────────────────────────────
 
-export const createVolunteer = async (uid: string, data: Omit<Volunteer, 'volunteerId' | 'rating'>): Promise<void> => {
+export const createVolunteer = async (uid: string, data: Omit<Volunteer, 'uid' | 'rating'>): Promise<void> => {
     try {
-        const timeRegex = /^([01]\d|2[0-3]):[0-5]\d$/;
-        for (const availability of data.availability) {
-            for (const timeSlot of availability.timeSlots) {
-                if (!timeRegex.test(timeSlot.start)) throw new Error(`Invalid start time: ${timeSlot.start}`);
-                if (!timeRegex.test(timeSlot.end)) throw new Error(`Invalid end time: ${timeSlot.end}`);
-            }
-        }
-        await setDoc(doc(db, 'volunteers', uid), {...data, volunteerid: uid, rating: 0.0});
+        await setDoc(doc(db, 'volunteers', uid), {...data, uid: uid, rating: 0.0});
     } catch (error) {
         console.error('Error creating volunteer: ', error);
         throw new Error('Failed to create volunteer: ' + error);
@@ -51,7 +44,7 @@ export const getVolunteersByPreferredMode = async (preferredMode: PreferredMode)
 }
 
 // Get all volunteers
-export const getAllVolunteers = async (): Promise<Volunteer[]> => {
+const getAllVolunteers = async (): Promise<Volunteer[]> => {
     try {
         const volunteers = await getDocs(collection(db, 'volunteers'));
         return volunteers.docs.map(doc => (doc.data() as Volunteer));
@@ -64,8 +57,6 @@ export const getAllVolunteers = async (): Promise<Volunteer[]> => {
 // Get volunteer between availability date range
 export const getAvailableVolunteersBetweenDateRange = async (startDate: Date, endDate: Date): Promise<Volunteer[]> => {
     try {
-        if (startDate > endDate) throw new Error('Start date must not later than end date');
-
         const days = Math.round((+endDate - +startDate) / (1000 * 60 * 60 * 24));
         const volunteers = await getAllVolunteers();
         if (volunteers && days >= 7) return volunteers
@@ -112,7 +103,7 @@ export const getVolunteersBySkills = async (skills: ): Promise<Volunteer[]> => {
 // ─── Update ────────────────────────────────────────────────────────────────────
 
 // Update volunteer data
-export const updateVolunteer = async (uid: string, newData: Partial<Omit<Volunteer, 'volunteerId' | 'rating' | 'isActive' | 'availability'>>): Promise<void> => {
+export const updateVolunteer = async (uid: string, newData: Partial<Omit<Volunteer, 'uid' | 'rating' | 'isActive' | 'availability'>>): Promise<void> => {
     try {
         await updateDoc(doc(db, 'volunteers', uid), newData);
     } catch (error) {
@@ -124,14 +115,18 @@ export const updateVolunteer = async (uid: string, newData: Partial<Omit<Volunte
 // Update volunteer rating
 export const updateVolunteerRating = async (uid: string): Promise<void> => {
     try {
-        const ratedSessions = await getRatedSessions(uid);
-        var totalRating = 0;
-        if (ratedSessions) {
-            for (const session of ratedSessions) {
-                const feedback = await getFeedback(session.sessionId);
-                if (feedback) totalRating += feedback.rating;
+        const completedSession = await getStudentSupportSessionsByStatus(uid, true, 'Completed');
+        let totalRating = 0;
+        let ratingCount = 0;
+        if (completedSession) {
+            for (const session of completedSession) {
+                const feedback = await getFeedback(session.uid);
+                if (feedback) {
+                    totalRating += feedback.rating;
+                    ratingCount++;
+                }
             }
-            await updateDoc(doc(db, 'volunteers', uid), { rating: totalRating / ratedSessions.length });
+            await updateDoc(doc(db, 'volunteers', uid), { rating: totalRating / ratingCount });
         }
     } catch (error) {
         console.error('Error updating volunteer\'s rating: ', error);
@@ -140,9 +135,11 @@ export const updateVolunteerRating = async (uid: string): Promise<void> => {
 }
 
 // Change volunteer active status
-export const updateVolunteerActiveStatus = async (uid: string, isActive: boolean): Promise<void> => {
+export const updateVolunteerActiveStatus = async (uid: string): Promise<void> => {
     try {
-        await updateDoc(doc(db, 'volunteers', uid), { isActive: !isActive });
+        const volunteer = await getVolunteer(uid);
+        if (!volunteer) throw new Error('No volunteer found');
+        await updateDoc(doc(db, 'volunteers', uid), { isActive: !volunteer.isActive });
     } catch (error) {
         console.error('Error updating volunteer active status: ', error);
         throw new Error('Failed to update volunteer active status: ' + error);
@@ -152,12 +149,6 @@ export const updateVolunteerActiveStatus = async (uid: string, isActive: boolean
 // Update volunteer availability
 export const updateVolunteerAvailability = async (uid: string, day: string, timeSlots: TimeSlot[]): Promise<void> => {
     try {
-        const timeRegex = /^([01]\d|2[0-3]):[0-5]\d$/;
-        for (const { start, end } of timeSlots) {
-            if (!timeRegex.test(start)) throw new Error(`Invalid start time: ${start}`);
-            if (!timeRegex.test(end)) throw new Error(`Invalid end time: ${end}`);
-            if (start >= end) throw new Error('Start time must not later that end time');
-        }
         await updateDoc(doc(db, 'volunteers', uid), { [`availability.${day}`]: timeSlots });
     } catch (error) {
         console.error('Error updating volunteer availability: ', error);
