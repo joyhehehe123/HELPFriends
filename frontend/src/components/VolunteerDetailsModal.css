@@ -1,0 +1,100 @@
+.volunteer-details__header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.volunteer-details__title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.75rem;
+}
+
+.volunteer-details__name {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: 1.125rem;
+    font-weight: var(--weight-bold);
+    line-height: 1.3;
+    letter-spacing: normal;
+    color: var(--color-text-primary);
+}
+
+.volunteer-details__student-id {
+    font-weight: var(--weight-medium);
+    color: #5f6b7a;
+}
+
+.volunteer-details__meta {
+    margin: 0.125rem 0 0;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: #5f6b7a;
+}
+
+.volunteer-details__about {
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    background: var(--color-bg-container-primary);
+}
+
+.volunteer-details__about p {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: #374151;
+}
+
+.volunteer-details__section {
+    margin-bottom: 1rem;
+}
+
+.volunteer-details__section-title {
+    margin: 0 0 0.5rem;
+    font-family: var(--font-heading);
+    font-size: 0.875rem;
+    font-weight: var(--weight-bold);
+    color: var(--color-text-primary);
+}
+
+.volunteer-details__about .volunteer-details__section-title {
+    margin-bottom: 0.25rem;
+}
+
+.volunteer-details__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.volunteer-details__chips--stacked {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.volunteer-details__chip {
+    padding: 0.3rem 0.75rem;
+    border-radius: 8px;
+    background: var(--color-bg-container-primary);
+    font-size: 0.8125rem;
+    color: #1f2937;
+}
+
+.volunteer-details__text {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #374151;
+}
+
+.volunteer-details__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+}
