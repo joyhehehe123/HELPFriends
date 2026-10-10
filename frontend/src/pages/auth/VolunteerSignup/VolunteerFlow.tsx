@@ -1,4 +1,4 @@
-import './steps/steps.css';
+import './VolunteerSteps/volunteer.css';
 import createCategoryStep from './VolunteerSteps/volunteer-category';
 import createSkillsStep from './VolunteerSteps/volunteer-skills';
 import createAvailabilityStep from './VolunteerSteps/volunteer-availability';
