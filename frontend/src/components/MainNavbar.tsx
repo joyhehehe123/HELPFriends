@@ -1,6 +1,5 @@
 import './MainNavbar.css';
 import type { MouseEvent } from 'react';
-import { flushSync } from 'react-dom';
 import { createRoot } from 'react-dom/client';
 
 export type NavbarButton = 'login' | 'signup';
@@ -82,8 +81,6 @@ export function createNavbar(currentPath: string, onNavigate: NavigateCallback):
     // display: contents keeps the navbar's `position: sticky` working relative to the page.
     host.style.display = 'contents';
     const root = createRoot(host);
-    flushSync(() => {
-        root.render(<Navbar currentPath={currentPath} onNavigate={onNavigate} />);
-    });
+    root.render(<Navbar currentPath={currentPath} onNavigate={onNavigate} />);
     return host;
 }

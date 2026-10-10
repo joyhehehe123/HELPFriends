@@ -1,7 +1,5 @@
 import '../Signup/SignupSteps/signup.css';
 import './LoginSteps/login.css';
-import { createNavbar } from '../../components/MainNavbar.tsx';
-import type { NavigateCallback } from '../../components/MainNavbar.tsx';
 import createLoginStep from './LoginSteps/login';
 import type { LoginInfoData } from './LoginSteps/login';
 import createLoginTwoFactorStep from './LoginSteps/login-2fa';
@@ -19,7 +17,6 @@ export default function createLoginFlow({ initialData }: LoginFlowProps = {}): H
         window.dispatchEvent(new PopStateEvent('popstate'));
     };
 
-    const navbar = createNavbar('/login', navigate as NavigateCallback);
 
     const state: { loginInfo: LoginInfoData; otp: string } = {
         loginInfo: {
@@ -78,6 +75,6 @@ export default function createLoginFlow({ initialData }: LoginFlowProps = {}): H
 
     renderStep();
 
-    container.append(navbar, content);
+    container.append(content);
     return container;
 }

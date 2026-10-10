@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react'
-import createLoginFlow from './Login/LoginFlow'
-import createResetPasswordFlow from './Login-ForgotPassword/ResetPasswordFlow'
-import createAccountDetailsPage from './Profile/AccountDetails'
-import createVolunteerDetailsPage from './Profile/VolunteerDetails'
-import createSignupFlow from './Signup/SignupFlow'
+import createLoginFlow from './auth/Login/LoginFlow'
+import createResetPasswordFlow from './auth/Login-ForgotPassword/ResetPasswordFlow'
+import createAccountDetailsPage from './profiles/AccountDetails'
+import createVolunteerDetailsPage from './profiles/VolunteerDetails'
+import createSignupFlow from './auth/Signup/SignupFlow'
 
 export default function SignupRoute() {
   const containerRef = useRef<HTMLDivElement>(null)

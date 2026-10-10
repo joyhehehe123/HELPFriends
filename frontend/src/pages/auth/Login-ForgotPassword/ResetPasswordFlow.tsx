@@ -1,7 +1,5 @@
 import '../Signup/SignupSteps/signup.css';
 import './ResetPasswordSteps/ResetPassword.css';
-import { createNavbar } from '../../components/MainNavbar';
-import type { NavigateCallback } from '../../components/MainNavbar';
 import createForgotPasswordStep from './ResetPasswordSteps/ForgotPassword';
 import createResetPasswordStep from './ResetPasswordSteps/ResetPassword';
 import createResetPasswordConfirmationStep from './ResetPasswordSteps/ResetPasswordConfirmation';
@@ -27,8 +25,6 @@ export default function createResetPasswordFlow({
         window.history.pushState({}, '', path);
         window.dispatchEvent(new PopStateEvent('popstate'));
     };
-
-    const navbar = createNavbar('/forgot-password', navigate as NavigateCallback);
 
     const state = { email: initialEmail };
 
@@ -76,6 +72,6 @@ export default function createResetPasswordFlow({
 
     renderStep();
 
-    container.append(navbar, content);
+    container.append(content);
     return container;
 }
