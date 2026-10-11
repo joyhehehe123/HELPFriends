@@ -6,10 +6,10 @@ import type { RequestStatus } from "../types/constants";
 
 // ─── Create ────────────────────────────────────────────────────────────────────
 
-export const createSupportRequest = async (data: Omit<SupportRequest, 'uid'>): Promise<void> => {
+export const createSupportRequest = async (data: Omit<SupportRequest, 'uid' | 'status'>): Promise<void> => {
     try {
         const nextId = 'R' + String(await generateNextId('request'));
-        await setDoc(doc(db, 'supportRequests', nextId), { ...data, uid: nextId});
+        await setDoc(doc(db, 'supportRequests', nextId), { ...data, uid: nextId, status: 'Pending'});
     } catch (error) {
         console.error('Error creating support request: ', error);
         throw new Error('Failed to create support request: ' + error);
@@ -45,7 +45,7 @@ export const getSupportRequestsByStudent = async (studentId: string, byVolunteer
 }
 
 // Get support requests by student
-export const getSupportRequestsByStudentByStatus = async (studentId: string, byVolunteer: boolean, status: RequestStatus): Promise<SupportRequest[]> => {
+export const getSupportRequestsByStudentAndStatus = async (studentId: string, byVolunteer: boolean, status: RequestStatus): Promise<SupportRequest[]> => {
     try {
         const q = (byVolunteer)
             ? query(collection(db, 'supportRequests'), where('volunteerId', '==', studentId), where('status', '==', status))
@@ -61,7 +61,7 @@ export const getSupportRequestsByStudentByStatus = async (studentId: string, byV
 // ─── Update ────────────────────────────────────────────────────────────────────
 
 // Update request data
-export const updateSupportRequest = async (uid: string, newData: Partial<Omit<SupportRequest, 'uid'>>): Promise<void> => {
+export const updateSupportRequest = async (uid: string, newData: Partial<Omit<SupportRequest, 'uid' | 'status'>>): Promise<void> => {
     try {
         await updateDoc(doc(db, 'supportRequests', uid), newData);
     } catch (error) {
@@ -69,6 +69,8 @@ export const updateSupportRequest = async (uid: string, newData: Partial<Omit<Su
         throw new Error('Failed to update support request: ' + error);
     }
 }
+
+// Cancel request
 
 // ─── Delete ────────────────────────────────────────────────────────────────────
 

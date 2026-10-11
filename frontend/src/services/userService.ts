@@ -6,7 +6,7 @@ import { type User } from '../types/user';
 
 export const createUser = async (uid: string, data: Omit<User, 'uid'>): Promise<void> => {
     try {
-        await setDoc(doc(db, 'users', uid), { ...data, uid: uid });
+        await setDoc(doc(db, 'users', uid), { ...data, uid: uid }); // User will have same uid as in Firebase Auth
     } catch (error) {
         console.error('Error creating user: ', error);
         throw new Error('Failed to create user: ' + error);

@@ -1,16 +1,15 @@
 import { db } from "../firebase";
 import { collection, setDoc, getDoc, getDocs, updateDoc, deleteDoc, doc, query, where } from "firebase/firestore";
-import { type TimeSlot, type Volunteer } from "../types/volunteer";
-import { getStudentSupportSessionsByStatus } from './supportSessionService';
+import { getSupportSessionsByStudentAndStatus } from './supportSessionService';
 import { getFeedback } from "./feedbackService";
-import { type PreferredMode } from "../types/constants";
-import { DAYS } from '../types/constants';
+import { type PreferredMode, DAYS } from "../types/constants";
+import type { TimeSlot, Volunteer } from "../types/volunteer";
 
 // ─── Create ────────────────────────────────────────────────────────────────────
 
 export const createVolunteer = async (uid: string, data: Omit<Volunteer, 'uid' | 'rating'>): Promise<void> => {
     try {
-        await setDoc(doc(db, 'volunteers', uid), {...data, uid: uid, rating: 0.0});
+        await setDoc(doc(db, 'volunteers', uid), {...data, uid: uid, rating: 0.0}); // Volunteer will have same uid as linked user uid
     } catch (error) {
         console.error('Error creating volunteer: ', error);
         throw new Error('Failed to create volunteer: ' + error);
@@ -91,14 +90,7 @@ export const getAvailableVolunteersBetweenDateRange = async (startDate: Date, en
 }
 
 // Get volunteers by skills
-export const getVolunteersBySkills = async (skills: ): Promise<Volunteer[]> => {
-    try {
 
-    } catch (error) {
-        console.error('Error fetching volunteers by skills: ', error);
-        throw new Error('Failed to retrieve volunteers by skills: ' + error);
-    }
-}
 
 // ─── Update ────────────────────────────────────────────────────────────────────
 
@@ -115,7 +107,7 @@ export const updateVolunteer = async (uid: string, newData: Partial<Omit<Volunte
 // Update volunteer rating
 export const updateVolunteerRating = async (uid: string): Promise<void> => {
     try {
-        const completedSession = await getStudentSupportSessionsByStatus(uid, true, 'Completed');
+        const completedSession = await getSupportSessionsByStudentAndStatus(uid, true, 'Completed');
         let totalRating = 0;
         let ratingCount = 0;
         if (completedSession) {
