@@ -1,0 +1,83 @@
+.picker-input {
+    position: relative;
+    min-width: 0;
+}
+
+/* The browser's own text is hidden, the span below shows the value instead */
+.picker-input__field {
+    box-sizing: border-box;
+    width: 100%;
+    height: 64px;
+    padding: 0 64px 0 25px;
+    border: 1px solid var(--color-border-input);
+    border-radius: 12px;
+    background: var(--color-bg-secondary);
+    font: inherit;
+    color: transparent;
+    caret-color: transparent;
+    cursor: pointer;
+}
+
+.picker-input__field::-webkit-datetime-edit {
+    opacity: 0;
+}
+
+.picker-input__field::-webkit-calendar-picker-indicator {
+    display: none;
+}
+
+.picker-input__field:focus {
+    outline: none;
+    border-color: var(--color-tertiary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.picker-input--invalid .picker-input__field {
+    border-color: var(--color-text-status-cancelled);
+}
+
+.picker-input__text,
+.picker-input__icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.picker-input__text {
+    left: 25px;
+    right: 64px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--color-text-primary);
+}
+
+.picker-input__text--placeholder {
+    color: var(--color-text-muted-light);
+}
+
+.picker-input__icon {
+    right: 21px;
+    width: 38px;
+    height: 38px;
+    color: var(--color-tertiary);
+}
+
+@media (max-width: 900px) {
+    .picker-input__field {
+        height: 52px;
+        padding: 0 48px 0 16px;
+    }
+
+    .picker-input__text {
+        left: 16px;
+        right: 48px;
+    }
+
+    .picker-input__icon {
+        right: 16px;
+        width: 22px;
+        height: 22px;
+    }
+}

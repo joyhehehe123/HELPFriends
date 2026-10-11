@@ -1,18 +1,26 @@
-/* Shared layout for the Request a Support pages */
+/* Shared layout for the support request pages. Sizes follow the Figma frames (1920px wide) at 80%. */
 
 .request-support {
     flex: 1;
+    padding-bottom: 48px;
     background: var(--color-bg-primary);
     color: var(--color-text-primary);
-    font-family: var(--font-body);
-    font-size: 1rem;
+    font-family: var(--font-heading); /* Figma uses Poppins for all text */
+    font-size: 20px;
     line-height: 1.5;
     letter-spacing: normal;
     text-align: left;
     color-scheme: light; /* light date/time pickers */
 }
 
-/* Overrides the Vite starter #root styles in index.css (remove when index.css is cleaned up) */
+/* Sizes include padding and border, like Figma (Joy's global.css does this for the whole app) */
+.request-support *,
+.request-support *::before,
+.request-support *::after {
+    box-sizing: border-box;
+}
+
+/* Overrides the centred #root styles (Vite index.css, team global.css) on these pages */
 #root:has(.request-support) {
     width: 100%;
     max-width: none;
@@ -20,37 +28,80 @@
     text-align: left;
 }
 
+/* Content column (1500px of 1920px in Figma) */
 .request-support__body {
-    max-width: 760px;
+    width: min(78%, 1200px);
     margin: 0 auto;
-    padding: 2rem 1.5rem 3rem;
+    padding-top: 40px;
 }
 
-.request-support__body--wide {
-    max-width: 880px;
+/* Row with the Back link under the navbar */
+.page-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 52px;
+    padding: 17px 64px 0;
 }
 
-.category-chip {
-    display: inline-block;
-    padding: 0.25rem 0.875rem;
-    border-radius: var(--radius-md);
-    background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
-    font-family: var(--font-heading);
-    font-size: 0.75rem;
-    font-weight: var(--weight-bold);
-    letter-spacing: 0.04em;
+.page-top + .request-support__body {
+    padding-top: 18px;
+}
+
+/* ───────────────────────────────────── Chips ───────────────────────────────────── */
+
+.category-chip,
+.role-chip {
+    display: inline-flex;
+    align-items: center;
+    height: 46px;
+    padding: 0 18px;
+    border-radius: 999px;
+    font-size: 20px;
+    font-weight: var(--weight-medium);
     text-transform: uppercase;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
     color: var(--color-text-secondary);
     white-space: nowrap;
 }
 
+.category-chip {
+    background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
+}
+
+.role-chip--volunteer {
+    background: var(--color-secondary);
+}
+
+.role-chip--seeker {
+    background: var(--color-primary);
+}
+
+.date-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    height: 46px;
+    padding: 0 18px;
+    border-radius: 999px;
+    background: var(--color-bg-container-primary);
+    font-size: 20px;
+    color: var(--color-text-primary);
+    white-space: nowrap;
+}
+
+.date-chip--negative {
+    background: var(--color-status-rejected);
+}
+
 .status-pill {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    border-radius: var(--radius-md);
-    font-size: 0.75rem;
-    font-weight: var(--weight-bold);
+    display: inline-flex;
+    align-items: center;
+    height: 46px;
+    padding: 0 25px;
+    border-radius: 999px;
+    font-size: 20px;
+    font-weight: var(--weight-medium);
+    white-space: nowrap;
 }
 
 .status-pill--pending {
@@ -58,15 +109,16 @@
     color: var(--color-text-status-pending);
 }
 
-.link-button {
-    padding: 0;
-    border: none;
-    background: none;
-    font: inherit;
-    font-weight: var(--weight-medium);
-    color: var(--color-tertiary);
-    text-decoration: underline;
-    cursor: pointer;
+.status-pill--accepted,
+.status-pill--scheduled {
+    background: var(--color-status-accepted);
+    color: var(--color-text-status-accepted);
+}
+
+.status-pill--rejected,
+.status-pill--cancelled {
+    background: var(--color-status-rejected);
+    color: var(--color-text-status-rejected);
 }
 
 .visually-hidden {
@@ -81,8 +133,32 @@
     border: 0;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 900px) {
+    .request-support {
+        font-size: 16px;
+    }
+
     .request-support__body {
-        padding: 1.25rem 1rem 2.5rem;
+        width: auto;
+        padding: 24px 16px 0;
+    }
+
+    .page-top {
+        gap: 12px 24px;
+        padding: 16px 16px 0;
+    }
+
+    .category-chip,
+    .role-chip,
+    .date-chip,
+    .status-pill {
+        height: 36px;
+        padding: 0 14px;
+        font-size: 14px;
+    }
+
+    .date-chip svg {
+        width: 20px;
+        height: 20px;
     }
 }
