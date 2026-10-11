@@ -1,13 +1,15 @@
+/* Buttons in the Figma design: bold uppercase text, blue fill or blue outline */
 .hf-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: var(--space-2);
+    box-sizing: border-box;
     border: 2px solid var(--color-tertiary);
-    border-radius: 10px;
+    border-radius: 12px;
     font-family: var(--font-heading);
+    font-size: 20px;
     font-weight: var(--weight-bold);
-    letter-spacing: 0.04em;
     text-transform: uppercase;
     white-space: nowrap;
     cursor: pointer;
@@ -15,16 +17,13 @@
 }
 
 .hf-button--md {
-    min-height: 44px;
-    padding: 0 1.5rem;
-    font-size: 0.875rem;
+    height: 62px;
+    padding: 0 32px;
 }
 
 .hf-button--sm {
-    min-height: 32px;
-    padding: 0 0.875rem;
-    border-radius: 8px;
-    font-size: 0.75rem;
+    height: 46px;
+    padding: 0 24px;
 }
 
 .hf-button--primary {
@@ -46,6 +45,10 @@
     background: #eef3ff;
 }
 
+.hf-button--pill {
+    border-radius: 999px;
+}
+
 .hf-button--full {
     width: 100%;
 }
@@ -58,4 +61,20 @@
 .hf-button:disabled {
     opacity: 0.55;
     cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
+    .hf-button {
+        font-size: 15px;
+    }
+
+    .hf-button--md {
+        height: 48px;
+        padding: 0 20px;
+    }
+
+    .hf-button--sm {
+        height: 40px;
+        padding: 0 16px;
+    }
 }

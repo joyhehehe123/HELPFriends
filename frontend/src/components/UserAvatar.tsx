@@ -3,7 +3,7 @@ import './UserAvatar.css';
 interface UserAvatarProps {
     name: string;
     photoUrl?: string; // Shows initials if empty
-    size?: 'md' | 'lg';
+    size?: 'sm' | 'md' | 'lg' | 'xl'; // 48, 64, 76, 96 px
 }
 
 const getInitials = (name: string): string =>
@@ -15,7 +15,7 @@ const getInitials = (name: string): string =>
         .join('');
 
 // alt="" because the name is shown next to it
-export default function UserAvatar({ name, photoUrl, size = 'md' }: UserAvatarProps) {
+export default function UserAvatar({ name, photoUrl, size = 'lg' }: UserAvatarProps) {
     if (photoUrl) {
         return <img className={`user-avatar user-avatar--${size}`} src={photoUrl} alt="" />;
     }

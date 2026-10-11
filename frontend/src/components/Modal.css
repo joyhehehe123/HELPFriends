@@ -15,7 +15,7 @@
 }
 
 .app-modal::backdrop {
-    background: rgba(15, 23, 42, 0.45);
+    background: rgba(0, 0, 0, 0.3); /* Figma popup overlay */
 }
 
 .app-modal__content {
