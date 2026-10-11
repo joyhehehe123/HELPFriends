@@ -6,9 +6,9 @@ import sadCat from '../../assets/sadcat.png';
 
 function SupportSessions() {
    return (
-      <section className='content'>
+      <section id='content'>
          <div className='wrapper'>
-            <Link to='' className='card link' id='active-sessions'>
+            <Link to='/support-sessions/active' className='card link' id='active-sessions'>
                <div className='title-subtitle'>
                   <p className='title'>ACTIVE SESSIONS</p>
                   <p className='subtitle'>
@@ -18,7 +18,7 @@ function SupportSessions() {
                </div>
                <img src={happyCat} />
             </Link>
-            <Link to='' className='card link' id='completed-sessions'>
+            <Link to='/support-sessions/completed' className='card link' id='completed-sessions'>
                <div className='title-subtitle'>
                   <p className='title'>COMPLETED SESSIONS</p>
                   <p className='subtitle'>
@@ -28,7 +28,7 @@ function SupportSessions() {
                </div>
                <img src={goodCat} />
             </Link>
-            <Link to='' className='card link' id='cancelled-sessions'>
+            <Link to='/support-sessions/cancelled' className='card link' id='cancelled-sessions'>
                <div className='title-subtitle'>
                   <p className='title'>CANCELLED SESSIONS</p>
                   <p className='subtitle'>
