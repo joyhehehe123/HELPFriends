@@ -1,9 +1,10 @@
 import { type SupportRequest } from '../../types/supportRequest';
-import { type DayName } from '../../types/volunteerProfile';
 
 // Same values as SupportRequest
 export type SupportCategory = SupportRequest['category'];
 export type SupportMode = SupportRequest['supportMode'];
+
+// ───────────────────────────────────── Form ──────────────────────────────────────
 
 // One date/time row in the form
 export interface ProposedSlotInput {
@@ -27,8 +28,11 @@ export interface ValidSupportRequestDraft extends SupportRequestDraft {
     supportMode: SupportMode;
 }
 
+// ─────────────────────────────────── Matching ────────────────────────────────────
+
 export interface VolunteerFilters {
-    skill: string;   // '' = any skill
-    days: DayName[]; // [] = any day
+    skill: string; // '' = any skill
+    from: string;  // "YYYY-MM-DD", '' = any date
+    to: string;    // "YYYY-MM-DD", '' = same as from
     mode: SupportMode;
 }

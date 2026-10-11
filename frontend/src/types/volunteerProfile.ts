@@ -16,6 +16,7 @@ export interface DayAvailability {
 // User + Volunteer data for the matching page (Firestore has no joins)
 export type VolunteerProfile =
     Pick<User, 'fullName' | 'studentId' | 'faculty' | 'program' | 'bio' | 'profilePic'> &
-    Pick<Volunteer, 'volunteerId' | 'preferredMode' | 'rating' | 'isActive' | 'supportCategories' | 'skills'> & {
+    Pick<Volunteer, 'preferredMode' | 'rating' | 'isActive' | 'supportCategories' | 'skills'> & {
+        volunteerId: string; // Volunteer document id (same as the user id)
         availability: DayAvailability[];
     };

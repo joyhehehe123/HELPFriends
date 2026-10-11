@@ -9,28 +9,20 @@ import './VolunteerDetailsModal.css';
 interface VolunteerDetailsModalProps {
     volunteer: VolunteerProfile;
     onClose: () => void;
-    onSelect?: (volunteer: VolunteerProfile) => void; // Shows Select button if given
 }
 
-const MODE_LABELS: Record<VolunteerProfile['preferredMode'], string> = {
-    Virtual: 'Virtual (online)',
-    Physical: 'Physical (on campus)',
-    Both: 'Virtual & Physical',
-};
-
-// Volunteer details popup (Figure 22)
-export default function VolunteerDetailsModal({ volunteer, onClose, onSelect }: VolunteerDetailsModalProps) {
+// Volunteer details popup (Figma: Volunteer Details)
+export default function VolunteerDetailsModal({ volunteer, onClose }: VolunteerDetailsModalProps) {
     const titleId = `volunteer-details-${volunteer.volunteerId}`;
 
     return (
         <Modal labelledBy={titleId} onClose={onClose} className="volunteer-details">
             <div className="volunteer-details__header">
-                <UserAvatar name={volunteer.fullName} photoUrl={volunteer.profilePic} size="lg" />
+                <UserAvatar name={volunteer.fullName} photoUrl={volunteer.profilePic} size="xl" />
                 <div>
                     <div className="volunteer-details__title-row">
                         <h2 id={titleId} className="volunteer-details__name">
-                            {volunteer.fullName}{' '}
-                            <span className="volunteer-details__student-id">({volunteer.studentId})</span>
+                            {volunteer.fullName} ({volunteer.studentId})
                         </h2>
                         <StarRating rating={volunteer.rating} />
                     </div>
@@ -41,13 +33,13 @@ export default function VolunteerDetailsModal({ volunteer, onClose, onSelect }: 
 
             {volunteer.bio && (
                 <section className="volunteer-details__about">
-                    <h3 className="volunteer-details__section-title">About Me</h3>
+                    <h3 className="volunteer-details__about-title">About Me</h3>
                     <p>{volunteer.bio}</p>
                 </section>
             )}
 
             <section className="volunteer-details__section">
-                <h3 className="volunteer-details__section-title">Support Categories</h3>
+                <h3 className="volunteer-details__section-title">Support Categories:</h3>
                 <ul className="volunteer-details__chips">
                     {volunteer.supportCategories.map((category) => (
                         <li key={category} className="volunteer-details__chip">{category}</li>
@@ -56,7 +48,7 @@ export default function VolunteerDetailsModal({ volunteer, onClose, onSelect }: 
             </section>
 
             <section className="volunteer-details__section">
-                <h3 className="volunteer-details__section-title">Skills</h3>
+                <h3 className="volunteer-details__section-title">Skills:</h3>
                 <ul className="volunteer-details__chips">
                     {volunteer.skills.map((skill) => (
                         <li key={skill} className="volunteer-details__chip">{skill}</li>
@@ -65,7 +57,7 @@ export default function VolunteerDetailsModal({ volunteer, onClose, onSelect }: 
             </section>
 
             <section className="volunteer-details__section">
-                <h3 className="volunteer-details__section-title">Availability</h3>
+                <h3 className="volunteer-details__section-title">Availability:</h3>
                 <ul className="volunteer-details__chips volunteer-details__chips--stacked">
                     {sortAvailability(volunteer.availability).flatMap((entry) =>
                         entry.timeSlots.map((slot) => (
@@ -76,16 +68,8 @@ export default function VolunteerDetailsModal({ volunteer, onClose, onSelect }: 
                 </ul>
             </section>
 
-            <section className="volunteer-details__section">
-                <h3 className="volunteer-details__section-title">Support Mode</h3>
-                <p className="volunteer-details__text">{MODE_LABELS[volunteer.preferredMode]}</p>
-            </section>
-
             <div className="volunteer-details__footer">
-                <Button size="sm" variant="outline" onClick={onClose}>Close</Button>
-                {onSelect && (
-                    <Button size="sm" onClick={() => onSelect(volunteer)}>Select</Button>
-                )}
+                <Button size="sm" shape="pill" className="volunteer-details__close" onClick={onClose}>Close</Button>
             </div>
         </Modal>
     );

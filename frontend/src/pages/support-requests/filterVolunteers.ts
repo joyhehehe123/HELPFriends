@@ -1,4 +1,5 @@
 import { type DayName, type VolunteerProfile } from '../../types/volunteerProfile';
+import { getDaysInRange } from '../../utils/dateTime';
 import { type SupportCategory, type SupportMode, type VolunteerFilters } from './types';
 
 // 'Both' matches Virtual and Physical
@@ -12,25 +13,27 @@ export const hasSkill = (volunteer: VolunteerProfile, skillSearch: string): bool
     return volunteer.skills.some((skill) => skill.toLowerCase().includes(search));
 };
 
-// Free on at least one of the chosen days
-export const isAvailableOnAnyDay = (volunteer: VolunteerProfile, days: DayName[]): boolean => {
-    if (days.length === 0) return true;
-    return volunteer.availability.some((entry) => days.includes(entry.day) && entry.timeSlots.length > 0);
+// Free on at least one of the days
+export const isAvailableOnAnyDay = (volunteer: VolunteerProfile, days: DayName[]): boolean =>
+    volunteer.availability.some((entry) => days.includes(entry.day) && entry.timeSlots.length > 0);
+
+// Free on a day between the two dates (no dates = any day)
+export const isAvailableInRange = (volunteer: VolunteerProfile, from: string, to: string): boolean => {
+    if (!from && !to) return true;
+    return isAvailableOnAnyDay(volunteer, getDaysInRange(from, to));
 };
 
-// Skips inactive volunteers and the student themself (FR), highest rating first
+// Skips inactive volunteers and the student themself (FR)
 export const filterVolunteers = (
     volunteers: VolunteerProfile[],
     category: SupportCategory,
     filters: VolunteerFilters,
     currentUserId: string | null,
 ): VolunteerProfile[] =>
-    volunteers
-        .filter((volunteer) =>
-            volunteer.isActive &&
-            volunteer.volunteerId !== currentUserId &&
-            volunteer.supportCategories.includes(category) &&
-            supportsMode(volunteer, filters.mode) &&
-            hasSkill(volunteer, filters.skill) &&
-            isAvailableOnAnyDay(volunteer, filters.days))
-        .sort((a, b) => b.rating - a.rating || a.fullName.localeCompare(b.fullName));
+    volunteers.filter((volunteer) =>
+        volunteer.isActive &&
+        volunteer.volunteerId !== currentUserId &&
+        volunteer.supportCategories.includes(category) &&
+        supportsMode(volunteer, filters.mode) &&
+        hasSkill(volunteer, filters.skill) &&
+        isAvailableInRange(volunteer, filters.from, filters.to));

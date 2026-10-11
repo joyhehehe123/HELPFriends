@@ -1,17 +1,18 @@
 import { type VolunteerProfile } from '../../types/volunteerProfile';
 
-// Test data until Firestore is connected (Marcus is inactive, Aisyah has no ratings)
+// Test data until Firestore is connected. Claire, Hazel and Elise are from the Figma design.
+// Marcus is inactive and Aisyah has no ratings yet.
 export const MOCK_VOLUNTEERS: VolunteerProfile[] = [
     {
         volunteerId: 'mock-claire',
-        fullName: 'Claire Lim',
+        fullName: 'Claire',
         studentId: 'B2200002',
         faculty: 'Faculty of Communication, Media and Creative Industries',
         program: 'Bachelor in Communication (Media Studies) (Honours)',
-        bio: "I'm a student who is willing to help anyone. Feel free to reach out!",
+        bio: 'I’m a student who willing to help anyone~ feel free to look for me~',
         profilePic: '',
         supportCategories: ['Academic', 'New Student', 'General Student'],
-        skills: ['Public Speaking', 'Mathematics'],
+        skills: ['Public Speaking', 'Math'],
         availability: [
             { day: 'Monday', timeSlots: [{ start: '11:00', end: '13:00' }] },
             { day: 'Tuesday', timeSlots: [{ start: '13:00', end: '14:00' }] },
@@ -23,14 +24,14 @@ export const MOCK_VOLUNTEERS: VolunteerProfile[] = [
     },
     {
         volunteerId: 'mock-hazel',
-        fullName: 'Hazel Wong',
+        fullName: 'Hazel',
         studentId: 'B2300154',
         faculty: 'Faculty of Business, Economics and Accounting',
         program: 'Bachelor of Accounting and Finance (Honours)',
         bio: 'Spreadsheets and statistics are my thing. Happy to help you get started.',
         profilePic: '',
         supportCategories: ['Academic', 'Technology'],
-        skills: ['Excel', 'Mathematics'],
+        skills: ['Excel', 'Math'],
         availability: [
             { day: 'Tuesday', timeSlots: [{ start: '13:00', end: '16:30' }] },
         ],
@@ -40,14 +41,14 @@ export const MOCK_VOLUNTEERS: VolunteerProfile[] = [
     },
     {
         volunteerId: 'mock-elise',
-        fullName: 'Elise Ng',
+        fullName: 'Elise',
         studentId: 'B2301178',
         faculty: 'Faculty of Computing and Digital Technology',
         program: 'Bachelor of Computer Science (Honours)',
         bio: 'Final-year CS student. I can help with programming assignments and debugging.',
         profilePic: '',
         supportCategories: ['Technology', 'Academic'],
-        skills: ['Python', 'Java', 'C#', 'Programming'],
+        skills: ['Python', 'Java', 'C#'],
         availability: [
             {
                 day: 'Monday',
@@ -116,7 +117,7 @@ export const MOCK_VOLUNTEERS: VolunteerProfile[] = [
     },
     {
         volunteerId: 'mock-nikki',
-        fullName: 'Nikki Raj',
+        fullName: 'Nikki',
         studentId: 'B2201089',
         faculty: 'Faculty of Business, Economics and Accounting',
         program: 'Bachelor of Business (Honours) in Marketing',

@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
+import sadCat from '../../assets/sadcat.png';
+import BackLink from '../../components/BackLink';
 import Button from '../../components/Button';
-import PageHeader from '../../components/PageHeader';
 import VolunteerCard from '../../components/VolunteerCard';
 import VolunteerDetailsModal from '../../components/VolunteerDetailsModal';
-import { type DayName, type VolunteerProfile } from '../../types/volunteerProfile';
-import { combineDateAndTime, formatDayAndDate, formatTime12h, getDayName, WEEK_DAYS } from '../../utils/dateTime';
+import { type VolunteerProfile } from '../../types/volunteerProfile';
 import { SUPPORT_MODES } from './constants';
-import DayMultiSelect from './DayMultiSelect';
+import DateRangeSelect from './DateRangeSelect';
 import { filterVolunteers } from './filterVolunteers';
 import SendRequestDialog from './SendRequestDialog';
 import { fetchVolunteerProfiles } from './supportRequestApi';
@@ -22,41 +22,9 @@ interface VolunteerMatchingProps {
 
 type LoadStatus = 'loading' | 'error' | 'ready';
 
-// Days of the week from the form dates
-const getPreferredDays = (request: ValidSupportRequestDraft): DayName[] => {
-    const days = request.proposedTimeSlots
-        .map((slot) => combineDateAndTime(slot.date, slot.time))
-        .filter((date): date is Date => date !== null)
-        .map(getDayName);
-    return WEEK_DAYS.filter((day) => days.includes(day));
-};
-
-// "Tue 20 Oct, 1:00 PM · Thu 22 Oct, 3:00 PM"
-const describePreferredTimes = (request: ValidSupportRequestDraft): string =>
-    request.proposedTimeSlots
-        .map((slot) => {
-            const dateTime = combineDateAndTime(slot.date, slot.time);
-            return dateTime ? `${formatDayAndDate(dateTime)}, ${formatTime12h(slot.time)}` : '';
-        })
-        .filter(Boolean)
-        .join(' · ');
-
-const haveSameDays = (a: DayName[], b: DayName[]): boolean =>
-    a.length === b.length && a.every((day) => b.includes(day));
-
-function NoMatchesIllustration() {
-    return (
-        <svg className="no-matches__icon" viewBox="0 0 96 96" width="96" height="96" aria-hidden="true">
-            <circle cx="42" cy="42" r="26" fill="#ffffff" stroke="#52d5ff" strokeWidth="6" />
-            <path d="M61 61l20 20" stroke="#37cc96" strokeWidth="8" strokeLinecap="round" />
-            <path d="M33 33l18 18M51 33L33 51" stroke="#2563eb" strokeWidth="5" strokeLinecap="round" />
-        </svg>
-    );
-}
-
-// Volunteers matching page (Figure 21, 23)
+// Volunteer matching page (Figma: Volunteer Filtering & Matching, No Results)
 export default function VolunteerMatching({ request, currentUserId, onBack, onRequestSent }: VolunteerMatchingProps) {
-    const defaultFilters: VolunteerFilters = { skill: '', days: [], mode: request.supportMode };
+    const defaultFilters: VolunteerFilters = { skill: '', from: '', to: '', mode: request.supportMode };
 
     const [filters, setFilters] = useState<VolunteerFilters>(defaultFilters);
     const [volunteers, setVolunteers] = useState<VolunteerProfile[]>([]);
@@ -84,9 +52,6 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
     }, [request.category, reloadCount]);
 
     const matches = filterVolunteers(volunteers, request.category, filters, currentUserId);
-    const preferredDays = getPreferredDays(request);
-    const filtersChanged =
-        filters.skill.trim() !== '' || filters.days.length > 0 || filters.mode !== request.supportMode;
 
     const updateFilters = (changes: Partial<VolunteerFilters>) => setFilters((current) => ({ ...current, ...changes }));
 
@@ -95,36 +60,19 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
         setReloadCount((count) => count + 1);
     };
 
-    const chooseVolunteer = (volunteer: VolunteerProfile) => {
-        setDetailsVolunteer(null); // Close details popup
-        setChosenVolunteer(volunteer);
-    };
-
     return (
-        <>
-            <PageHeader
-                title="Volunteers Matching"
-                breadcrumb={['Request a Support', 'Volunteers Matching']}
-                onBack={onBack}
-                backLabel="Back to the support request form"
-            />
+        <main>
+            <div className="page-top">
+                <BackLink onClick={onBack} label="Back to the support request form" />
+                <span className="category-chip matching-chip">{request.category} Support</span>
+            </div>
 
-            <main className="request-support__body request-support__body--wide">
+            <div className="request-support__body matching-body">
+                <h1 className="visually-hidden">Volunteer Matching</h1>
+
                 {/* Filters */}
                 <section className="matching-filters" aria-labelledby="filter-heading">
-                    <div className="matching-filters__header">
-                        <h2 id="filter-heading" className="matching-heading">Filter Volunteers</h2>
-                        <span className="category-chip">{request.category} Support</span>
-                        {filtersChanged && (
-                            <button
-                                type="button"
-                                className="link-button matching-filters__reset"
-                                onClick={() => setFilters(defaultFilters)}
-                            >
-                                Reset filters
-                            </button>
-                        )}
-                    </div>
+                    <h2 id="filter-heading" className="matching-heading">Filter Volunteers</h2>
 
                     <div className="matching-filters__controls">
                         <label className="visually-hidden" htmlFor="skill-filter">Skill</label>
@@ -138,7 +86,7 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
                             onChange={(event) => updateFilters({ skill: event.target.value })}
                         />
 
-                        <DayMultiSelect selectedDays={filters.days} onChange={(days) => updateFilters({ days })} />
+                        <DateRangeSelect from={filters.from} to={filters.to} onChange={updateFilters} />
 
                         <span className="matching-filters__divider" aria-hidden="true" />
 
@@ -159,28 +107,16 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
                             ))}
                         </fieldset>
                     </div>
-
-                    {preferredDays.length > 0 && (
-                        <p className="matching-filters__hint">
-                            <span>Your preferred times: {describePreferredTimes(request)}</span>
-                            {!haveSameDays(filters.days, preferredDays) && (
-                                <button
-                                    type="button"
-                                    className="link-button"
-                                    onClick={() => updateFilters({ days: preferredDays })}
-                                >
-                                    Show volunteers free on these days
-                                </button>
-                            )}
-                        </p>
-                    )}
                 </section>
 
                 {/* Results */}
                 <section aria-labelledby="results-heading" aria-busy={status === 'loading'}>
-                    <h2 id="results-heading" className="matching-heading">
-                        Matching Volunteers{status === 'ready' ? ` (${matches.length})` : ''}
-                    </h2>
+                    {(status !== 'ready' || matches.length > 0) && (
+                        <h2 id="results-heading" className="matching-heading matching-heading--results">
+                            Matching Volunteers
+                            {status === 'ready' && <span className="visually-hidden"> ({matches.length} found)</span>}
+                        </h2>
+                    )}
 
                     {status === 'loading' && (
                         <p className="matching-results__status" role="status">Finding volunteers...</p>
@@ -195,22 +131,13 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
 
                     {status === 'ready' && matches.length === 0 && (
                         <div className="no-matches">
-                            <NoMatchesIllustration />
+                            <h2 id="results-heading" className="visually-hidden">Matching Volunteers (0 found)</h2>
+                            <img className="no-matches__image" src={sadCat} alt="" />
                             <p className="no-matches__title">No volunteers match your filters</p>
-                            {filtersChanged ? (
-                                <>
-                                    <p className="no-matches__text">Try a different skill, day or support mode.</p>
-                                    <Button onClick={() => setFilters(defaultFilters)}>Reset filters</Button>
-                                </>
-                            ) : (
-                                <>
-                                    <p className="no-matches__text">
-                                        No {request.supportMode.toLowerCase()} volunteers offer {request.category} support yet.
-                                        Try the other support mode or edit your request.
-                                    </p>
-                                    <Button variant="outline" onClick={onBack}>Edit request</Button>
-                                </>
-                            )}
+                            <p className="no-matches__text">Please try again.</p>
+                            <Button shape="pill" className="no-matches__button" onClick={() => setFilters(defaultFilters)}>
+                                Reset filters
+                            </Button>
                         </div>
                     )}
 
@@ -221,21 +148,17 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
                                     <VolunteerCard
                                         volunteer={volunteer}
                                         onViewDetails={setDetailsVolunteer}
-                                        onSelect={chooseVolunteer}
+                                        onSelect={setChosenVolunteer}
                                     />
                                 </li>
                             ))}
                         </ul>
                     )}
                 </section>
-            </main>
+            </div>
 
             {detailsVolunteer && (
-                <VolunteerDetailsModal
-                    volunteer={detailsVolunteer}
-                    onClose={() => setDetailsVolunteer(null)}
-                    onSelect={chooseVolunteer}
-                />
+                <VolunteerDetailsModal volunteer={detailsVolunteer} onClose={() => setDetailsVolunteer(null)} />
             )}
 
             {chosenVolunteer && (
@@ -246,6 +169,6 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
                     onSent={(sentAt) => onRequestSent(chosenVolunteer, sentAt)}
                 />
             )}
-        </>
+        </main>
     );
 }

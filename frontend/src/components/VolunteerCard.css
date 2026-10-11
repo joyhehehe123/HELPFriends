@@ -1,82 +1,91 @@
-.volunteer-card {
+/* "match-card" because Haiqal's signup.css already uses .volunteer-card */
+.match-card {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 1rem 1.5rem;
-    border: 2px solid transparent;
-    border-radius: var(--radius-sm);
+    gap: 41px;
+    padding: 24px 40px;
+    border: 3px solid transparent;
+    border-radius: 32px;
     background:
         linear-gradient(var(--color-bg-card), var(--color-bg-card)) padding-box,
         linear-gradient(to right, var(--color-primary), var(--color-secondary)) border-box;
-    box-shadow: var(--shadow-card);
     text-align: left;
 }
 
-.volunteer-card__info {
+.match-card__info {
     flex: 1;
     min-width: 0; /* needed for text-overflow */
+    max-width: 545px; /* long availability ends with "..." (Figma) */
 }
 
-.volunteer-card__title-row {
+.match-card__title-row {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.25rem 0.625rem;
-    margin-bottom: 0.25rem;
+    gap: 4px 16px;
+    margin-bottom: 2px;
 }
 
-.volunteer-card__name {
+.match-card__name {
     margin: 0;
     font-family: var(--font-heading);
-    font-size: 1rem;
-    font-weight: var(--weight-bold);
+    font-size: 24px;
+    font-weight: var(--weight-medium);
+    line-height: 1.4;
     letter-spacing: normal;
     color: var(--color-text-primary);
 }
 
-.volunteer-card__detail {
-    margin: 0.125rem 0 0;
-    font-family: var(--font-body);
-    font-size: 0.8125rem;
-    line-height: 1.45;
-    color: #5f6b7a;
+.match-card__detail {
+    margin: 0;
+    font-size: 20px;
+    line-height: 1.5;
+    color: var(--color-text-muted-default);
 }
 
-.volunteer-card__detail--one-line {
+.match-card__detail--one-line {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
-.volunteer-card__label {
-    font-weight: var(--weight-medium);
-    color: #374151;
-}
-
-.volunteer-card__actions {
+.match-card__actions {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    width: 144px;
+    gap: 16px;
+    width: 216px;
     flex-shrink: 0;
+    margin-left: auto;
 }
 
-@media (max-width: 640px) {
-    .volunteer-card {
+@media (max-width: 900px) {
+    .match-card {
         flex-wrap: wrap;
-        padding: 1rem;
+        gap: 16px;
+        padding: 16px;
+        border-radius: 20px;
     }
 
-    .volunteer-card__info {
+    .match-card__info {
         flex-basis: calc(100% - 64px);
+        max-width: none;
     }
 
-    .volunteer-card__actions {
+    .match-card__name {
+        font-size: 18px;
+    }
+
+    .match-card__detail {
+        font-size: 15px;
+    }
+
+    .match-card__actions {
         flex-direction: row;
         width: 100%;
+        gap: 12px;
     }
 
-    .volunteer-card__actions > * {
+    .match-card__actions > * {
         flex: 1;
     }
 }
