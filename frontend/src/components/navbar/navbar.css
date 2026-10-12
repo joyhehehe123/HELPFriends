@@ -7,6 +7,10 @@
     background: var(--color-bg-navbar);
     color: var(--color-text-secondary);
     font-family: var(--font-heading);
+    box-shadow: var(--shadow-drop);
+    top: 0;
+    z-index: 1000;
+    position: sticky;
 }
 
 .logo {
