@@ -1,0 +1,54 @@
+.user-avatar {
+    flex-shrink: 0;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-avatar--sm {
+    width: 48px;
+    height: 48px;
+    font-size: 18px;
+}
+
+.user-avatar--md {
+    width: 64px;
+    height: 64px;
+    font-size: 24px;
+}
+
+.user-avatar--lg {
+    width: 76px;
+    height: 76px;
+    font-size: 28px;
+}
+
+.user-avatar--xl {
+    width: 96px;
+    height: 96px;
+    font-size: 36px;
+}
+
+.user-avatar--initials {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    font-family: var(--font-heading);
+    font-weight: var(--weight-medium);
+    color: var(--color-text-secondary);
+}
+
+@media (max-width: 900px) {
+    .user-avatar--md,
+    .user-avatar--lg {
+        width: 48px;
+        height: 48px;
+        font-size: 18px;
+    }
+
+    .user-avatar--xl {
+        width: 64px;
+        height: 64px;
+        font-size: 24px;
+    }
+}

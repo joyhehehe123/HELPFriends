@@ -1,0 +1,155 @@
+/* Sizes follow the Figma navbar (1920px frame) at 80% */
+.app-navbar,
+.app-navbar * {
+    box-sizing: border-box;
+}
+
+.app-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 30; /* Above the date range panel */
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 24px;
+    min-height: 96px;
+    padding: 0 40px;
+    background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
+    font-family: var(--font-heading);
+    text-align: left;
+}
+
+.app-navbar__logo {
+    font-size: 32px;
+    font-weight: var(--weight-bold);
+    line-height: 1;
+    color: var(--color-text-secondary);
+}
+
+.app-navbar__logo-help {
+    color: var(--color-tertiary);
+}
+
+.app-navbar__nav {
+    flex: 1;
+    min-width: 0;
+}
+
+.app-navbar__links {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.app-navbar__link {
+    display: flex;
+    align-items: center;
+    height: 64px;
+    padding: 0 17px;
+    border-radius: 12px;
+    font-size: 20px;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.app-navbar__link:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Current page: light box with gradient text (Figma) */
+.app-navbar__link[aria-current='page'] {
+    background: #d9f5f3;
+    font-weight: var(--weight-medium);
+}
+
+.app-navbar__link[aria-current='page'] span {
+    background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.app-navbar__end {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+.app-navbar__bell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    color: var(--color-text-secondary);
+}
+
+.app-navbar__bell:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.app-navbar__bell[aria-current='page'] {
+    background: #d7f5ea;
+    color: #46d0c9;
+}
+
+.app-navbar__link:focus-visible,
+.app-navbar__bell:focus-visible {
+    outline: 3px solid var(--color-tertiary);
+    outline-offset: 2px;
+}
+
+.app-navbar__user {
+    display: flex;
+    border-radius: 50%;
+}
+
+@media (max-width: 1180px) {
+    .app-navbar {
+        position: static; /* Two rows would take too much space */
+        padding: 12px 16px;
+    }
+
+    .app-navbar__logo {
+        font-size: 24px;
+    }
+
+    /* Links go to their own row */
+    .app-navbar__nav {
+        order: 3;
+        flex-basis: 100%;
+    }
+
+    .app-navbar__links {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        gap: 4px;
+    }
+
+    .app-navbar__link {
+        height: 40px;
+        padding: 0 12px;
+        font-size: 15px;
+    }
+
+    .app-navbar__end {
+        gap: 16px;
+        margin-left: auto;
+    }
+
+    .app-navbar__bell {
+        width: 44px;
+        height: 44px;
+    }
+
+    .app-navbar__bell svg {
+        width: 26px;
+        height: 26px;
+    }
+}

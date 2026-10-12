@@ -1,0 +1,91 @@
+/* "match-card" because Haiqal's signup.css already uses .volunteer-card */
+.match-card {
+    display: flex;
+    align-items: center;
+    gap: 41px;
+    padding: 24px 40px;
+    border: 3px solid transparent;
+    border-radius: 32px;
+    background:
+        linear-gradient(var(--color-bg-card), var(--color-bg-card)) padding-box,
+        linear-gradient(to right, var(--color-primary), var(--color-secondary)) border-box;
+    text-align: left;
+}
+
+.match-card__info {
+    flex: 1;
+    min-width: 0; /* needed for text-overflow */
+    max-width: 545px; /* long availability ends with "..." (Figma) */
+}
+
+.match-card__title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 16px;
+    margin-bottom: 2px;
+}
+
+.match-card__name {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: 24px;
+    font-weight: var(--weight-medium);
+    line-height: 1.4;
+    letter-spacing: normal;
+    color: var(--color-text-primary);
+}
+
+.match-card__detail {
+    margin: 0;
+    font-size: 20px;
+    line-height: 1.5;
+    color: var(--color-text-muted-default);
+}
+
+.match-card__detail--one-line {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.match-card__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 216px;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+@media (max-width: 900px) {
+    .match-card {
+        flex-wrap: wrap;
+        gap: 16px;
+        padding: 16px;
+        border-radius: 20px;
+    }
+
+    .match-card__info {
+        flex-basis: calc(100% - 64px);
+        max-width: none;
+    }
+
+    .match-card__name {
+        font-size: 18px;
+    }
+
+    .match-card__detail {
+        font-size: 15px;
+    }
+
+    .match-card__actions {
+        flex-direction: row;
+        width: 100%;
+        gap: 12px;
+    }
+
+    .match-card__actions > * {
+        flex: 1;
+    }
+}

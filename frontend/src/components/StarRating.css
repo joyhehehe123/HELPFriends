@@ -1,0 +1,33 @@
+.star-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.star-rating__star {
+    width: 30px;
+    height: 30px;
+    fill: #ffff00;
+}
+
+.star-rating__new {
+    display: inline-block;
+    padding: 2px 12px;
+    border-radius: 999px;
+    background: var(--color-bg-container-primary);
+    font-size: 14px;
+    font-weight: var(--weight-medium);
+    color: var(--color-text-status-accepted);
+    white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+    .star-rating {
+        gap: 3px;
+    }
+
+    .star-rating__star {
+        width: 18px;
+        height: 18px;
+    }
+}
