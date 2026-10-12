@@ -8,6 +8,9 @@ export const DESCRIPTION_MAX_LENGTH = 255; // description VARCHAR(255)
 
 export const MAX_TIME_SLOTS = 5;
 
+// The form has no duration field, so requests use the shortest session (data dictionary: multiples of 30)
+export const DEFAULT_DURATION_MINUTES = 30;
+
 // Empty form with one date/time row
 export const createEmptyDraft = (): SupportRequestDraft => ({
     category: '',

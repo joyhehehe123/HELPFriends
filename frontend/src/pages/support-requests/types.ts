@@ -36,3 +36,35 @@ export interface VolunteerFilters {
     to: string;    // "YYYY-MM-DD", '' = same as from
     mode: SupportMode;
 }
+
+// ─────────────────────────────────── Requests ────────────────────────────────────
+
+// Same values as RequestStatus in Joy's types/constants.ts
+export type RequestStatus = 'Pending' | 'Accepted' | 'Rejected' | 'Cancelled' | 'Scheduled';
+
+// Who is looking at the request
+export type RequestRole = 'Seeker' | 'Volunteer';
+
+export interface PersonSummary {
+    userId: string;
+    fullName: string;
+    profilePic: string;
+}
+
+// Saved request with the names to show (Firestore has no joins)
+export interface SupportRequestRecord {
+    requestId: string;
+    category: SupportCategory;
+    supportTitle: string;
+    description: string;
+    supportMode: SupportMode;
+    proposedTimeSlots: Date[];
+    duration: number;     // Minutes
+    status: RequestStatus;
+    createdAt: Date;
+    respondedAt?: Date;   // Accepted or rejected
+    cancelledAt?: Date;
+    scheduledAt?: Date;
+    seeker: PersonSummary;
+    volunteer: PersonSummary;
+}
