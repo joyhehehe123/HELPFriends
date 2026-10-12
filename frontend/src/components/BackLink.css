@@ -1,0 +1,37 @@
+/* Same box for both looks, so "Back" sits in the same place (Figma) */
+.hf-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 18px;
+    height: 46px;
+    padding: 0 25px;
+    border: none;
+    border-radius: 12px;
+    background: none;
+    font-family: var(--font-heading);
+    font-size: 20px;
+    color: var(--color-tertiary);
+    cursor: pointer;
+}
+
+.hf-back-link--pill {
+    background: rgba(255, 255, 255, 0.6);
+}
+
+.hf-back-link:hover {
+    text-decoration: underline;
+}
+
+.hf-back-link:focus-visible {
+    outline: 3px solid rgba(37, 99, 235, 0.35);
+    outline-offset: 2px;
+}
+
+@media (max-width: 900px) {
+    .hf-back-link {
+        gap: 10px;
+        height: 40px;
+        padding: 0 14px;
+        font-size: 16px;
+    }
+}

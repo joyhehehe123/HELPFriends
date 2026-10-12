@@ -1,0 +1,80 @@
+/* Buttons in the Figma design: bold uppercase text, blue fill or blue outline */
+.hf-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    box-sizing: border-box;
+    border: 2px solid var(--color-tertiary);
+    border-radius: 12px;
+    font-family: var(--font-heading);
+    font-size: 20px;
+    font-weight: var(--weight-bold);
+    text-transform: uppercase;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.hf-button--md {
+    height: 62px;
+    padding: 0 32px;
+}
+
+.hf-button--sm {
+    height: 46px;
+    padding: 0 24px;
+}
+
+.hf-button--primary {
+    background: var(--color-tertiary);
+    color: var(--color-text-secondary);
+}
+
+.hf-button--primary:hover:not(:disabled) {
+    background: #1d4ed8;
+    border-color: #1d4ed8;
+}
+
+.hf-button--outline {
+    background: var(--color-bg-secondary);
+    color: var(--color-tertiary);
+}
+
+.hf-button--outline:hover:not(:disabled) {
+    background: #eef3ff;
+}
+
+.hf-button--pill {
+    border-radius: 999px;
+}
+
+.hf-button--full {
+    width: 100%;
+}
+
+.hf-button:focus-visible {
+    outline: 3px solid rgba(37, 99, 235, 0.35);
+    outline-offset: 2px;
+}
+
+.hf-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
+    .hf-button {
+        font-size: 15px;
+    }
+
+    .hf-button--md {
+        height: 48px;
+        padding: 0 20px;
+    }
+
+    .hf-button--sm {
+        height: 40px;
+        padding: 0 16px;
+    }
+}
