@@ -1,0 +1,287 @@
+/* HELPFriends signup flow. All colours/fonts/spacing come from global.css tokens. */
+
+.signup-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-bg-secondary);
+    font-family: var(--font-body);
+    color: var(--color-text-primary);
+}
+
+.signup-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-5) var(--space-3);
+}
+
+/* ---------- Card ---------- */
+
+.signup-card {
+    box-sizing: border-box;
+    width: min(850px, 100%);
+    padding: 3.5rem 3rem 3rem;
+    border-radius: var(--radius-md);
+    background: linear-gradient(to bottom, #d0f3ff 0%, #d7fff8 100%);
+    box-shadow: var(--shadow-card);
+}
+
+.signup-card--narrow {
+    width: min(750px, 100%);
+}
+
+.signup-card--password {
+    width: min(700px, 100%);
+}
+
+.signup-header {
+    text-align: center;
+    margin-bottom: var(--space-5);
+}
+
+.signup-header h2 {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-bold);
+    color: var(--color-text-primary);
+}
+
+.signup-header p {
+    margin: var(--space-3) auto 0;
+    max-width: 30rem;
+    font-size: var(--text-base);
+    line-height: 1.5;
+    color: var(--color-text-muted-default);
+}
+
+/* ---------- Form ---------- */
+
+.signup-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.signup-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.signup-field label {
+    font-size: var(--text-base);
+    font-weight: var(--weight-regular);
+    color: var(--color-text-muted-default);
+}
+
+.signup-field input,
+.otp-input {
+    box-sizing: border-box;
+    width: 100%;
+    height: 3.25rem;
+    padding: 0 var(--space-4);
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-card);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--color-text-primary);
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.signup-field input:focus,
+.otp-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(82, 213, 255, 0.35);
+}
+
+.otp-input {
+    text-align: center;
+    font-size: var(--text-lg);
+    letter-spacing: 0.35em;
+    border-radius: var(--radius-md);
+    margin-top: var(--space-2);
+}
+
+.otp-input::placeholder {
+    letter-spacing: normal;
+    font-size: var(--text-lg);
+    color: var(--color-text-muted-default);
+}
+
+/* ---------- Volunteer card ---------- */
+
+.volunteer-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: var(--space-3);
+    padding: var(--space-3);
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    background:
+        linear-gradient(#d4faf9, #d4faf9) padding-box,
+        linear-gradient(to right, var(--color-primary) 0%, var(--color-secondary) 100%) border-box;
+    cursor: pointer;
+}
+
+.volunteer-card input[type='checkbox'] {
+    flex-shrink: 0;
+    width: 1.4rem;
+    height: 1.4rem;
+    margin: 0;
+    accent-color: var(--color-tertiary);
+    cursor: pointer;
+}
+
+.volunteer-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.volunteer-title {
+    font-size: var(--text-lg);
+    color: var(--color-text-primary);
+}
+
+.volunteer-description {
+    font-size: var(--text-base);
+    color: var(--color-text-primary);
+}
+
+/* ---------- Buttons ---------- */
+
+.signup-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-5);
+}
+
+.signup-button {
+    width: 320px;
+    max-width: 100%;
+    height: 3.5rem;
+    border: none;
+    border-radius: var(--radius-md);
+    background: var(--color-tertiary);
+    color: var(--color-text-secondary);
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+    font-weight: var(--weight-bold);
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.signup-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-card);
+}
+
+.signup-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ---------- Links row (return / resend) ---------- */
+
+.signup-links {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-top: var(--space-3);
+    font-size: var(--text-base);
+}
+
+.back-link,
+.resend-link {
+    padding: 0;
+    border: none;
+    background: none;
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--color-text-primary);
+    cursor: pointer;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.back-link:hover,
+.resend-link:hover:not(:disabled) {
+    text-decoration: underline;
+}
+
+.back-arrow {
+    width: 0;
+    height: 0;
+    border-top: 0.4rem solid transparent;
+    border-bottom: 0.4rem solid transparent;
+    border-right: 0.7rem solid var(--color-text-primary);
+}
+
+.resend-text {
+    color: var(--color-text-muted-default);
+}
+
+.resend-link {
+    font-weight: var(--weight-bold);
+}
+
+.resend-link:disabled {
+    color: var(--color-text-muted-default);
+    cursor: not-allowed;
+}
+
+/* ---------- Confirmation ---------- */
+
+.signup-confirmation {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 40rem;
+}
+
+.confirmation-mascot {
+    width: min(340px, 70vw);
+    height: auto;
+    margin-bottom: var(--space-4);
+}
+
+.signup-confirmation h2 {
+    margin: 0 0 var(--space-4);
+    font-family: var(--font-heading);
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-regular);
+}
+
+.signup-confirmation p {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+    line-height: 1.6;
+}
+
+/* ---------- Small screens ---------- */
+
+@media (max-width: 600px) {
+    .signup-card {
+        padding: var(--space-5) var(--space-3);
+        border-radius: var(--radius-sm);
+    }
+
+    .signup-links {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
