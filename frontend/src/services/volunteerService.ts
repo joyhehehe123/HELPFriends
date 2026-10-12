@@ -7,9 +7,9 @@ import type { TimeSlot, Volunteer } from "../types/volunteer";
 
 // ─── Create ────────────────────────────────────────────────────────────────────
 
-export const createVolunteer = async (uid: string, data: Omit<Volunteer, 'uid' | 'rating'>): Promise<void> => {
+export const createVolunteer = async (uid: string, data: Omit<Volunteer, 'uid' | 'rating' | 'isActive'>): Promise<void> => {
     try {
-        await setDoc(doc(db, 'volunteers', uid), {...data, uid: uid, rating: 0.0}); // Volunteer will have same uid as linked user uid
+        await setDoc(doc(db, 'volunteers', uid), {...data, uid: uid, rating: 0.0, isActive: true}); // Volunteer will have same uid as linked user uid
     } catch (error) {
         console.error('Error creating volunteer: ', error);
         throw new Error('Failed to create volunteer: ' + error);

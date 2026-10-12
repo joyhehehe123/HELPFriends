@@ -14,9 +14,9 @@ export interface SupportSession {
     dateTime: Timestamp;
     duration: number; // Duration in minutes
     status: SessionStatus;
-    respondedAt:Timestamp;
-    cancelAt: Timestamp;
-    cancelReason?: string;
+    completedAt?: Timestamp;
+    cancelledAt?: Timestamp;
+    cancelledReason?: string;
     requestId: string; // Reference to the associated SupportRequest
     seekerId: string;
     volunteerId: string;

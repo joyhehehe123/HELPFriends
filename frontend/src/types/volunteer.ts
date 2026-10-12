@@ -17,7 +17,7 @@ export interface Volunteer {
     supportCategories: SupportCategory[];
     skills: string[];
     availability: {
-        day: Day;
+        day: Day; // Day of the week (e.g. Monday)
         timeSlots: TimeSlot[];
     }[];
 }
