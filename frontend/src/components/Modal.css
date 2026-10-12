@@ -1,0 +1,28 @@
+.app-modal {
+    width: min(560px, calc(100vw - 2rem));
+    max-height: calc(100dvh - 3rem);
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    background:
+        linear-gradient(var(--color-bg-card), var(--color-bg-card)) padding-box,
+        linear-gradient(to bottom, var(--color-primary), var(--color-secondary)) border-box;
+    color: var(--color-text-primary);
+    font-family: var(--font-body);
+    text-align: left;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.25);
+    overflow: auto;
+}
+
+.app-modal::backdrop {
+    background: rgba(0, 0, 0, 0.3); /* Figma popup overlay */
+}
+
+.app-modal__content {
+    padding: 1.5rem;
+}
+
+/* No page scroll while a modal is open */
+html:has(.app-modal[open]) {
+    overflow: hidden;
+}

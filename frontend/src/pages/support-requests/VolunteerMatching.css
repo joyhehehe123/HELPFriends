@@ -1,0 +1,233 @@
+.matching-chip {
+    padding: 0 25px;
+    border-radius: 999px;
+}
+
+.request-support__body.matching-body {
+    width: min(76%, 1168px);
+}
+
+.page-top + .request-support__body.matching-body {
+    padding-top: 35px;
+}
+
+.matching-heading {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: 24px;
+    font-weight: var(--weight-medium);
+    line-height: 1.4;
+    letter-spacing: normal;
+    color: var(--color-text-primary);
+}
+
+/* ────────────────────────────────── Filters ─────────────────────────────────── */
+
+.matching-filters .matching-heading {
+    margin-bottom: 16px;
+}
+
+.matching-filters__controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 2px auto;
+    align-items: center;
+    gap: 24px;
+}
+
+.matching-filters__skill {
+    box-sizing: border-box;
+    width: 100%;
+    height: 62px;
+    padding: 0 25px;
+    border: none;
+    border-radius: 12px;
+    background: var(--color-bg-secondary);
+    font: inherit;
+    color: var(--color-text-muted-default);
+}
+
+.matching-filters__skill::placeholder {
+    color: var(--color-text-muted-default);
+}
+
+.matching-filters__skill:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+}
+
+.matching-filters__divider {
+    width: 2px;
+    height: 62px;
+    background: #a9bbbf;
+}
+
+/* ──────────────────────────────── Mode toggle ───────────────────────────────── */
+
+.mode-toggle {
+    display: flex;
+    gap: 24px;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+.mode-toggle__option {
+    position: relative;
+}
+
+.mode-toggle__input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    opacity: 0;
+}
+
+.mode-toggle__label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 187px;
+    height: 62px;
+    border-radius: 12px;
+    background: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    cursor: pointer;
+}
+
+.mode-toggle__input:checked + .mode-toggle__label {
+    background: var(--color-tertiary);
+    font-weight: var(--weight-bold);
+    color: var(--color-text-secondary);
+}
+
+.mode-toggle__input:focus-visible + .mode-toggle__label {
+    outline: 3px solid rgba(37, 99, 235, 0.35);
+    outline-offset: 2px;
+}
+
+/* ────────────────────────────────── Results ─────────────────────────────────── */
+
+.matching-heading--results {
+    margin-top: 26px;
+}
+
+.matching-results__list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin: 18px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.matching-results__status {
+    margin: 16px 0;
+    color: var(--color-text-muted-default);
+}
+
+.matching-results__error {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 18px 0 0;
+    padding: 16px 20px;
+    border-radius: 12px;
+    background: var(--color-status-msg-negative);
+    color: var(--color-text-status-cancelled);
+}
+
+.matching-results__error p {
+    margin: 0;
+}
+
+/* ───────────────────────────────── No matches ───────────────────────────────── */
+
+.no-matches {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 81px;
+    text-align: center;
+}
+
+/* Cat from the Figma design (same file as Joy's assets/sadcat.png) */
+.no-matches__image {
+    width: 263px;
+    height: auto;
+}
+
+.no-matches__title {
+    margin: -4px 0 0;
+    font-size: 28.8px;
+    font-weight: var(--weight-medium);
+    line-height: 1.4;
+    color: var(--color-text-primary);
+}
+
+.no-matches__text {
+    margin: 2px 0 0;
+    font-size: 24px;
+    color: var(--color-text-muted-default);
+}
+
+.no-matches__button {
+    min-width: 218px;
+    margin-top: 28px;
+}
+
+@media (max-width: 900px) {
+    .request-support__body.matching-body {
+        width: auto;
+    }
+
+    .page-top + .request-support__body.matching-body {
+        padding-top: 20px;
+    }
+
+    .matching-heading {
+        font-size: 18px;
+    }
+
+    .matching-filters__controls {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 12px;
+    }
+
+    .matching-filters__skill,
+    .mode-toggle__label {
+        height: 48px;
+    }
+
+    .matching-filters__divider {
+        display: none;
+    }
+
+    .mode-toggle {
+        grid-column: 1 / -1;
+        gap: 12px;
+    }
+
+    .mode-toggle__option {
+        flex: 1;
+    }
+
+    .mode-toggle__label {
+        width: 100%;
+    }
+
+    .no-matches__image {
+        width: 180px;
+    }
+
+    .no-matches__title {
+        font-size: 20px;
+    }
+
+    .no-matches__text {
+        font-size: 16px;
+    }
+}
