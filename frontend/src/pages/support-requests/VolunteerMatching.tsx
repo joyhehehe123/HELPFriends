@@ -8,16 +8,15 @@ import { type VolunteerProfile } from '../../types/volunteerProfile';
 import { SUPPORT_MODES } from './constants';
 import DateRangeSelect from './DateRangeSelect';
 import { filterVolunteers } from './filterVolunteers';
-import SendRequestDialog from './SendRequestDialog';
-import { fetchVolunteerProfiles } from './supportRequestApi';
-import { type ValidSupportRequestDraft, type VolunteerFilters } from './types';
+import { fetchVolunteerProfiles, submitSupportRequest } from './supportRequestApi';
+import { type SupportRequestRecord, type ValidSupportRequestDraft, type VolunteerFilters } from './types';
 import './VolunteerMatching.css';
 
 interface VolunteerMatchingProps {
     request: ValidSupportRequestDraft;
     currentUserId: string | null;
     onBack: () => void;
-    onRequestSent: (volunteer: VolunteerProfile, sentAt: Date) => void;
+    onRequestSent: (record: SupportRequestRecord) => void;
 }
 
 type LoadStatus = 'loading' | 'error' | 'ready';
@@ -31,7 +30,8 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
     const [status, setStatus] = useState<LoadStatus>('loading');
     const [reloadCount, setReloadCount] = useState(0);
     const [detailsVolunteer, setDetailsVolunteer] = useState<VolunteerProfile | null>(null);
-    const [chosenVolunteer, setChosenVolunteer] = useState<VolunteerProfile | null>(null);
+    const [sendingTo, setSendingTo] = useState<string | null>(null); // Volunteer id while sending
+    const [sendError, setSendError] = useState('');
 
     // Load volunteers (again on "Try again")
     useEffect(() => {
@@ -58,6 +58,19 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
     const retryLoading = () => {
         setStatus('loading');
         setReloadCount((count) => count + 1);
+    };
+
+    // SELECT sends the request straight away (Figma)
+    const sendRequest = async (volunteer: VolunteerProfile) => {
+        setSendingTo(volunteer.volunteerId);
+        setSendError('');
+        try {
+            onRequestSent(await submitSupportRequest(request, volunteer, currentUserId ?? undefined));
+        } catch (error) {
+            console.error('Error sending support request: ', error);
+            setSendError(`We couldn't send your request to ${volunteer.fullName}. Please try again.`);
+            setSendingTo(null);
+        }
     };
 
     return (
@@ -129,6 +142,8 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
                         </div>
                     )}
 
+                    {sendError && <p className="matching-results__error" role="alert">{sendError}</p>}
+
                     {status === 'ready' && matches.length === 0 && (
                         <div className="no-matches">
                             <h2 id="results-heading" className="visually-hidden">Matching Volunteers (0 found)</h2>
@@ -147,8 +162,10 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
                                 <li key={volunteer.volunteerId}>
                                     <VolunteerCard
                                         volunteer={volunteer}
+                                        isSending={sendingTo === volunteer.volunteerId}
+                                        disabled={sendingTo !== null}
                                         onViewDetails={setDetailsVolunteer}
-                                        onSelect={setChosenVolunteer}
+                                        onSelect={sendRequest}
                                     />
                                 </li>
                             ))}
@@ -159,15 +176,6 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
 
             {detailsVolunteer && (
                 <VolunteerDetailsModal volunteer={detailsVolunteer} onClose={() => setDetailsVolunteer(null)} />
-            )}
-
-            {chosenVolunteer && (
-                <SendRequestDialog
-                    request={request}
-                    volunteer={chosenVolunteer}
-                    onCancel={() => setChosenVolunteer(null)}
-                    onSent={(sentAt) => onRequestSent(chosenVolunteer, sentAt)}
-                />
             )}
         </main>
     );

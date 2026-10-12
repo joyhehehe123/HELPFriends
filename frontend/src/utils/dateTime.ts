@@ -55,22 +55,8 @@ export const formatInputDate = (value: string): string => {
 // "2026-10-20" -> "20/10"
 export const formatDayMonth = (value: string): string => formatInputDate(value).slice(0, 5);
 
-// "Tue, 20 Oct 2026"
-export const formatLongDate = (date: Date): string =>
-    date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
-
-// "Tue 20 Oct"
-export const formatDayAndDate = (date: Date): string =>
-    date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
-
 // "20/10/2026"
 export const formatShortDate = (date: Date): string => date.toLocaleDateString('en-GB');
-
-// "Tue, 20 Oct 2026, 1:00 PM"
-export const formatDateTime = (date: string, time: string): string => {
-    const dateTime = combineDateAndTime(date, time);
-    return dateTime ? `${formatLongDate(dateTime)}, ${formatTime12h(time)}` : `${date} ${time}`;
-};
 
 // "1:00 PM"
 export const formatClockTime = (date: Date): string => formatTime12h(toTimeInputValue(date));

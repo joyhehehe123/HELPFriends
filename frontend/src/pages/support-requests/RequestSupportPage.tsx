@@ -1,30 +1,50 @@
-import { useEffect, useState } from 'react';
-import { onAuthChange } from '../../services/authService';
-import { type VolunteerProfile } from '../../types/volunteerProfile';
+import { useState } from 'react';
+import { toDateInputValue, toTimeInputValue } from '../../utils/dateTime';
 import { createEmptyDraft } from './constants';
-import RequestSentConfirmation from './RequestSentConfirmation';
 import SupportRequestForm from './SupportRequestForm';
-import { type SupportRequestDraft, type ValidSupportRequestDraft } from './types';
+import { type SupportRequestDraft, type SupportRequestRecord, type ValidSupportRequestDraft } from './types';
+import useCurrentUserId from './useCurrentUserId';
 import VolunteerMatching from './VolunteerMatching';
 import './RequestSupportPage.css';
 
-type Step =
-    | { name: 'form' }
-    | { name: 'matching'; request: ValidSupportRequestDraft }
-    | { name: 'sent'; request: ValidSupportRequestDraft; volunteer: VolunteerProfile; sentAt: Date };
-
-// TODO: use the team's auth hook when login is ready
-function useCurrentUserId(): string | null {
-    const [userId, setUserId] = useState<string | null>(null);
-    useEffect(() => onAuthChange((user) => setUserId(user?.uid ?? null)), []);
-    return userId;
+interface RequestSupportPageProps {
+    startFrom?: SupportRequestRecord; // Rejected request ("Find another volunteer")
+    onRequestSent: (record: SupportRequestRecord) => void; // Shows it under Support Requests (Figma)
 }
 
-// Request a Support: form -> matching -> sent
-export default function RequestSupportPage() {
+type Step = { name: 'form' } | { name: 'matching'; request: ValidSupportRequestDraft };
+
+// Copies a sent request back into the form (times that have passed are left out)
+const toDraft = (record: SupportRequestRecord): ValidSupportRequestDraft => {
+    const now = Date.now();
+    const futureSlots = record.proposedTimeSlots.filter((slot) => slot.getTime() > now);
+
+    return {
+        category: record.category,
+        supportTitle: record.supportTitle,
+        description: record.description,
+        supportMode: record.supportMode,
+        proposedTimeSlots: futureSlots.length === 0
+            ? createEmptyDraft().proposedTimeSlots
+            : futureSlots.map((slot, index) => ({
+                id: `slot-copy-${index}`,
+                date: toDateInputValue(slot),
+                time: toTimeInputValue(slot),
+            })),
+    };
+};
+
+// Matching if all proposed times are still ahead, otherwise the form to pick new times
+const getRetryStep = (record: SupportRequestRecord): Step => {
+    const allTimesAhead = record.proposedTimeSlots.every((slot) => slot.getTime() > Date.now());
+    return allTimesAhead ? { name: 'matching', request: toDraft(record) } : { name: 'form' };
+};
+
+// Request a Support: form -> volunteer matching
+export default function RequestSupportPage({ startFrom, onRequestSent }: RequestSupportPageProps) {
     const currentUserId = useCurrentUserId();
-    const [draft, setDraft] = useState<SupportRequestDraft>(createEmptyDraft);
-    const [step, setStep] = useState<Step>({ name: 'form' });
+    const [draft, setDraft] = useState<SupportRequestDraft>(() => (startFrom ? toDraft(startFrom) : createEmptyDraft()));
+    const [step, setStep] = useState<Step>(() => (startFrom ? getRetryStep(startFrom) : { name: 'form' }));
 
     const goTo = (nextStep: Step) => {
         setStep(nextStep);
@@ -34,11 +54,6 @@ export default function RequestSupportPage() {
     const handleFormSubmit = (request: ValidSupportRequestDraft) => {
         setDraft(request); // Keep answers when going back
         goTo({ name: 'matching', request });
-    };
-
-    const startNewRequest = () => {
-        setDraft(createEmptyDraft());
-        goTo({ name: 'form' });
     };
 
     return (
@@ -52,17 +67,7 @@ export default function RequestSupportPage() {
                     request={step.request}
                     currentUserId={currentUserId}
                     onBack={() => goTo({ name: 'form' })}
-                    onRequestSent={(volunteer, sentAt) =>
-                        goTo({ name: 'sent', request: step.request, volunteer, sentAt })}
-                />
-            )}
-
-            {step.name === 'sent' && (
-                <RequestSentConfirmation
-                    request={step.request}
-                    volunteer={step.volunteer}
-                    sentAt={step.sentAt}
-                    onNewRequest={startNewRequest}
+                    onRequestSent={onRequestSent}
                 />
             )}
         </div>
