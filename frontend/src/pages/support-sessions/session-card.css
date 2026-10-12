@@ -1,0 +1,76 @@
+.session-card {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    font-size: var(--text-md);
+    padding: 30px 50px;
+    background-color: #ffffff;
+    border: 5px solid var(--color-primary);
+    border-radius: var(--radius-lg);
+}
+
+.card-brief-details {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.card-chips {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-heading);
+    font-weight: var(--weight-regular);
+}
+
+.support-category {
+    flex: 1;
+    padding: 8px 20px;
+    background: var(--color-gradient-horizontal);
+    border-radius: var(--radius-sm);
+    color: #ffffff;
+}
+
+.status-msg {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 20px;
+    background-color: var(--color-status-msg-positive);
+    border-radius: var(--radius-sm);
+}
+
+.session-brief-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: var(--weight-regular);
+}
+
+.session-brief-details h4 {
+    margin: 0px;;
+}
+
+.card-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.card-button {
+    font-size: var(--text-md);
+    width: 100%;
+    max-width: 250px;
+    font-weight: var(--weight-regular);
+    border-radius: var(--radius-sm);
+}

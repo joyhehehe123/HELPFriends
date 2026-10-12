@@ -20,14 +20,15 @@ function SessionList({ role, status }: Props) {
         : sessions.map((s) => (<SessionCards key={s.uid} session={s} role={role} />))
 
     useEffect(() => {
-        const uid = getCurrentUid();
+        const uid = 'tTkoPuvMtlYhuXBRHCkmAtkvFTk1'; // getCurrentUid();
+        // const uid = '2xHc86nAQeNJntDP8DaYlRw7n012'; // getCurrentUid();
         if (!uid) return;
 
         const fetch = (role === 'Volunteer' )
             ? getSupportSessionsByStudentAndStatus(uid, true, status)
             : getSupportSessionsByStudentAndStatus(uid, false, status)
 
-        fetch.then(setSessions);
+        fetch.then(setSessions).catch(console.error);
     }, [role, status]);
 
     return (
