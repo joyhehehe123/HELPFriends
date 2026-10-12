@@ -1,13 +1,14 @@
 import { db } from '../firebase';
-import { collection, addDoc, getDoc, getDocs, updateDoc, deleteDoc, doc, query, where } from "firebase/firestore";
+import { collection, setDoc, getDoc, getDocs, updateDoc, deleteDoc, doc, query, where } from "firebase/firestore";
 import { type Feedback } from "../types/feedback";
+import { generateNextId } from './counterService';
 
 // ─── Create ────────────────────────────────────────────────────────────────────
 
-export const createFeedback = async (data: Omit<Feedback, 'feedbackId'>): Promise<void> => {
+export const createFeedback = async (data: Omit<Feedback, 'uid'>): Promise<void> => {
     try {
-        const docRef = await addDoc(collection(db, 'feedbacks'), data);
-        await updateFeedback(docRef.id, { feedbackId: docRef.id });
+        const nextId = 'F' + String(await generateNextId('feedback'));
+        await setDoc(doc(db, 'feedbacks', nextId), { ...data, uid: nextId });
     } catch (error) {
         console.error('Error creating feedback: ', error);
         throw new Error('Failed to create feedback: ' + error);
@@ -43,9 +44,9 @@ export const getFeedbackBySession = async (sessionId: string): Promise<Feedback 
 
 // ─── Update ────────────────────────────────────────────────────────────────────
 
-export const updateFeedback = async (uid: string, newData: Partial<Feedback>): Promise<void> => {
+export const updateFeedback = async (uid: string, newData: Partial<Omit<Feedback, 'uid'>>): Promise<void> => {
     try {
-        await updateDoc(doc(db, 'feedbacks', uid), { uid, newData });
+        await updateDoc(doc(db, 'feedbacks', uid), newData);
     } catch (error) {
         console.error('Error updating feedback: ', error);
         throw new Error('Failed to update feedback: ' + error);

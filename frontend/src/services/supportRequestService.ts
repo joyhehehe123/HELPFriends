@@ -1,14 +1,15 @@
 import { db } from "../firebase";
-import { collection, addDoc, getDoc, getDocs, updateDoc, deleteDoc, doc, query, where } from "firebase/firestore";
+import { collection, setDoc, getDoc, getDocs, updateDoc, deleteDoc, doc, query, where } from "firebase/firestore";
 import { type SupportRequest } from "../types/supportRequest";
+import { generateNextId } from "../services/counterService";
+import type { RequestStatus } from "../types/constants";
 
 // ─── Create ────────────────────────────────────────────────────────────────────
 
-export const createSupportRequest = async (data: Omit<SupportRequest, 'requestId'>): Promise<void> => {
+export const createSupportRequest = async (data: Omit<SupportRequest, 'uid' | 'status'>): Promise<void> => {
     try {
-        if (data.studentId == data.volunteerId) throw new Error('Student and volunteer cannot be the same person');
-        const docRef = await addDoc(collection(db, 'supportRequests'), data);
-        await updateSupportRequest(docRef.id, { requestId: docRef.id });
+        const nextId = 'R' + String(await generateNextId('request'));
+        await setDoc(doc(db, 'supportRequests', nextId), { ...data, uid: nextId, status: 'Pending'});
     } catch (error) {
         console.error('Error creating support request: ', error);
         throw new Error('Failed to create support request: ' + error);
@@ -17,12 +18,12 @@ export const createSupportRequest = async (data: Omit<SupportRequest, 'requestId
 
 // ─── Read ──────────────────────────────────────────────────────────────────────
 
-// Get support request by uid (doc id)
+// Get support request by uid
 export const getSupportRequest = async (uid: string): Promise<SupportRequest | null> => {
     try {
-        const supportRequest = await getDoc(doc(db, 'supportRequests', uid));
-        if (!supportRequest.exists()) return null;
-        return supportRequest.data() as SupportRequest;
+        const request = await getDoc(doc(db, 'supportRequests', uid));
+        if (!request.exists()) return null;
+        return request.data() as SupportRequest;
     } catch (error) {
         console.error('Error fetching support request: ', error);
         throw new Error('Failed to retrieve support request: ' + error);
@@ -30,11 +31,12 @@ export const getSupportRequest = async (uid: string): Promise<SupportRequest | n
 }
 
 // Get support requests by student
-export const getSupportRequestByStudent = async (studentId: string): Promise<SupportRequest[] | null> => {
+export const getSupportRequestsByStudent = async (studentId: string, byVolunteer: boolean): Promise<SupportRequest[]> => {
     try {
-        const q = query(collection(db, 'supportRequests'), where('studentId', '==', studentId));
+        const q = (byVolunteer)
+            ? query(collection(db, 'supportRequests'), where('volunteerId', '==', studentId))
+            : query(collection(db, 'supportRequests'), where('seekerId', '==', studentId));
         const snap = await getDocs(q);
-        if (snap.empty) return null;
         return snap.docs.map(doc => (doc.data() as SupportRequest));
     } catch (error) {
         console.error('Error fetching support requests: ', error);
@@ -42,12 +44,13 @@ export const getSupportRequestByStudent = async (studentId: string): Promise<Sup
     }
 }
 
-// Get support requests by volunteer
-export const getSupportRequestByVolunteer = async (volunteerId: string): Promise<SupportRequest[] | null> => {
+// Get support requests by student
+export const getSupportRequestsByStudentAndStatus = async (studentId: string, byVolunteer: boolean, status: RequestStatus): Promise<SupportRequest[]> => {
     try {
-        const q = query(collection(db, 'supportRequests'), where('volunteerid', '==', volunteerId));
+        const q = (byVolunteer)
+            ? query(collection(db, 'supportRequests'), where('volunteerId', '==', studentId), where('status', '==', status))
+            : query(collection(db, 'supportRequests'), where('seekerId', '==', studentId), where('status', '==', status));
         const snap = await getDocs(q);
-        if (snap.empty) return null;
         return snap.docs.map(doc => (doc.data() as SupportRequest));
     } catch (error) {
         console.error('Error fetching support requests: ', error);
@@ -57,7 +60,8 @@ export const getSupportRequestByVolunteer = async (volunteerId: string): Promise
 
 // ─── Update ────────────────────────────────────────────────────────────────────
 
-export const updateSupportRequest = async (uid: string, newData: Partial<Omit<SupportRequest, 'requestId'>>): Promise<void> => {
+// Update request data
+export const updateSupportRequest = async (uid: string, newData: Partial<Omit<SupportRequest, 'uid' | 'status'>>): Promise<void> => {
     try {
         await updateDoc(doc(db, 'supportRequests', uid), newData);
     } catch (error) {
@@ -65,6 +69,8 @@ export const updateSupportRequest = async (uid: string, newData: Partial<Omit<Su
         throw new Error('Failed to update support request: ' + error);
     }
 }
+
+// Cancel request
 
 // ─── Delete ────────────────────────────────────────────────────────────────────
 

@@ -1,12 +1,13 @@
 import { Timestamp } from "firebase/firestore";
+import { type NotificationCategory } from "./constants";
 
 export interface Notification {
-    notificationId: string;
+    uid: string;
     title: string;
     message: string;
-    category: 'Support Request' | 'Support Session' | 'Feedback' | 'General';
+    category: NotificationCategory;
     isRead: boolean;
     createdAt: Timestamp;
     userId: string; // Reference to the user who should receive the notification
-    referenceId?: string; // Reference to the associated entity (SupportRequest, SupportSession, Feedback)
+    referenceId?: string; // Reference to the associated entity (SupportRequest, SupportSession, Feedback), omit if not related to any of these
 }

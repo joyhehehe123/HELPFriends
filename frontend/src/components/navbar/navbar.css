@@ -1,0 +1,107 @@
+.navbar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 30px;
+    background: var(--color-bg-navbar);
+    color: var(--color-text-secondary);
+    font-family: var(--font-heading);
+}
+
+.logo {
+    font-size: var(--text-xl);
+    transition: transform 0.2s ease;
+}
+
+.logo:hover {
+    transform: translateY(-1px);
+}
+
+.logo:active {
+    transform: scale(0.98);
+}
+
+#logo-help {
+    color: var(--color-tertiary);
+}
+
+#logo-friends {
+    color: var(--color-text-secondary);
+}
+
+#nav-links {
+    display: flex;
+    gap: 20px;
+    align-items: stretch;
+    align-self: stretch;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-radius: var(--radius-sm);
+    color: var(--color-text-secondary);
+    font-weight: var(--weight-medium);
+    transition: transform 0.2s ease;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 50%);
+    transform: translateY(-1px);
+    /* color: var(--color-tertiary); */
+}
+
+.nav-link:active {
+    background-color: rgba(255, 255, 255, 50%);
+    color: var(--color-tertiary);
+    transform: scale(0.95);
+}
+
+#bell-and-profile {
+    display: flex;
+    gap: 50px;
+    align-items: stretch;
+}
+
+#bell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    width: 50px;
+    color: #ffffff;
+    border-radius: var(--radius-sm);
+    transition: transform 0.2s ease;
+}
+
+#bell:hover {
+    background-color: rgba(255, 255, 255, 50%);
+    transform: translateY(-1px);
+}
+
+#bell:active {
+    background-color: rgba(255, 255, 255, 50%);
+    color: var(--color-tertiary);
+    transform: scale(0.95);
+}
+
+#profile img {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+#profile img:hover {
+    transform: translateY(-1px);
+    box-shadow: 5px 5px 10px rgba(255, 255, 255, 0.5);
+}
+
+#profile img:active {
+    opacity: 100%;
+    transform: scale(0.95);
+}

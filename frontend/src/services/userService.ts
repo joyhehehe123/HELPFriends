@@ -4,15 +4,9 @@ import { type User } from '../types/user';
 
 // ─── Create ────────────────────────────────────────────────────────────────────
 
-export const createUser = async (uid: string, data: Omit<User, 'userId'>): Promise<void> => {
+export const createUser = async (uid: string, data: Omit<User, 'uid'>): Promise<void> => {
     try {
-        const emailRegex = /^B\d{7}@helplive\.edu\.my$/;
-        const studentIdRegex = /^B\d{7}$/;
-
-        if (!emailRegex.test(data.email)) throw new Error('Only HELP University email addresses are allowed');
-        if (!studentIdRegex.test(data.studentId)) throw new Error('Invalid student ID');
-
-        await setDoc(doc(db, 'users', uid), { ...data, userId: uid });
+        await setDoc(doc(db, 'users', uid), { ...data, uid: uid }); // User will have same uid as in Firebase Auth
     } catch (error) {
         console.error('Error creating user: ', error);
         throw new Error('Failed to create user: ' + error);
@@ -21,7 +15,7 @@ export const createUser = async (uid: string, data: Omit<User, 'userId'>): Promi
 
 // ─── Read ──────────────────────────────────────────────────────────────────────
 
-// Get user by uid (doc id)
+// Get user by uid
 export const getUser = async (uid: string): Promise<User | null> => {
     try {
         const user = await getDoc(doc(db, 'users', uid));
@@ -49,7 +43,7 @@ export const getUserByEmail = async (email: string): Promise<User | null> => {
 // ─── Update ────────────────────────────────────────────────────────────────────
 
 // Update user data
-export const updateUser = async (uid: string, newData: Partial<Omit<User, 'userid' | 'isVolunteer'>>): Promise<void> => {
+export const updateUser = async (uid: string, newData: Partial<Omit<User, 'uid' | 'isVolunteer'>>): Promise<void> => {
     try {
         await updateDoc(doc(db, 'users', uid), newData);
     } catch (error) {
@@ -59,9 +53,11 @@ export const updateUser = async (uid: string, newData: Partial<Omit<User, 'useri
 }
 
 // Enable/disable volunteer status
-export const updateVolunteerStatus = async (uid: string, isVolunteer: boolean): Promise<void> => {
+export const updateVolunteerStatus = async (uid: string): Promise<void> => {
     try {
-        await updateDoc(doc(db, 'users', uid), { isVolunteer: !isVolunteer });
+        const user = await getUser(uid);
+        if (!user) throw new Error('No user found');
+        await updateDoc(doc(db, 'users', uid), { isVolunteer: !user.isVolunteer });
     } catch (error) {
         console.error('Error updating volunteer status: ', error);
         throw new Error('Failed to update volunteer status: ' + error);

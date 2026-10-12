@@ -1,16 +1,23 @@
+import { 
+    type PreferredMode, 
+    type SupportCategory, 
+    type Day 
+} from "./constants";
+
+export interface TimeSlot {
+    start: string; // Format: "HH:mm"
+    end: string; // Format: "HH:mm"
+}
+
 export interface Volunteer {
-    volunteerId: string; // Same as the userId
-    preferredMode: 'Virtual' | 'Physical' | 'Both';
+    uid: string; // Same as the userId
+    preferredMode: PreferredMode;
     rating: number;
-    ratingCount: number; // Used to calculate rating
     isActive: boolean;
-    supportCategories: ('Academic' | 'Technology' | 'New Student' | 'General Student')[];
+    supportCategories: SupportCategory[];
     skills: string[];
     availability: {
-        day: 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
-        timeSlots: {
-            startTime: string; // Format: "HH:mm"
-            endTime: string;   // Format: "HH:mm"
-        }[];
+        day: Day; // Day of the week (e.g. Monday)
+        timeSlots: TimeSlot[];
     }[];
 }

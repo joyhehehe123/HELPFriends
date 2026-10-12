@@ -59,8 +59,8 @@ export const resetPassword = async (email: string): Promise<void> => {
 
 // ─── Get Current User ───────────────────────────────────────────────────────────
 
-export const getCurrentUser = async (): Promise<AuthUser | null> => {
-    return auth.currentUser
+export const getCurrentUid = (): string | null => {
+    return auth.currentUser?.uid ?? null;
 }
 
 // ─── Listen for Auth State Changes ─────────────────────────────────────────────
