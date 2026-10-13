@@ -1,7 +1,11 @@
 /* HELPFriends signup flow. All colours/fonts/spacing come from global.css tokens. */
 
+/* ---------- Page layout ---------- */
+
 .signup-page {
-    min-height: 100vh;
+    flex: 1;
+    /* fills the space under the navbar (120px in the design) even if the page isn't a flex child */
+    min-height: calc(100svh - 7.5rem);
     display: flex;
     flex-direction: column;
     background: var(--color-bg-secondary);
@@ -19,13 +23,22 @@
 
 /* ---------- Card ---------- */
 
+.signup-card,
+.signup-confirmation {
+    /* sizes measured from the designs, expressed with global.css tokens */
+    --signup-text-lg: calc(var(--text-lg) * 1.2);   /* ~24px: labels, inputs, buttons */
+    --signup-text-link: calc(var(--text-lg) * 1.1); /* ~22px: return / resend links */
+    --signup-heading: calc(var(--text-xl) * 1.5);   /* ~42px: card titles */
+    --signup-gap-lg: 4.4rem;                        /* big gap above the form / button */
+}
+
 .signup-card {
-    box-sizing: border-box;
     width: min(850px, 100%);
-    padding: 3.5rem 3rem 3rem;
+    padding: 3.125rem;
     border-radius: var(--radius-md);
-    background: linear-gradient(to bottom, #d0f3ff 0%, #d7fff8 100%);
+    background: var(--color-bg-primary);
     box-shadow: var(--shadow-card);
+    text-align: center;
 }
 
 .signup-card--narrow {
@@ -36,24 +49,34 @@
     width: min(700px, 100%);
 }
 
+/* 2FA, password and confirmation screens are set in Poppins; the sign up form is Inter */
+.signup-card--narrow,
+.signup-card--password,
+.signup-confirmation {
+    font-family: var(--font-heading);
+}
+
+/* ---------- Headings ---------- */
+
 .signup-header {
+    margin-bottom: var(--signup-gap-lg);
     text-align: center;
-    margin-bottom: var(--space-5);
 }
 
 .signup-header h2 {
     margin: 0;
     font-family: var(--font-heading);
-    font-size: var(--text-2xl);
+    font-size: var(--signup-heading);
     font-weight: var(--weight-bold);
+    line-height: 1.3;
     color: var(--color-text-primary);
 }
 
 .signup-header p {
-    margin: var(--space-3) auto 0;
-    max-width: 30rem;
-    font-size: var(--text-base);
-    line-height: 1.5;
+    max-width: 38rem;
+    margin: 0.75rem auto 0;
+    font-size: var(--text-lg);
+    line-height: 1.6;
     color: var(--color-text-muted-default);
 }
 
@@ -62,7 +85,8 @@
 .signup-form {
     display: flex;
     flex-direction: column;
-    gap: var(--space-2);
+    gap: var(--space-3);
+    text-align: left;
 }
 
 .signup-field {
@@ -71,23 +95,27 @@
     gap: var(--space-1);
 }
 
+/* the password card's inputs sit further in than its links */
+.signup-card--password .signup-field {
+    padding-inline: 1.3rem;
+}
+
 .signup-field label {
-    font-size: var(--text-base);
+    font-size: var(--signup-text-lg);
     font-weight: var(--weight-regular);
     color: var(--color-text-muted-default);
 }
 
 .signup-field input,
 .otp-input {
-    box-sizing: border-box;
     width: 100%;
-    height: 3.25rem;
+    height: 3.3rem;
     padding: 0 var(--space-4);
     border: 1px solid transparent;
     border-radius: var(--radius-sm);
     background: var(--color-bg-card);
-    font-family: var(--font-body);
-    font-size: var(--text-base);
+    font-family: inherit;
+    font-size: var(--signup-text-lg);
     color: var(--color-text-primary);
     outline: none;
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
@@ -100,16 +128,14 @@
 }
 
 .otp-input {
+    height: 4.25rem;
+    border-radius: var(--radius-lg);
     text-align: center;
-    font-size: var(--text-lg);
     letter-spacing: 0.35em;
-    border-radius: var(--radius-md);
-    margin-top: var(--space-2);
 }
 
 .otp-input::placeholder {
     letter-spacing: normal;
-    font-size: var(--text-lg);
     color: var(--color-text-muted-default);
 }
 
@@ -118,14 +144,14 @@
 .volunteer-card {
     display: flex;
     align-items: center;
-    gap: var(--space-3);
+    gap: 1.25rem;
     margin-top: var(--space-3);
-    padding: var(--space-3);
+    padding: var(--space-3) 1.25rem;
     border: 2px solid transparent;
     border-radius: var(--radius-sm);
     background:
         linear-gradient(#d4faf9, #d4faf9) padding-box,
-        linear-gradient(to right, var(--color-primary) 0%, var(--color-secondary) 100%) border-box;
+        var(--color-border-card-horizontal) border-box;
     cursor: pointer;
 }
 
@@ -134,6 +160,7 @@
     width: 1.4rem;
     height: 1.4rem;
     margin: 0;
+    padding: 0;
     accent-color: var(--color-tertiary);
     cursor: pointer;
 }
@@ -145,12 +172,14 @@
 }
 
 .volunteer-title {
-    font-size: var(--text-lg);
+    font-size: var(--signup-text-lg);
+    line-height: 1.3;
     color: var(--color-text-primary);
 }
 
 .volunteer-description {
-    font-size: var(--text-base);
+    font-size: var(--text-lg);
+    line-height: 1.4;
     color: var(--color-text-primary);
 }
 
@@ -159,19 +188,19 @@
 .signup-actions {
     display: flex;
     justify-content: center;
-    margin-top: var(--space-5);
+    margin-top: var(--signup-gap-lg);
 }
 
 .signup-button {
     width: 320px;
     max-width: 100%;
-    height: 3.5rem;
+    height: 4.9rem;
     border: none;
-    border-radius: var(--radius-md);
-    background: var(--color-tertiary);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-btn-primary);
     color: var(--color-text-secondary);
     font-family: var(--font-heading);
-    font-size: var(--text-lg);
+    font-size: var(--signup-text-lg);
     font-weight: var(--weight-bold);
     text-transform: uppercase;
     cursor: pointer;
@@ -183,6 +212,11 @@
     box-shadow: var(--shadow-card);
 }
 
+.signup-button:focus-visible {
+    outline: 2px solid var(--color-border-btn);
+    outline-offset: 3px;
+}
+
 .signup-button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
@@ -192,11 +226,12 @@
 
 .signup-links {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-3);
-    margin-top: var(--space-3);
-    font-size: var(--text-base);
+    gap: var(--space-2) var(--space-3);
+    margin-top: 1.75rem;
+    font-size: var(--signup-text-link);
 }
 
 .back-link,
@@ -204,8 +239,8 @@
     padding: 0;
     border: none;
     background: none;
-    font-family: var(--font-body);
-    font-size: var(--text-base);
+    font-family: inherit;
+    font-size: var(--signup-text-link);
     color: var(--color-text-primary);
     cursor: pointer;
 }
@@ -214,6 +249,7 @@
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
+    font-weight: var(--weight-regular);
 }
 
 .back-link:hover,
@@ -221,12 +257,13 @@
     text-decoration: underline;
 }
 
+/* Solid left-pointing triangle, drawn in CSS */
 .back-arrow {
     width: 0;
     height: 0;
-    border-top: 0.4rem solid transparent;
-    border-bottom: 0.4rem solid transparent;
-    border-right: 0.7rem solid var(--color-text-primary);
+    border-top: 0.5rem solid transparent;
+    border-bottom: 0.5rem solid transparent;
+    border-right: 0.9rem solid var(--color-text-primary);
 }
 
 .resend-text {
@@ -248,36 +285,75 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-align: center;
     max-width: 40rem;
+    text-align: center;
 }
 
 .confirmation-mascot {
     width: min(340px, 70vw);
     height: auto;
-    margin-bottom: var(--space-4);
+    margin-bottom: 3.25rem;
 }
 
 .signup-confirmation h2 {
-    margin: 0 0 var(--space-4);
+    margin: 0 0 3.25rem;
     font-family: var(--font-heading);
-    font-size: var(--text-2xl);
+    font-size: var(--signup-heading);
     font-weight: var(--weight-regular);
+    line-height: 1.3;
+    color: var(--color-text-primary);
 }
 
 .signup-confirmation p {
     margin: 0;
     font-family: var(--font-heading);
-    font-size: var(--text-lg);
+    font-size: var(--signup-text-lg);
     line-height: 1.6;
+    color: var(--color-text-primary);
+}
+
+.signup-confirmation .signup-actions {
+    margin-top: 3.125rem;
 }
 
 /* ---------- Small screens ---------- */
 
 @media (max-width: 600px) {
+    .signup-card,
+    .signup-confirmation {
+        --signup-text-lg: var(--text-md);
+        --signup-text-link: var(--text-md);
+        --signup-heading: var(--text-xl);
+        --signup-gap-lg: var(--space-5);
+    }
+
     .signup-card {
         padding: var(--space-5) var(--space-3);
         border-radius: var(--radius-sm);
+    }
+
+    .signup-card--password .signup-field {
+        padding-inline: 0;
+    }
+
+    .signup-header p,
+    .volunteer-description {
+        font-size: var(--text-md);
+    }
+
+    .signup-field input,
+    .otp-input,
+    .signup-button {
+        height: 3.25rem;
+    }
+
+    .confirmation-mascot,
+    .signup-confirmation h2 {
+        margin-bottom: var(--space-4);
+    }
+
+    .signup-confirmation .signup-actions {
+        margin-top: var(--space-4);
     }
 
     .signup-links {

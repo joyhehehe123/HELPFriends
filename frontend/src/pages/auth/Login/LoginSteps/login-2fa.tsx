@@ -1,4 +1,3 @@
-import '../../Signup/SignupSteps/signup.css';
 import './login.css';
 
 interface LoginTwoFactorProps {

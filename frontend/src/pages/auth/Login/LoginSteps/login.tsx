@@ -1,4 +1,3 @@
-import '../../Signup/SignupSteps/signup.css';
 import './login.css';
 
 export interface LoginInfoData {
@@ -24,7 +23,7 @@ export default function createLoginStep({
     const container = document.createElement('div');
     container.className = 'signup-card login-card';
     container.innerHTML = `
-        <div class="signup-header">
+        <div class="login-header">
             <h2>Login</h2>
         </div>
 

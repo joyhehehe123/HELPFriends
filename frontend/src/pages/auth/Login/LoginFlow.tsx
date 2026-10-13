@@ -1,4 +1,3 @@
-import '../Signup/SignupSteps/signup.css';
 import './LoginSteps/login.css';
 import createLoginStep from './LoginSteps/login';
 import type { LoginInfoData } from './LoginSteps/login';
