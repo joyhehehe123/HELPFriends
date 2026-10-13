@@ -1,4 +1,3 @@
-import '../Signup/SignupSteps/signup.css';
 import './ResetPasswordSteps/ResetPassword.css';
 import createForgotPasswordStep from './ResetPasswordSteps/ForgotPassword';
 import createResetPasswordStep from './ResetPasswordSteps/ResetPassword';
