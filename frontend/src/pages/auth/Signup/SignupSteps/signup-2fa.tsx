@@ -6,8 +6,6 @@ interface TwoFactorProps {
     onNext: (otp: string) => void | Promise<boolean>;
 }
 
-const RESEND_COOLDOWN_SECONDS = 60;
-
 export default function createTwoFactorStep({
     onBack,
     onResend,
@@ -18,7 +16,7 @@ export default function createTwoFactorStep({
     container.innerHTML = `
         <div class="signup-header">
             <h2>Two-Factor Authentication</h2>
-            <p>Enter the 6-digit code sent to your registered email to activate this account</p>
+            <p>Enter a 6-digit code to continue. Email delivery and code verification are not connected yet; any 6 digits will work.</p>
         </div>
 
         <form class="signup-form signup-form--otp">
@@ -30,6 +28,7 @@ export default function createTwoFactorStep({
                 autocomplete="one-time-code"
                 maxlength="6"
                 placeholder="Enter OTP"
+                aria-label="Six-digit verification code"
                 required
             />
 
@@ -55,45 +54,14 @@ export default function createTwoFactorStep({
     const backButton = container.querySelector<HTMLButtonElement>('.back-link')!;
     const resendButton = container.querySelector<HTMLButtonElement>('.resend-link')!;
 
-    let cooldownTimer: number | undefined;
-
-    const startCooldown = () => {
-        let remaining = RESEND_COOLDOWN_SECONDS;
-        resendButton.disabled = true;
-        resendButton.textContent = `Send again (${remaining}s)`;
-        window.clearInterval(cooldownTimer);
-        cooldownTimer = window.setInterval(() => {
-            remaining -= 1;
-            if (remaining <= 0) {
-                window.clearInterval(cooldownTimer);
-                resendButton.disabled = false;
-                resendButton.textContent = 'Send again';
-                return;
-            }
-            resendButton.textContent = `Send again (${remaining}s)`;
-        }, 1000);
-    };
-
-    // A code was just sent when the previous step finished, so start on cooldown.
-    startCooldown();
-
     backButton.addEventListener('click', () => {
-        window.clearInterval(cooldownTimer);
         onBack?.();
     });
 
     resendButton.addEventListener('click', async () => {
-        if (resendButton.disabled) return;
         resendButton.disabled = true;
-        resendButton.textContent = 'Sending...';
         const sent = await onResend();
-        if (sent) {
-            alert('A new code has been sent to your email.');
-            startCooldown();
-        } else {
-            resendButton.disabled = false;
-            resendButton.textContent = 'Send again';
-        }
+        if (!sent) resendButton.disabled = false;
     });
 
     otpInput.addEventListener('input', () => {
@@ -107,7 +75,7 @@ export default function createTwoFactorStep({
 
         const otp = otpInput.value.trim();
         if (!/^\d{6}$/.test(otp)) {
-            alert('Please enter the 6-digit code sent to your email.');
+            alert('Please enter a 6-digit code.');
             return;
         }
 
