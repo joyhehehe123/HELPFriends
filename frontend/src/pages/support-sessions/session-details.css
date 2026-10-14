@@ -1,0 +1,19 @@
+#session-content {
+    padding: 0px;
+}
+
+.back-container {
+    flex: 1;
+    display: flex;
+    padding: 20px 50px;
+}
+
+.back-button {
+    margin: 20px 50px;
+}
+
+.card-wrapper {
+    margin: 0 auto 50px;
+    width: 100%;
+    max-width: 1000px;
+}

@@ -1,10 +1,11 @@
-import { Routes, Route, Outlet } from 'react-router-dom'
-import { type ReactNode } from 'react';
-import './App.css'
+import { Routes, Route, Outlet } from "react-router-dom"
+import { type ReactNode } from "react";
+import "./App.css"
 
-import Navbar from './components/navbar/navbar';
-import SupportSessionsMenu from './pages/support-sessions/my-support-sessions';
-import SupportSessions from './pages/support-sessions/support-sessions';
+import Navbar from "./components/navbar/navbar";
+import SupportSessionsMenu from "./pages/support-sessions/my-support-sessions";
+import SupportSessions from "./pages/support-sessions/support-sessions";
+import SessionDetails from "./pages/support-sessions/session-details";
 
 function AppShell() {
   return (
@@ -21,10 +22,13 @@ function App() {
       <Routes>
         
         <Route element={<AppShell />}>
-          <Route path='/support-sessions' element={<SupportSessionsMenu />} />
-          <Route path='/support-sessions/active' element={<SupportSessions status='Active' />} /> 
-          <Route path='/support-sessions/completed' element={<SupportSessions status='Completed' />} /> 
-          <Route path='/support-sessions/cancelled' element={<SupportSessions status='Cancelled' />} /> 
+          <Route path="/support-sessions" element={<SupportSessionsMenu />} />
+          <Route path="/support-sessions/active" element={<SupportSessions status="Active" />} /> 
+          <Route path="/support-sessions/completed" element={<SupportSessions status="Completed" />} /> 
+          <Route path="/support-sessions/cancelled" element={<SupportSessions status="Cancelled" />} />
+          <Route path="/support-sessions/active/:sessionId" element={<SessionDetails />} />
+          <Route path="/support-sessions/completed/:sessionId" element={<SessionDetails />} /> 
+          <Route path="/support-sessions/cancelled/:sessionId" element={<SessionDetails />} />
         </Route>
       </Routes>
     </>
