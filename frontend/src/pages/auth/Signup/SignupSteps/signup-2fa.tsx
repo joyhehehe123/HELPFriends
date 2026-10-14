@@ -1,4 +1,6 @@
 import './signup.css';
+import '../../auth-feedback.css';
+import { createAuthFeedback } from '../../auth-feedback';
 
 interface TwoFactorProps {
     onBack?: () => void;
@@ -53,6 +55,7 @@ export default function createTwoFactorStep({
     const submitButton = container.querySelector<HTMLButtonElement>('.signup-button')!;
     const backButton = container.querySelector<HTMLButtonElement>('.back-link')!;
     const resendButton = container.querySelector<HTMLButtonElement>('.resend-link')!;
+    const showFeedback = createAuthFeedback(form);
 
     backButton.addEventListener('click', () => {
         onBack?.();
@@ -61,7 +64,10 @@ export default function createTwoFactorStep({
     resendButton.addEventListener('click', async () => {
         resendButton.disabled = true;
         const sent = await onResend();
-        if (!sent) resendButton.disabled = false;
+        if (!sent) {
+            showFeedback('Email code delivery is not connected yet.', 'info');
+            resendButton.disabled = false;
+        }
     });
 
     otpInput.addEventListener('input', () => {
@@ -75,14 +81,20 @@ export default function createTwoFactorStep({
 
         const otp = otpInput.value.trim();
         if (!/^\d{6}$/.test(otp)) {
-            alert('Please enter a 6-digit code.');
+            showFeedback('Please enter a 6-digit code.');
             return;
         }
 
         submitButton.disabled = true;
         submitButton.textContent = 'Verifying...';
-        const verified = await onNext(otp);
-        if (verified === false) {
+        try {
+            const verified = await onNext(otp);
+            if (verified === false) {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Verify';
+            }
+        } catch (error) {
+            showFeedback(error instanceof Error ? error.message : 'Unable to verify the code.');
             submitButton.disabled = false;
             submitButton.textContent = 'Verify';
         }

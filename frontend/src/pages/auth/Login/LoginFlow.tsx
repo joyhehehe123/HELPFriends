@@ -37,14 +37,9 @@ export default function createLoginFlow({ initialData }: LoginFlowProps = {}): H
             onForgotPassword: () => navigate('/reset-password'),
             onRegister: () => navigate('/signup'),
             onNext: async () => {
-                try {
-                    await login(state.loginInfo.email, state.loginInfo.password);
-                    navigate('/');
-                    return true;
-                } catch (error) {
-                    alert(error instanceof Error ? error.message : 'Unable to log in.');
-                    return false;
-                }
+                await login(state.loginInfo.email, state.loginInfo.password);
+                navigate('/');
+                return true;
             },
         }));
     };

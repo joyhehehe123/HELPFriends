@@ -212,7 +212,7 @@ export default function createSignupFlow({ initialData }: SignupFlowProps = {}):
                 stepContent.appendChild(createTwoFactorStep({
                     onBack: goBack,
                     onResend: async () => {
-                        alert('Email code delivery is not connected yet.');
+                        // The OTP screen is a placeholder until email delivery is configured.
                         return false;
                     },
                     onNext: () => {
@@ -303,13 +303,14 @@ export default function createSignupFlow({ initialData }: SignupFlowProps = {}):
                                     await deleteUser(createdUser);
                                 } catch (cleanupError) {
                                     console.error('Failed to remove Firebase account after signup error:', cleanupError);
-                                    alert('Signup did not complete and the new account could not be cleaned up. Please contact support before trying again.');
-                                    return false;
+                                    throw new Error(
+                                        'Signup did not complete and the new account could not be cleaned up. Please contact support before trying again.',
+                                        { cause: cleanupError },
+                                    );
                                 }
                             }
 
-                            alert(error instanceof Error ? error.message : 'Unable to create your account.');
-                            return false;
+                            throw error;
                         }
                     },
                 }));

@@ -1,4 +1,6 @@
 import './signup.css';
+import '../../auth-feedback.css';
+import { createAuthFeedback } from '../../auth-feedback';
 
 export interface SignupInfoData {
     studentId: string;
@@ -25,7 +27,7 @@ export default function createSignupStep({
             <h2>Sign Up</h2>
         </div>
 
-        <form class="signup-form">
+        <form class="signup-form" novalidate>
             <div class="signup-field">
                 <label for="studentId">Student ID</label>
                 <input id="studentId" type="text" autocomplete="off" required />
@@ -61,6 +63,7 @@ export default function createSignupStep({
     const studentEmailInput = container.querySelector<HTMLInputElement>('#studentEmail')!;
     const volunteerInput = container.querySelector<HTMLInputElement>('#volunteer')!;
     const submitButton = container.querySelector<HTMLButtonElement>('.signup-button')!;
+    const showFeedback = createAuthFeedback(form);
 
     studentIdInput.value = signupInfo.studentId;
     fullNameInput.value = signupInfo.fullName;
@@ -75,14 +78,17 @@ export default function createSignupStep({
     };
 
     studentIdInput.addEventListener('input', (event) => {
+        showFeedback('');
         updateSignupInfo('studentId', (event.target as HTMLInputElement).value);
     });
 
     fullNameInput.addEventListener('input', (event) => {
+        showFeedback('');
         updateSignupInfo('fullName', (event.target as HTMLInputElement).value);
     });
 
     studentEmailInput.addEventListener('input', (event) => {
+        showFeedback('');
         updateSignupInfo('studentEmail', (event.target as HTMLInputElement).value);
     });
 
@@ -103,13 +109,13 @@ export default function createSignupStep({
         };
 
         if (!currentInfo.studentId || !currentInfo.fullName || !currentInfo.studentEmail) {
-            alert('Please fill in all fields.');
+            showFeedback('Please fill in all fields.');
             return;
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(currentInfo.studentEmail)) {
-            alert('Please enter a valid email address.');
+            showFeedback('Please enter a valid email address.');
             return;
         }
 

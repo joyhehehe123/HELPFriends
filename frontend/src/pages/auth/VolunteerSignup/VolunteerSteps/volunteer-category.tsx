@@ -1,4 +1,6 @@
 import './volunteer.css';
+import '../../auth-feedback.css';
+import { createAuthFeedback } from '../../auth-feedback';
 import { icons } from './icons';
 import type { CategoryInfoData, SupportCategory } from '../Voluteer';
 
@@ -51,6 +53,7 @@ export default function createCategoryStep({
     const tiles = Array.from(container.querySelectorAll<HTMLButtonElement>('.vol-tile'));
     const returnButton = container.querySelector<HTMLButtonElement>('.vol-return-link')!;
     const nextButton = container.querySelector<HTMLButtonElement>('.next-button')!;
+    const showFeedback = createAuthFeedback(form);
 
     const selected = new Set<SupportCategory>(categoryInfo.categories);
 
@@ -60,6 +63,7 @@ export default function createCategoryStep({
             tile.classList.toggle('is-selected', isSelected);
             tile.setAttribute('aria-pressed', String(isSelected));
         });
+        showFeedback('');
         nextButton.disabled = selected.size === 0;
     };
 
@@ -90,7 +94,7 @@ export default function createCategoryStep({
 
         const categories = currentCategories();
         if (categories.length === 0) {
-            alert('Please select at least one support category.');
+            showFeedback('Please select at least one support category.');
             return;
         }
 

@@ -1,4 +1,6 @@
 import './volunteer.css';
+import '../../auth-feedback.css';
+import { createAuthFeedback } from '../../auth-feedback';
 import { icons } from './icons';
 import type { AvailabilityInfoData, DayKey, TimeSlot, WeeklySchedule } from '../Voluteer';
 
@@ -81,6 +83,20 @@ export default function createAvailabilityStep({
     const form = container.querySelector<HTMLFormElement>('form')!;
     const backButton = container.querySelector<HTMLButtonElement>('.back-button');
     const dayList = container.querySelector<HTMLElement>('#dayList')!;
+    const showFeedback = createAuthFeedback(form);
+    const copyConfirmation = document.createElement('div');
+    copyConfirmation.className = 'auth-inline-confirmation';
+    copyConfirmation.hidden = true;
+    copyConfirmation.innerHTML = `
+        <p class="copy-confirmation-message"></p>
+        <button type="button" class="vol-btn vol-btn--primary copy-confirm-button">Copy times</button>
+        <button type="button" class="vol-btn vol-btn--secondary cancel-copy-button">Cancel</button>
+    `;
+    form.prepend(copyConfirmation);
+    const copyMessage = copyConfirmation.querySelector<HTMLElement>('.copy-confirmation-message')!;
+    const confirmCopyButton = copyConfirmation.querySelector<HTMLButtonElement>('.copy-confirm-button')!;
+    const cancelCopyButton = copyConfirmation.querySelector<HTMLButtonElement>('.cancel-copy-button')!;
+    let pendingCopyDay: DayKey | null = null;
 
     const schedule = cloneSchedule(availabilityInfo.schedule);
 
@@ -141,7 +157,7 @@ export default function createAvailabilityStep({
             } else {
                 const previousEnd = toMinutes(slots[index].end);
                 if (previousEnd >= toMinutes(LAST_TIME)) {
-                    alert(`There is no time left after ${toLabel(slots[index].end)} on ${dayLabel}.`);
+                    showFeedback(`There is no time left after ${toLabel(slots[index].end)} on ${dayLabel}.`);
                     return;
                 }
                 const newEnd = Math.min(previousEnd + 120, toMinutes(LAST_TIME));
@@ -150,19 +166,35 @@ export default function createAvailabilityStep({
         }
 
         if (action === 'copy') {
-            if (!confirm(`Copy ${dayLabel}'s times to all other days? This replaces their current availability.`)) {
-                return;
-            }
-            const source = slots.map((slot) => ({ ...slot }));
-            days.forEach((day) => {
-                if (day.key !== dayKey) {
-                    schedule[day.key] = source.map((slot) => ({ ...slot }));
-                }
-            });
+            pendingCopyDay = dayKey;
+            copyMessage.textContent = `Copy ${dayLabel}'s times to all other days? This replaces their current availability.`;
+            copyConfirmation.hidden = false;
+            return;
         }
 
+        showFeedback('');
         render();
         commit();
+    });
+
+    confirmCopyButton.addEventListener('click', () => {
+        if (!pendingCopyDay) return;
+        const source = schedule[pendingCopyDay].map((slot) => ({ ...slot }));
+        days.forEach((day) => {
+            if (day.key !== pendingCopyDay) {
+                schedule[day.key] = source.map((slot) => ({ ...slot }));
+            }
+        });
+        pendingCopyDay = null;
+        copyConfirmation.hidden = true;
+        showFeedback('');
+        render();
+        commit();
+    });
+
+    cancelCopyButton.addEventListener('click', () => {
+        pendingCopyDay = null;
+        copyConfirmation.hidden = true;
     });
 
     dayList.addEventListener('change', (event) => {
@@ -187,7 +219,7 @@ export default function createAvailabilityStep({
 
         const hasAvailability = days.some((day) => schedule[day.key].length > 0);
         if (!hasAvailability) {
-            alert('Please add your availability for at least one day.');
+            showFeedback('Please add your availability for at least one day.');
             return;
         }
 
@@ -196,17 +228,18 @@ export default function createAvailabilityStep({
 
             for (let i = 0; i < sorted.length; i++) {
                 if (toMinutes(sorted[i].end) <= toMinutes(sorted[i].start)) {
-                    alert(`On ${day.label}, the end time must be after the start time.`);
+                    showFeedback(`On ${day.label}, the end time must be after the start time.`);
                     return;
                 }
                 if (i > 0 && toMinutes(sorted[i].start) < toMinutes(sorted[i - 1].end)) {
-                    alert(`On ${day.label}, your time slots overlap. Please adjust them.`);
+                    showFeedback(`On ${day.label}, your time slots overlap. Please adjust them.`);
                     return;
                 }
             }
         }
 
         commit();
+        showFeedback('');
         onNext();
     });
 
