@@ -13,7 +13,7 @@ interface ProfileLayoutProps {
 
 const TABS: { id: ProfileTab; label: string; path: string }[] = [
     { id: 'account', label: 'Account Details', path: '/profile' },
-    { id: 'volunteer', label: 'Volunteer Details', path: '/profile/volunteer' },
+    { id: 'volunteer', label: 'Volunteer Details', path: '/profile/volunteer-profile' },
 ];
 
 export default function createProfileLayout({

@@ -6,7 +6,7 @@ import Index from "./pages/index/index";
 import Login from './pages/auth/Login/LoginFlow.tsx'
 import ResetPassword from './pages/auth/Login-ForgotPassword/ResetPasswordFlow'
 import Profile from './pages/profiles/AccountDetails'
-import VolunteerProfile from './pages/profiles/VolunteerDetails'
+import VolunteerProfile from './pages/profiles/VolunteerDetails.tsx'
 import Signup from './pages/auth/Signup/SignupFlow.tsx'
 
 function LegacyDomRenderer({ render }: { render: () => HTMLElement | null }) {
@@ -71,7 +71,7 @@ function App() {
           <Route path='/reset-password' element={<ResetPasswordPage />} />
           <Route path='/profile' element={<ProfilePage />} />
           <Route path='/' element={<Index />} />
-          <Route path='/volunteer-profile' element={<VolunteerProfilePage />} />
+          <Route path='/profile/volunteer-profile' element={<VolunteerProfilePage />} />
 
         </Route>
       </Routes>
