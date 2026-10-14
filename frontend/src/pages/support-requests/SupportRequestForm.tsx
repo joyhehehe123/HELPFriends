@@ -14,13 +14,12 @@ interface SupportRequestFormProps {
 
 let slotCounter = 0;
 
-// New empty date/time row
 const createSlot = (): ProposedSlotInput => {
     slotCounter += 1;
     return { id: `slot-${slotCounter}`, date: '', time: '' };
 };
 
-// First field with an error (top to bottom)
+// Find the first field with an error
 const getFirstErrorFieldId = (errors: SupportRequestErrors, draft: SupportRequestDraft): string | null => {
     if (errors.category) return 'category-0';
     if (errors.supportTitle) return 'support-title';
@@ -42,11 +41,10 @@ function FieldError({ id, message }: { id: string; message?: string }) {
     return <p id={id} className="support-form__error">{message}</p>;
 }
 
-// Support request form (Figma: Support Request Form)
 export default function SupportRequestForm({ initialDraft, onSubmit }: SupportRequestFormProps) {
     const [draft, setDraft] = useState<SupportRequestDraft>(initialDraft);
     const [showErrors, setShowErrors] = useState(false);
-    const [today] = useState(() => toDateInputValue(new Date())); // min date for the date picker
+    const [today] = useState(() => toDateInputValue(new Date())); // Min date for the date picker
 
     // Show errors only after the first submit
     const errors: SupportRequestErrors = showErrors ? validateSupportRequest(draft) : {};
@@ -68,7 +66,6 @@ export default function SupportRequestForm({ initialDraft, onSubmit }: SupportRe
         if (!canAddSlot) return;
         const newSlot = createSlot();
         setDraft((current) => ({ ...current, proposedTimeSlots: [...current.proposedTimeSlots, newSlot] }));
-        // Focus the new date input
         requestAnimationFrame(() => document.getElementById(`slot-date-${newSlot.id}`)?.focus());
     };
 
@@ -104,7 +101,6 @@ export default function SupportRequestForm({ initialDraft, onSubmit }: SupportRe
             <h1 className="visually-hidden">Request a Support</h1>
 
             <form className="support-form" onSubmit={handleSubmit} noValidate>
-                {/* Support Category */}
                 <fieldset
                     className="support-form__group"
                     aria-describedby={errors.category ? 'category-error' : undefined}
@@ -129,7 +125,6 @@ export default function SupportRequestForm({ initialDraft, onSubmit }: SupportRe
                     <FieldError id="category-error" message={errors.category} />
                 </fieldset>
 
-                {/* Title */}
                 <div className="support-form__group">
                     <label htmlFor="support-title" className="support-form__label">Title</label>
                     <input
@@ -146,7 +141,6 @@ export default function SupportRequestForm({ initialDraft, onSubmit }: SupportRe
                     <FieldError id="title-error" message={errors.supportTitle} />
                 </div>
 
-                {/* Description */}
                 <div className="support-form__group">
                     <label htmlFor="support-description" className="support-form__label">Description</label>
                     <textarea
@@ -162,7 +156,6 @@ export default function SupportRequestForm({ initialDraft, onSubmit }: SupportRe
                     <FieldError id="description-error" message={errors.description} />
                 </div>
 
-                {/* Preferred Dates & Times */}
                 <fieldset className="support-form__group">
                     <legend className="support-form__label">Preferred Dates &amp; Times</legend>
                     <ul className="slot-list">
@@ -233,7 +226,6 @@ export default function SupportRequestForm({ initialDraft, onSubmit }: SupportRe
                     <FieldError id="slots-error" message={errors.proposedTimeSlots} />
                 </fieldset>
 
-                {/* Support Mode */}
                 <fieldset
                     className="support-form__group"
                     aria-describedby={errors.supportMode ? 'mode-error' : undefined}

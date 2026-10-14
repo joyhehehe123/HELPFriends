@@ -5,7 +5,7 @@ export type DayName = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday'
 
 export interface AvailabilityTimeSlot {
     start: string; // Format: "HH:mm"
-    end: string;   // Format: "HH:mm"
+    end: string; // Format: "HH:mm"
 }
 
 export interface DayAvailability {

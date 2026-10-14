@@ -13,11 +13,11 @@ interface RequestDetailsProps {
     role: RequestRole;
     onBack: () => void;
     backLabel?: string;
-    onChange: (request: SupportRequestRecord) => void; // After accept, reject or cancel
+    onChange: (request: SupportRequestRecord) => void;
     onNewRequest: () => void;
     onViewMyRequests: () => void;
     onFindAnotherVolunteer: (request: SupportRequestRecord) => void;
-    onSchedule: (request: SupportRequestRecord) => void; // Scheduling is part of Support Sessions (Joy)
+    onSchedule: (request: SupportRequestRecord) => void;
 }
 
 const ACTION_ERRORS: Record<RequestAction, string> = {
@@ -44,7 +44,6 @@ function Person({ person }: { person: PersonSummary }) {
     );
 }
 
-// Support request details for the seeker or the volunteer (Figma: Support Requests Details)
 export default function RequestDetails({
     request,
     role,
@@ -61,7 +60,7 @@ export default function RequestDetails({
 
     const titleId = `request-${request.requestId}-title`;
     const otherPerson = role === 'Volunteer' ? request.seeker : request.volunteer;
-    // Figma "Support Request Sent (Pending)": the seeker's own pending request has its own layout
+    // The seeker's own pending request has a different layout
     const isSentLayout = role === 'Seeker' && request.status === 'Pending';
     const firstSlot = request.proposedTimeSlots[0];
 
@@ -94,7 +93,6 @@ export default function RequestDetails({
         <Button variant="outline" shape="pill" onClick={onViewMyRequests}>View my support requests</Button>
     );
 
-    // Buttons for each status (Figma)
     const renderActions = () => {
         if (role === 'Volunteer') {
             if (request.status === 'Pending') {

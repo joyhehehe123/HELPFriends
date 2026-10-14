@@ -3,7 +3,7 @@
     min-width: 0;
 }
 
-/* The browser's own text is hidden, the span below shows the value instead */
+/* Hide the browser's text, the span shows the value */
 .picker-input__field {
     box-sizing: border-box;
     width: 100%;

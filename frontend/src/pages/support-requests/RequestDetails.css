@@ -48,7 +48,6 @@
     margin: 27px 0 0;
 }
 
-/* Seeker's pending request: 3 columns, 2 rows */
 .request-details__facts--sent {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     row-gap: 41px;

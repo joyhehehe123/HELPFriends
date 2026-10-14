@@ -21,8 +21,6 @@
     color: var(--color-text-primary);
 }
 
-/* ────────────────────────────────── Filters ─────────────────────────────────── */
-
 .matching-filters .matching-heading {
     margin-bottom: 16px;
 }
@@ -60,8 +58,6 @@
     height: 62px;
     background: #a9bbbf;
 }
-
-/* ──────────────────────────────── Mode toggle ───────────────────────────────── */
 
 .mode-toggle {
     display: flex;
@@ -107,8 +103,6 @@
     outline-offset: 2px;
 }
 
-/* ────────────────────────────────── Results ─────────────────────────────────── */
-
 .matching-heading--results {
     margin-top: 26px;
 }
@@ -144,8 +138,6 @@
     margin: 0;
 }
 
-/* ───────────────────────────────── No matches ───────────────────────────────── */
-
 .no-matches {
     display: flex;
     flex-direction: column;
@@ -154,7 +146,6 @@
     text-align: center;
 }
 
-/* Cat from the Figma design (same file as Joy's assets/sadcat.png) */
 .no-matches__image {
     width: 263px;
     height: auto;

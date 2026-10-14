@@ -11,12 +11,12 @@ import {
     type ValidSupportRequestDraft,
 } from './types';
 
-// Uses mock data for now. Only this file changes when Firestore is connected.
+// Mock data until Firestore is connected
 
 const simulateNetworkDelay = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
 let mockRequests: SupportRequestRecord[] = createMockRequests();
-let nextRequestNumber = 1014; // Joy's counter makes ids like "R1014"
+let nextRequestNumber = 1014; // Ids like "R1014"
 
 const findRequest = (requestId: string): SupportRequestRecord => {
     const request = mockRequests.find((item) => item.requestId === requestId);
@@ -31,7 +31,7 @@ const saveRequest = (updated: SupportRequestRecord): SupportRequestRecord => {
 
 const newestFirst = (a: SupportRequestRecord, b: SupportRequestRecord) => b.createdAt.getTime() - a.createdAt.getTime();
 
-// ────────────────────────────────── Volunteers ───────────────────────────────────
+// ─── Volunteers ────────────────────────────────────────────────────────────────
 
 // TODO: get from Firestore (volunteers + users)
 export const fetchVolunteerProfiles = async (category: SupportCategory): Promise<VolunteerProfile[]> => {
@@ -39,9 +39,9 @@ export const fetchVolunteerProfiles = async (category: SupportCategory): Promise
     return MOCK_VOLUNTEERS.filter((volunteer) => volunteer.supportCategories.includes(category));
 };
 
-// ─────────────────────────────── Support requests ────────────────────────────────
+// ─── Support Requests ──────────────────────────────────────────────────────────
 
-// TODO: getSupportRequestsByStudent(userId, false) and (userId, true)
+// TODO: getSupportRequestsByStudent()
 export const fetchSupportRequests = async (
     userId: string,
 ): Promise<{ sent: SupportRequestRecord[]; received: SupportRequestRecord[] }> => {
@@ -97,7 +97,7 @@ const ALLOWED_FROM: Record<RequestAction, RequestStatus[]> = {
     cancel: ['Pending', 'Accepted'],
 };
 
-// The seeker is told when the volunteer answers (Epic 4)
+// Tell the seeker when the volunteer answers
 const notifySeeker = (request: SupportRequestRecord) => {
     const nextStep = request.status === 'Accepted'
         ? 'You can now schedule the session.'

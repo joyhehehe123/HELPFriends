@@ -1,7 +1,7 @@
 import { type VolunteerProfile } from '../../types/volunteerProfile';
 
-// Test data until Firestore is connected. Claire, Hazel and Elise are from the Figma design.
-// Marcus is inactive and Aisyah has no ratings yet.
+// Test data until Firestore is connected
+// Marcus is inactive and Aisyah has no ratings yet
 export const MOCK_VOLUNTEERS: VolunteerProfile[] = [
     {
         volunteerId: 'mock-claire',
@@ -10,7 +10,7 @@ export const MOCK_VOLUNTEERS: VolunteerProfile[] = [
         faculty: 'Faculty of Communication, Media and Creative Industries',
         program: 'Bachelor in Communication (Media Studies) (Honours)',
         bio: 'I’m a student who willing to help anyone~ feel free to look for me~',
-        profilePic: '',
+        profilePic: null,
         supportCategories: ['Academic', 'New Student', 'General Student'],
         skills: ['Public Speaking', 'Math'],
         availability: [
@@ -29,7 +29,7 @@ export const MOCK_VOLUNTEERS: VolunteerProfile[] = [
         faculty: 'Faculty of Business, Economics and Accounting',
         program: 'Bachelor of Accounting and Finance (Honours)',
         bio: 'Spreadsheets and statistics are my thing. Happy to help you get started.',
-        profilePic: '',
+        profilePic: null,
         supportCategories: ['Academic', 'Technology'],
         skills: ['Excel', 'Math'],
         availability: [
@@ -46,7 +46,7 @@ export const MOCK_VOLUNTEERS: VolunteerProfile[] = [
         faculty: 'Faculty of Computing and Digital Technology',
         program: 'Bachelor of Computer Science (Honours)',
         bio: 'Final-year CS student. I can help with programming assignments and debugging.',
-        profilePic: '',
+        profilePic: null,
         supportCategories: ['Technology', 'Academic'],
         skills: ['Python', 'Java', 'C#'],
         availability: [
@@ -70,7 +70,7 @@ export const MOCK_VOLUNTEERS: VolunteerProfile[] = [
         faculty: 'Faculty of Behavioural Sciences',
         program: 'Bachelor of Psychology (Honours)',
         bio: 'I know the campus well and love showing new students around.',
-        profilePic: '',
+        profilePic: null,
         supportCategories: ['New Student', 'General Student'],
         skills: ['Campus Navigation', 'Study Techniques'],
         availability: [
@@ -87,7 +87,7 @@ export const MOCK_VOLUNTEERS: VolunteerProfile[] = [
         faculty: 'Faculty of Communication, Media and Creative Industries',
         program: 'Bachelor of Mass Communication (Honours)',
         bio: 'New volunteer! I can help you plan and structure your assignments.',
-        profilePic: '',
+        profilePic: null,
         supportCategories: ['Academic'],
         skills: ['Assignment Guidance', 'Study Techniques', 'APA Referencing'],
         availability: [
@@ -105,7 +105,7 @@ export const MOCK_VOLUNTEERS: VolunteerProfile[] = [
         faculty: 'Faculty of Computing and Digital Technology',
         program: 'Bachelor of Information Technology (Honours)',
         bio: 'Taking a break from volunteering this semester.',
-        profilePic: '',
+        profilePic: null,
         supportCategories: ['Technology'],
         skills: ['Networking', 'Laptop Setup'],
         availability: [
@@ -122,7 +122,7 @@ export const MOCK_VOLUNTEERS: VolunteerProfile[] = [
         faculty: 'Faculty of Business, Economics and Accounting',
         program: 'Bachelor of Business (Honours) in Marketing',
         bio: 'I can help with presentations, Canva designs and student life questions.',
-        profilePic: '',
+        profilePic: null,
         supportCategories: ['General Student', 'Technology'],
         skills: ['Canva', 'Excel', 'Public Speaking'],
         availability: [

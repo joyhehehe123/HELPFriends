@@ -6,8 +6,8 @@ export interface SupportRequestErrors {
     category?: string;
     supportTitle?: string;
     description?: string;
-    proposedTimeSlots?: string;     // Whole list
-    slots?: Record<string, string>; // Per row (key = slot id)
+    proposedTimeSlots?: string; // Error for the whole list
+    slots?: Record<string, string>; // Error for each row (key = slot id)
     supportMode?: string;
 }
 
@@ -22,7 +22,7 @@ const validateSlot = (slot: ProposedSlotInput, now: Date): string | null => {
     return null;
 };
 
-// Empty object = no errors
+// Returns an empty object if there are no errors
 export const validateSupportRequest = (draft: SupportRequestDraft, now: Date = new Date()): SupportRequestErrors => {
     const errors: SupportRequestErrors = {};
 

@@ -2,20 +2,18 @@ import { useEffect, useRef, type ReactNode } from 'react';
 import './Modal.css';
 
 interface ModalProps {
-    labelledBy: string;    // id of the dialog title
+    labelledBy: string; // Id of the dialog title
     onClose: () => void;
     children: ReactNode;
-    dismissible?: boolean; // false = can't close (e.g. while saving)
+    dismissible?: boolean; // False while saving, so it can't be closed
     className?: string;
 }
 
-// Uses <dialog>, so the browser handles focus and the Esc key
 export default function Modal({ labelledBy, onClose, children, dismissible = true, className = '' }: ModalProps) {
     const dialogRef = useRef<HTMLDialogElement>(null);
 
     useEffect(() => {
         const dialog = dialogRef.current;
-        // No cleanup needed, the dialog closes when it is removed
         if (dialog && !dialog.open) dialog.showModal();
     }, []);
 
@@ -29,7 +27,7 @@ export default function Modal({ labelledBy, onClose, children, dismissible = tru
                 event.preventDefault();
                 if (dismissible) onClose();
             }}
-            onClose={onClose} // If the browser closes it anyway
+            onClose={onClose}
             onClick={(event) => {
                 // Backdrop click
                 if (dismissible && event.target === event.currentTarget) onClose();

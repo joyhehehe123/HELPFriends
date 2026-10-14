@@ -15,7 +15,6 @@
     gap: 12px 24px;
 }
 
-/* Rounded corners in the list (Figma), pills on the details page */
 .request-card .category-chip,
 .request-card .date-chip {
     padding: 0 17px;
