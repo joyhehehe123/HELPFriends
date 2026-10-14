@@ -17,11 +17,11 @@ function SessionList({ role, status }: Props) {
             <img src={sillycat} alt='Silly Cat' />
             <p>No {status.toLowerCase()} sessions found</p>
         </>
-        : sessions.map((s) => (<SessionCards key={s.uid} session={s} role={role} />))
+        : sessions.map((s) => (<SessionCards key={s.uid} session={s} role={role} status={status} />))
 
     useEffect(() => {
-        const uid = 'tTkoPuvMtlYhuXBRHCkmAtkvFTk1'; // getCurrentUid();
-        // const uid = '2xHc86nAQeNJntDP8DaYlRw7n012'; // getCurrentUid();
+        const uid = 'q6ueIqs7iuSpi3s0BIjuAuHN5652'; // getCurrentUid();
+        // const uid = 'AijequVCA7avM7PH0zaaEoKyquj1'; // getCurrentUid();
         if (!uid) return;
 
         const fetch = (role === 'Volunteer' )
