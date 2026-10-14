@@ -1,5 +1,5 @@
 import { Routes, Route, Outlet, useNavigate } from 'react-router-dom'
-import { type ReactNode, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 import Navbar from "./components/MainNavbar";
 import Index from "./pages/index/index";
@@ -8,6 +8,8 @@ import ResetPassword from './pages/auth/Login-ForgotPassword/ResetPasswordFlow'
 import Profile from './pages/profiles/AccountDetails'
 import VolunteerProfile from './pages/profiles/VolunteerDetails.tsx'
 import Signup from './pages/auth/Signup/SignupFlow.tsx'
+import Dashboard from './pages/dashboard/Dashboard.tsx'
+import SupportShell from './pages/support-requests/SupportShell'
 
 function LegacyDomRenderer({ render }: { render: () => HTMLElement | null }) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -64,15 +66,18 @@ function App() {
   return (
     <>
       <Routes>
-        
+        <Route path='/dashboard' element={<Dashboard />} />
+        <Route path='/support-request-form' element={<SupportShell />} />
+        <Route path='/support-requests' element={<SupportShell />} />
+        <Route path='/support-sessions' element={<SupportShell />} />
+        <Route path='/notifications' element={<SupportShell />} />
+        <Route path='/profile' element={<ProfilePage />} />
         <Route element={<AppShell />}>
           <Route path='/signup' element={<SignupPage />} />
           <Route path='/login' element={<LoginPage />} />
           <Route path='/reset-password' element={<ResetPasswordPage />} />
-          <Route path='/profile' element={<ProfilePage />} />
           <Route path='/' element={<Index />} />
           <Route path='/profile/volunteer-profile' element={<VolunteerProfilePage />} />
-
         </Route>
       </Routes>
     </>

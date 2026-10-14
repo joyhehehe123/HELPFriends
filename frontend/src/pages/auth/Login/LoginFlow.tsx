@@ -38,7 +38,7 @@ export default function createLoginFlow({ initialData }: LoginFlowProps = {}): H
             onRegister: () => navigate('/signup'),
             onNext: async () => {
                 await login(state.loginInfo.email, state.loginInfo.password);
-                navigate('/');
+                navigate('/dashboard');
                 return true;
             },
         }));

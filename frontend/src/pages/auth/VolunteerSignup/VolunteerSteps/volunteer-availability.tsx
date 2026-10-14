@@ -84,21 +84,9 @@ export default function createAvailabilityStep({
     const backButton = container.querySelector<HTMLButtonElement>('.back-button');
     const dayList = container.querySelector<HTMLElement>('#dayList')!;
     const showFeedback = createAuthFeedback(form);
-    const copyConfirmation = document.createElement('div');
-    copyConfirmation.className = 'auth-inline-confirmation';
-    copyConfirmation.hidden = true;
-    copyConfirmation.innerHTML = `
-        <p class="copy-confirmation-message"></p>
-        <button type="button" class="vol-btn vol-btn--primary copy-confirm-button">Copy times</button>
-        <button type="button" class="vol-btn vol-btn--secondary cancel-copy-button">Cancel</button>
-    `;
-    form.prepend(copyConfirmation);
-    const copyMessage = copyConfirmation.querySelector<HTMLElement>('.copy-confirmation-message')!;
-    const confirmCopyButton = copyConfirmation.querySelector<HTMLButtonElement>('.copy-confirm-button')!;
-    const cancelCopyButton = copyConfirmation.querySelector<HTMLButtonElement>('.cancel-copy-button')!;
-    let pendingCopyDay: DayKey | null = null;
 
     const schedule = cloneSchedule(availabilityInfo.schedule);
+    let copyOpenDay: DayKey | null = null;
 
     const commit = (): void => {
         setAvailabilityInfo({ schedule: cloneSchedule(schedule) });
@@ -123,15 +111,34 @@ export default function createAvailabilityStep({
                         <div class="vol-slot-actions">
                             <button type="button" class="vol-icon-btn" data-action="remove" data-day="${day.key}" data-index="${index}" aria-label="Remove this time on ${day.label}">${icons.close}</button>
                             <button type="button" class="vol-icon-btn" data-action="add" data-day="${day.key}" data-index="${index}" aria-label="Add another time on ${day.label}">${icons.plusCircle}</button>
-                            <button type="button" class="vol-icon-btn" data-action="copy" data-day="${day.key}" data-index="${index}" aria-label="Copy ${day.label}'s times to all other days">${icons.copy}</button>
+                            <button type="button" class="vol-icon-btn" data-action="copy" data-day="${day.key}" aria-label="Copy ${day.label}'s times to other days">${icons.copy}</button>
                         </div>
                     </div>
                 `).join('');
+
+            const copyPopover = copyOpenDay === day.key
+                ? `
+                    <div class="vol-copy-popover" role="dialog" aria-label="Copy times to other days">
+                        <strong>Copy ${day.label}'s times to:</strong>
+                        ${days.filter((other) => other.key !== day.key).map((other) => `
+                            <label class="vol-copy-option">
+                                <input type="checkbox" data-copy-target="${other.key}" />
+                                ${other.label}
+                            </label>
+                        `).join('')}
+                        <div class="vol-copy-actions">
+                            <button type="button" class="vol-btn vol-btn--secondary" data-action="copy-cancel">Cancel</button>
+                            <button type="button" class="vol-btn vol-btn--primary" data-action="copy-apply" data-day="${day.key}">Copy</button>
+                        </div>
+                    </div>
+                `
+                : '';
 
             return `
                 <div class="vol-day-row">
                     <div class="vol-day-badge" title="${day.label}" aria-label="${day.label}">${day.letter}</div>
                     <div class="vol-day-slots">${body}</div>
+                    ${copyPopover}
                 </div>
             `;
         }).join('');
@@ -144,6 +151,13 @@ export default function createAvailabilityStep({
         const dayKey = button.dataset.day as DayKey;
         const index = Number(button.dataset.index);
         const action = button.dataset.action;
+
+        if (action === 'copy-cancel') {
+            copyOpenDay = null;
+            render();
+            return;
+        }
+
         const dayLabel = days.find((day) => day.key === dayKey)!.label;
         const slots = schedule[dayKey];
 
@@ -166,35 +180,20 @@ export default function createAvailabilityStep({
         }
 
         if (action === 'copy') {
-            pendingCopyDay = dayKey;
-            copyMessage.textContent = `Copy ${dayLabel}'s times to all other days? This replaces their current availability.`;
-            copyConfirmation.hidden = false;
-            return;
+            copyOpenDay = copyOpenDay === dayKey ? null : dayKey;
+        }
+
+        if (action === 'copy-apply') {
+            const popover = button.closest('.vol-copy-popover')!;
+            popover.querySelectorAll<HTMLInputElement>('input[data-copy-target]:checked').forEach((checkbox) => {
+                schedule[checkbox.dataset.copyTarget as DayKey] = slots.map((slot) => ({ ...slot }));
+            });
+            copyOpenDay = null;
         }
 
         showFeedback('');
         render();
         commit();
-    });
-
-    confirmCopyButton.addEventListener('click', () => {
-        if (!pendingCopyDay) return;
-        const source = schedule[pendingCopyDay].map((slot) => ({ ...slot }));
-        days.forEach((day) => {
-            if (day.key !== pendingCopyDay) {
-                schedule[day.key] = source.map((slot) => ({ ...slot }));
-            }
-        });
-        pendingCopyDay = null;
-        copyConfirmation.hidden = true;
-        showFeedback('');
-        render();
-        commit();
-    });
-
-    cancelCopyButton.addEventListener('click', () => {
-        pendingCopyDay = null;
-        copyConfirmation.hidden = true;
     });
 
     dayList.addEventListener('change', (event) => {
