@@ -10,6 +10,7 @@ const db = getFirestore();
 const auth = getAuth();
 
 const ts = (date) => Timestamp.fromDate(new Date(date));
+const minutesFromNow = (m) => Timestamp.fromDate(new Date(Date.now() + m * 60_000));
 
 const users = [
     {
@@ -142,8 +143,8 @@ const requests = [
         description: 'I would like help revising algebra and solving practice questions.',
         supportMode: 'Virtual',
         proposedTimeSlots: [
-            ts('2026-10-09T10:00:00+08:00'),
-            ts('2026-10-09T11:00:00+08:00')
+            minutesFromNow(80), // ts('2026-10-09T10:00:00+08:00'),
+            minutesFromNow(110)  // ts('2026-10-09T11:00:00+08:00')
         ],
         status: 'Scheduled',
         createdAt: ts('2026-10-05T09:00:00+08:00'),
@@ -176,8 +177,8 @@ const requests = [
         description: 'Idk what I shud do for this assignment... my brain is empty',
         supportMode: 'Virtual',
         proposedTimeSlots: [
-            ts('2026-10-23T10:00:00+08:00'),
-            ts('2026-10-23T15:00:00+08:00')
+            minutesFromNow(-100), // ts('2026-10-23T10:00:00+08:00'),
+            minutesFromNow(-70)  // ts('2026-10-23T15:00:00+08:00')
         ],
         status: 'Scheduled',
         createdAt: ts('2026-10-09T12:35:02+08:00'),
@@ -227,8 +228,8 @@ const requests = [
         description: 'I would like someone to talk to about managing university workload and study stress.',
         supportMode: 'Virtual',
         proposedTimeSlots: [
-            ts('2026-10-19T12:00:00+08:00'),
-            ts('2026-10-19T13:00:00+08:00')
+            minutesFromNow(300), // ts('2026-10-19T12:00:00+08:00'),
+            minutesFromNow(330)  // ts('2026-10-19T13:00:00+08:00')
         ],
         status: 'Scheduled',
         createdAt: ts('2026-10-11T09:00:00+08:00'),
@@ -244,8 +245,8 @@ const requests = [
         description: 'I would appreciate advice on adapting to university life and managing my timetable.',
         supportMode: 'Virtual',
         proposedTimeSlots: [
-            ts('2026-10-19T14:00:00+08:00'),
-            ts('2026-10-19T15:00:00+08:00')
+            minutesFromNow(-30), // ts('2026-10-19T14:00:00+08:00'),
+            minutesFromNow(-60)  // ts('2026-10-19T15:00:00+08:00')
         ],
         status: 'Scheduled',
         createdAt: ts('2026-10-11T10:00:00+08:00'),
@@ -356,7 +357,7 @@ const sessions = [
         title: 'Git and GitHub Setup',
         description: 'Help with setting up Git and GitHub for programming projects.',
         supportMode: 'Virtual',
-        dateTime: ts('2026-10-16T14:00:00+08:00'),
+        dateTime: minutesFromNow(80), // ts('2026-10-16T14:00:00+08:00'),
         duration: 60,
         status: 'Active',
         requestId: 'R1004',
@@ -369,7 +370,7 @@ const sessions = [
         title: 'Managing Study Stress',
         description: 'Discuss strategies for managing university workload and study stress.',
         supportMode: 'Virtual',
-        dateTime: ts('2026-10-19T12:00:00+08:00'),
+        dateTime: minutesFromNow(300), // ts('2026-10-19T12:00:00+08:00'),
         duration: 60,
         status: 'Active',
         requestId: 'R1006',
@@ -382,7 +383,7 @@ const sessions = [
         title: 'Getting Used to University Life',
         description: 'Advice on adapting to university life and managing a timetable.',
         supportMode: 'Virtual',
-        dateTime: ts('2026-10-19T14:00:00+08:00'),
+        dateTime: minutesFromNow(-30), // ts('2026-10-19T14:00:00+08:00'),
         duration: 60,
         status: 'Active',
         requestId: 'R1007',
@@ -399,6 +400,7 @@ const sessions = [
         duration: 60,
         status: 'Cancelled',
         cancelledAt: ts('2026-10-12T03:30:00+08:00'),
+        cancelledBy: 'Joy Lau Xuan',
         cancelledReason: 'The volunteer is unavailable at the scheduled time.',
         requestId: 'R1008',
         seekerName: 'Kim Ga-In',
@@ -410,7 +412,7 @@ const sessions = [
         title: 'Assignment Guidance',
         description: 'Idk what I shud do for this assignment... my brain is empty',
         supportMode: 'Virtual',
-        dateTime: ts('2026-10-23T15:00:00+08:00'),
+        dateTime: minutesFromNow(-100), // ts('2026-10-23T15:00:00+08:00'),
         duration: 60,
         status: 'Active',
         requestId: 'R1003',
@@ -419,7 +421,7 @@ const sessions = [
     },
 ];
 
-const COLLECTIONS = ['users', 'volunteers', 'supportRequests', 'supportSessions'];
+const COLLECTIONS = ['volunteers', 'supportRequests', 'supportSessions'];
 
 async function clearData() {
     for (const C of COLLECTIONS) {
@@ -519,6 +521,7 @@ async function seed() {
                 status: s.status,
                 ...(s.completedAt !== undefined && {completedAt: s.completedAt}),
                 ...(s.cancelledAt !== undefined && {cancelledAt: s.cancelledAt}),
+                ...(s.cancelledBy !== undefined && {cancelledBy: uids[s.cancelledBy]}),
                 ...(s.cancelledReason !== undefined && {cancelledReason: s.cancelledReason}),
                 requestId: s.requestId,
                 seekerId: uids[s.seekerName],
