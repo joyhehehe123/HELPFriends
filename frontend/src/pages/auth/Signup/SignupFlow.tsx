@@ -52,6 +52,8 @@ export default function createSignupFlow({ initialData }: SignupFlowProps = {}):
             studentId: initialData?.studentId ?? '',
             fullName: initialData?.fullName ?? '',
             studentEmail: initialData?.studentEmail ?? '',
+            faculty: initialData?.faculty ?? '',
+            program: initialData?.program ?? '',
             volunteer: initialData?.volunteer ?? false,
         },
         volunteer: {
@@ -235,8 +237,8 @@ export default function createSignupFlow({ initialData }: SignupFlowProps = {}):
                                 fullName: state.signupInfo.fullName,
                                 studentId: state.signupInfo.studentId,
                                 isVolunteer: state.signupInfo.volunteer,
-                                faculty: null,
-                                program: null,
+                                faculty: state.signupInfo.faculty,
+                                program: state.signupInfo.program,
                                 bio: null,
                                 profilePic: null,
                             };

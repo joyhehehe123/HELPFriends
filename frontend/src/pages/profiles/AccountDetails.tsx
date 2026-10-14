@@ -1,6 +1,8 @@
 import './profile.css';
 import createProfileLayout from './ProfileLayout';
 import { profileStore, escapeHtml } from './ProfileData';
+import { onAuthChange } from '../../services/authService';
+import { getUser } from '../../services/userService';
 
 const MAX_AVATAR_BYTES = 5 * 1024 * 1024;
 const MAX_ABOUT_LENGTH = 300;
@@ -55,8 +57,8 @@ export default function createAccountDetailsPage({ navigate }: AccountDetailsPro
                 <div class="profile-card info-card">
                     <dl>
                         <dt>Student ID:</dt><dd>${escapeHtml(profile.studentId)}</dd>
-                        <dt>Faculty:</dt><dd>${escapeHtml(profile.faculty)}</dd>
-                        <dt>Programme:</dt><dd>${escapeHtml(profile.programme)}</dd>
+                        <dt>Faculty:</dt><dd class="profile-faculty">${escapeHtml(profile.faculty)}</dd>
+                        <dt>Programme:</dt><dd class="profile-program">${escapeHtml(profile.programme)}</dd>
                     </dl>
                 </div>
             </section>
@@ -83,6 +85,32 @@ export default function createAccountDetailsPage({ navigate }: AccountDetailsPro
     const aboutTextarea = content.querySelector<HTMLTextAreaElement>('#aboutMe')!;
     const aboutCount = content.querySelector<HTMLElement>('.about-count')!;
     const aboutCancelButton = content.querySelector<HTMLButtonElement>('.about-cancel')!;
+    const summaryAcademic = content.querySelector<HTMLElement>('.summary-academic')!;
+    const facultyValue = content.querySelector<HTMLElement>('.profile-faculty')!;
+    const programValue = content.querySelector<HTMLElement>('.profile-program')!;
+
+    const stopAuthListener = onAuthChange((authUser) => {
+        stopAuthListener();
+        if (!authUser) return;
+
+        void getUser(authUser.uid)
+            .then((user) => {
+                if (!user) return;
+                profile.faculty = user.faculty ?? '';
+                profile.programme = user.program ?? '';
+                summaryAcademic.replaceChildren();
+                summaryAcademic.append(document.createTextNode(profile.faculty));
+                if (profile.faculty && profile.programme) {
+                    summaryAcademic.appendChild(document.createElement('br'));
+                }
+                summaryAcademic.append(document.createTextNode(profile.programme));
+                facultyValue.textContent = profile.faculty;
+                programValue.textContent = profile.programme;
+            })
+            .catch((error: unknown) => {
+                console.error('Failed to load registered faculty and program for the profile:', error);
+            });
+    });
 
     // ----- Profile picture -----
     avatarEditButton.addEventListener('click', () => avatarFileInput.click());
