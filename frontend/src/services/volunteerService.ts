@@ -43,7 +43,7 @@ export const getVolunteersByPreferredMode = async (preferredMode: PreferredMode)
 }
 
 // Get all volunteers
-const getAllVolunteers = async (): Promise<Volunteer[]> => {
+export const getAllVolunteers = async (): Promise<Volunteer[]> => {
     try {
         const volunteers = await getDocs(collection(db, 'volunteers'));
         return volunteers.docs.map(doc => (doc.data() as Volunteer));
