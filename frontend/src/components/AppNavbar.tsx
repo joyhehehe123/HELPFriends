@@ -31,7 +31,6 @@ function BellIcon() {
     );
 }
 
-// Navbar for my pages (Figma). Will be replaced by the team navbar.
 export default function AppNavbar({
     links,
     notificationsHref,
@@ -40,7 +39,6 @@ export default function AppNavbar({
     userPhoto,
     onNavigate,
 }: AppNavbarProps) {
-    // Ctrl/Cmd + click still opens a new tab
     const handleClick = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
         if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
         event.preventDefault();

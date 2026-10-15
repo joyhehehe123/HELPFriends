@@ -69,7 +69,6 @@ const data: DashboardData = {
   ],
 };
 
-/* ---------- Helpers ---------- */
 function el<K extends keyof HTMLElementTagNameMap>(
   tag: K,
   className?: string,
@@ -103,7 +102,6 @@ function capitalise(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-/* ---------- Building blocks ---------- */
 function createStatCard(label: string, value: number, href: string): HTMLElement {
   const card = el("article", "dash-stat");
   card.append(el("h3", "dash-stat__label heading", label), el("p", "dash-stat__value heading", String(value)));
@@ -196,7 +194,6 @@ function createRoleToggle(active: Role, onChange: (role: Role) => void): HTMLEle
   return wrap;
 }
 
-/* ---------- Dashboard ---------- */
 function createDashboard(initialRole: Role = "student"): HTMLElement {
   const page = el("div", "dash-page");
   const main = el("main", "dash-main");
