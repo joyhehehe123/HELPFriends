@@ -4,12 +4,11 @@ import type { SupportSession } from "../../types/supportSession";
 import type { Feedback } from "../../types/feedback";
 import { getFeedbackBySession } from "../../services/feedbackService";
 import { getUser } from "../../services/userService";
-import { Clock, CircleX, CircleCheckBig, Star, Volleyball } from "lucide-react";
+import { Clock, CircleX, CircleCheckBig, Star } from "lucide-react";
 import getStatusMessage from "./status-msg";
 import defaultProfilePic from "../../assets/hamster.jpg";
 import "./session-details-card.css"
 import Button from "../../components/Button";
-import VolunteerCard from "../../components/VolunteerCard";
 
 type Props = { session: SupportSession, role: Role, status: SessionStatus};
 
