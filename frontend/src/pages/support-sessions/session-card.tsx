@@ -26,8 +26,8 @@ function SessionCards({ session, role, status }: Props) {
     const cancelledDateTime = session.cancelledAt?.toDate();
     const cancelledDate = cancelledDateTime?.toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric" });
 
-    const myId = role === "Support Seeker" ? session.seekerId : session.volunteerId;
     const otherRole = role === "Support Seeker" ? "Volunteer" : "Seeker";
+    const myId = role === "Support Seeker" ? session.seekerId : session.volunteerId;
     const cancelledBy = session.cancelledBy === myId ? "you" : `${otherName} (${otherRole})`;
 
     useEffect(() => {
