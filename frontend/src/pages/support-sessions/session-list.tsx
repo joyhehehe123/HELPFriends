@@ -20,8 +20,9 @@ function SessionList({ role, status }: Props) {
         : sessions.map((s) => (<SessionCards key={s.uid} session={s} role={role} status={status} />))
 
     useEffect(() => {
-        // const uid = "poFo7wbZjvcORzhO9sz4EaMxwQv2"; // getCurrentUid();
-        const uid = "n66jreETszcSgvbor2ETABZ5VW33"; // getCurrentUid();
+        const uid = getCurrentUid();
+        // const uid = "poFo7wbZjvcORzhO9sz4EaMxwQv2";
+        // const uid = "n66jreETszcSgvbor2ETABZ5VW33";
         if (!uid) return;
 
         const fetch = (role === "Volunteer" )

@@ -13,8 +13,11 @@ function SupportSessions({ status }: Props) {
     const [volunteerSessionsCount, setVolunteerSessionsCount] = useState<number>(0);
 
     useEffect(() => {
-        // const uid = "poFo7wbZjvcORzhO9sz4EaMxwQv2"; // getCurrentUid();
-        const uid = "n66jreETszcSgvbor2ETABZ5VW33"; // getCurrentUid();
+        const uid = getCurrentUid();
+        // const uid = "poFo7wbZjvcORzhO9sz4EaMxwQv2";
+        // const uid = "n66jreETszcSgvbor2ETABZ5VW33";
+        if (!uid) return;
+
         const fetchSessions = async () => {
             try {
                 const ssCount = (await getSupportSessionsByStudentAndStatus(uid, false, status)).length;
