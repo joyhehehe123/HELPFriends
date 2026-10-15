@@ -1,4 +1,5 @@
 import { auth } from "../firebase";
+import { FirebaseError } from "firebase/app";
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
@@ -18,7 +19,7 @@ export const signUp = async (email: string, password: string): Promise<AuthUser>
         return credential.user;
     } catch (error) {
         console.error('Error signing up: ', error);
-        throw new Error('Failed to sign up: ' + error);
+        throw error;
     }
 }
 
@@ -31,7 +32,7 @@ export const login = async (email: string, password: string): Promise<AuthUser> 
         return credential.user;
     } catch (error) {
         console.error('Error logging in: ', error);
-        throw new Error('Failed to log in: ' + error);
+        throw error;
     }
 }
 
@@ -42,7 +43,7 @@ export const logout = async (): Promise<void> => {
         await signOut(auth);
     } catch (error) {
         console.error('Error logging out: ', error);
-        throw new Error('Failed to log out: ' + error);
+        throw new Error('Failed to log out: ' + error, { cause: error });
     }
 }
 
@@ -53,7 +54,10 @@ export const resetPassword = async (email: string): Promise<void> => {
         await sendPasswordResetEmail(auth, email);
     } catch (error) {
         console.error('Error resetting password: ', error);
-        throw new Error('Failed to reset password: ' + error);
+        if (error instanceof FirebaseError && error.code === 'auth/user-not-found') {
+            return;
+        }
+        throw new Error('Failed to reset password: ' + error, { cause: error });
     }
 }
 

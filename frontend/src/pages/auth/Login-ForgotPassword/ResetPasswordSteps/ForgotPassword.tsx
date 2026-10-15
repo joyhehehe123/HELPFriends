@@ -1,5 +1,7 @@
 import '../../Signup/SignupSteps/signup.css';
 import './ResetPassword.css';
+import '../../auth-feedback.css';
+import { createAuthFeedback, getAuthErrorMessage } from '../../auth-feedback';
 
 interface ForgotPasswordProps {
     email: string;
@@ -22,7 +24,7 @@ export default function createForgotPasswordStep({
             <p>Please enter the email used for your account and we’ll send you a link to reset your password.</p>
         </div>
 
-        <form class="signup-form">
+        <form class="signup-form" novalidate>
             <div class="icon-input">
                 <svg class="icon-input-icon" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <rect x="2.5" y="4.5" width="19" height="15" rx="2.5" />
@@ -47,6 +49,7 @@ export default function createForgotPasswordStep({
     const emailInput = container.querySelector<HTMLInputElement>('#resetEmail')!;
     const submitButton = container.querySelector<HTMLButtonElement>('.signup-button')!;
     const backButton = container.querySelector<HTMLButtonElement>('.back-link')!;
+    const showFeedback = createAuthFeedback(form);
 
     emailInput.value = email;
 
@@ -55,6 +58,7 @@ export default function createForgotPasswordStep({
     });
 
     emailInput.addEventListener('input', () => {
+        showFeedback('');
         setEmail(emailInput.value);
     });
 
@@ -65,21 +69,27 @@ export default function createForgotPasswordStep({
 
         const currentEmail = emailInput.value.trim();
         if (!currentEmail) {
-            alert('Please enter your email.');
+            showFeedback('Please enter your email.');
             return;
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(currentEmail)) {
-            alert('Please enter a valid email address.');
+            showFeedback('Please enter a valid email address.');
             return;
         }
 
         setEmail(currentEmail);
         submitButton.disabled = true;
         submitButton.textContent = 'Sending link...';
-        const result = await onNext();
-        if (result === false) {
+        try {
+            const result = await onNext();
+            if (result === false) {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Reset Password';
+            }
+        } catch (error) {
+            showFeedback(getAuthErrorMessage(error, 'Unable to send the password reset email.'));
             submitButton.disabled = false;
             submitButton.textContent = 'Reset Password';
         }

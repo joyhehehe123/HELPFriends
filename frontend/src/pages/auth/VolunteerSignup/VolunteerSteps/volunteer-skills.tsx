@@ -1,4 +1,6 @@
 import './volunteer.css';
+import '../../auth-feedback.css';
+import { createAuthFeedback } from '../../auth-feedback';
 import { icons } from './icons';
 import {
     CATEGORY_LABELS,
@@ -78,6 +80,7 @@ export default function createSkillsStep({
     const customInput = container.querySelector<HTMLInputElement>('#customSkillInput')!;
     const addCustomButton = container.querySelector<HTMLButtonElement>('#addCustomSkill')!;
     const customList = container.querySelector<HTMLElement>('#customList')!;
+    const showFeedback = createAuthFeedback(form);
 
     // Drop any skill that no longer belongs to the chosen categories (user went back and changed them).
     const selected = new Set<string>(skillsInfo.selectedSkills.filter((skill) => availableSkills.includes(skill)));
@@ -118,14 +121,15 @@ export default function createSkillsStep({
 
         const exists = [...availableSkills, ...customSkills].some((skill) => skill.toLowerCase() === value.toLowerCase());
         if (exists) {
-            alert(`"${value}" is already in your list.`);
+            showFeedback(`"${value}" is already in your list.`);
             return false;
         }
         if (customSkills.length >= MAX_CUSTOM_SKILLS) {
-            alert(`You can add up to ${MAX_CUSTOM_SKILLS} extra skills.`);
+            showFeedback(`You can add up to ${MAX_CUSTOM_SKILLS} extra skills.`);
             return false;
         }
 
+        showFeedback('');
         customSkills.push(value);
         customInput.value = '';
         sync();
@@ -143,6 +147,7 @@ export default function createSkillsStep({
             }
             sync();
             commit();
+            showFeedback('');
         });
     });
 
@@ -187,10 +192,11 @@ export default function createSkillsStep({
         }
 
         if (selected.size === 0 && customSkills.length === 0) {
-            alert('Please select at least one skill, or add your own under "Others".');
+            showFeedback('Please select at least one skill, or add your own under "Others".');
             return;
         }
 
+        showFeedback('');
         commit();
         onNext();
     });

@@ -1,22 +1,14 @@
-import '../Signup/SignupSteps/signup.css';
 import './ResetPasswordSteps/ResetPassword.css';
 import createForgotPasswordStep from './ResetPasswordSteps/ForgotPassword';
-import createResetPasswordStep from './ResetPasswordSteps/ResetPassword';
 import createResetPasswordConfirmationStep from './ResetPasswordSteps/ResetPasswordConfirmation';
+import { resetPassword } from '../../../services/authService';
 
 interface ResetPasswordFlowProps {
     initialEmail?: string;
-    /**
-     * 1 = enter email, 2 = enter new password.
-     * Once you have an API, the emailed link should open the page with initialStep: 2
-     * (and read the reset token from the URL).
-     */
-    initialStep?: 1 | 2 | 3;
 }
 
 export default function createResetPasswordFlow({
     initialEmail = '',
-    initialStep = 1,
 }: ResetPasswordFlowProps = {}): HTMLElement {
     const container = document.createElement('div');
     container.className = 'signup-page';
@@ -28,7 +20,7 @@ export default function createResetPasswordFlow({
 
     const state = { email: initialEmail };
 
-    let currentStep: 1 | 2 | 3 = initialStep;
+    let currentStep: 1 | 2 = 1;
 
     const content = document.createElement('main');
     content.className = 'signup-content';
@@ -44,23 +36,15 @@ export default function createResetPasswordFlow({
                         state.email = email;
                     },
                     onBack: () => navigate('/login'),
-                    onNext: () => {
-                        alert('If an account exists for this email, a reset link has been sent.');
+                    onNext: async () => {
+                        await resetPassword(state.email);
                         currentStep = 2;
                         renderStep();
+                        return true;
                     },
                 }));
                 break;
             case 2:
-                content.appendChild(createResetPasswordStep({
-                    onBack: () => navigate('/login'),
-                    onNext: () => {
-                        currentStep = 3;
-                        renderStep();
-                    },
-                }));
-                break;
-            case 3:
                 content.appendChild(createResetPasswordConfirmationStep({
                     onLogin: () => navigate('/login'),
                 }));

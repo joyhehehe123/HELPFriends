@@ -1,13 +1,19 @@
 import './SignupSteps/signup.css';
 import createSignupStep from './SignupSteps/signup.tsx';
 import type { SignupInfoData } from './SignupSteps/signup.tsx';
+import { doc, writeBatch } from 'firebase/firestore';
+import { deleteUser, type User as AuthUser } from 'firebase/auth';
+import { db } from '../../../firebase';
+import { signUp } from '../../../services/authService';
+import type { User } from '../../../types/user';
+import type { Volunteer } from '../../../types/volunteer';
 import createVolunteerCategoryStep from '../VolunteerSignup/VolunteerSteps/volunteer-category';
 import createVolunteerSkillsStep from '../VolunteerSignup/VolunteerSteps/volunteer-skills';
 import createVolunteerAvailabilityStep from '../VolunteerSignup/VolunteerSteps/volunteer-availability';
 import createVolunteerModeStep from '../VolunteerSignup/VolunteerSteps/volunteer-mode';
 import '../VolunteerSignup/VolunteerSteps/volunteer.css';
 import { getAvailableSkills } from '../VolunteerSignup/Voluteer.ts';
-import type { VolunteerRegistrationData } from '../VolunteerSignup/Voluteer.ts';
+import type { DayKey, SupportCategory, VolunteerRegistrationData } from '../VolunteerSignup/Voluteer.ts';
 import createTwoFactorStep from './SignupSteps/signup-2fa.tsx';
 import createSetPasswordStep from './SignupSteps/signup-password.tsx';
 import createConfirmationStep from './SignupSteps/signup-confirmation.tsx';
@@ -41,12 +47,13 @@ export default function createSignupFlow({ initialData }: SignupFlowProps = {}):
     const state: {
         signupInfo: SignupInfoData;
         volunteer: VolunteerRegistrationData;
-        otp: string;
     } = {
         signupInfo: {
             studentId: initialData?.studentId ?? '',
             fullName: initialData?.fullName ?? '',
             studentEmail: initialData?.studentEmail ?? '',
+            faculty: initialData?.faculty ?? '',
+            program: initialData?.program ?? '',
             volunteer: initialData?.volunteer ?? false,
         },
         volunteer: {
@@ -63,7 +70,6 @@ export default function createSignupFlow({ initialData }: SignupFlowProps = {}):
             },
             supportModeInfo: { modes: [] },
         },
-        otp: '',
     };
  
     // The order of steps depends on whether the user wants to become a volunteer.
@@ -90,9 +96,6 @@ export default function createSignupFlow({ initialData }: SignupFlowProps = {}):
         const next = sequence[sequence.indexOf(currentStep) + 1];
         if (!next) return;
  
-        if (next === '2fa') {
-            // TODO (API): request the OTP email here
-        }
         goTo(next);
     };
  
@@ -209,14 +212,12 @@ export default function createSignupFlow({ initialData }: SignupFlowProps = {}):
                 break;
             case '2fa':
                 stepContent.appendChild(createTwoFactorStep({
-                    onBack: () => goTo('signup'), // "Return to registration"
-                    onResend: async (): Promise<boolean> => {
-                        // TODO (API): resend the OTP email here
-                        return true;
+                    onBack: goBack,
+                    onResend: async () => {
+                        // The OTP screen is a placeholder until email delivery is configured.
+                        return false;
                     },
-                    onNext: (otp) => {
-                        // TODO (API): verify the OTP here (currently accepts any 6 digits)
-                        state.otp = otp;
+                    onNext: () => {
                         goNext();
                     },
                 }));
@@ -224,11 +225,95 @@ export default function createSignupFlow({ initialData }: SignupFlowProps = {}):
             case 'password':
                 stepContent.appendChild(createSetPasswordStep({
                     onBack: () => goTo('signup'), // "Return to registration"
-                    onNext: () => {
-                        // TODO (API): create the account with the password here.
-                        // If state.signupInfo.volunteer is true, also send state.volunteer
-                        // (categories, skills + customSkills, availability, supportModes).
-                        goNext();
+                    onNext: async (password) => {
+                        let createdUser: AuthUser | undefined;
+
+                        try {
+                            createdUser = await signUp(state.signupInfo.studentEmail, password);
+
+                            const batch = writeBatch(db);
+                            const userProfile: Omit<User, 'uid'> = {
+                                email: state.signupInfo.studentEmail,
+                                fullName: state.signupInfo.fullName,
+                                studentId: state.signupInfo.studentId,
+                                isVolunteer: state.signupInfo.volunteer,
+                                faculty: state.signupInfo.faculty,
+                                program: state.signupInfo.program,
+                                bio: null,
+                                profilePic: null,
+                            };
+
+                            batch.set(doc(db, 'users', createdUser.uid), {
+                                ...userProfile,
+                                uid: createdUser.uid,
+                            });
+
+                            if (state.signupInfo.volunteer) {
+                                const categoryNames: Record<SupportCategory, Volunteer['supportCategories'][number]> = {
+                                    academic: 'Academic',
+                                    technology: 'Technology',
+                                    newStudent: 'New Student',
+                                    general: 'General Student',
+                                };
+                                const dayNames: Record<DayKey, Volunteer['availability'][number]['day']> = {
+                                    mon: 'Monday',
+                                    tue: 'Tuesday',
+                                    wed: 'Wednesday',
+                                    thu: 'Thursday',
+                                    fri: 'Friday',
+                                };
+                                const modes = state.volunteer.supportModeInfo.modes;
+                                const preferredMode: Volunteer['preferredMode'] = modes.length === 2
+                                    ? 'Both'
+                                    : modes[0] === 'virtual' ? 'Virtual' : 'Physical';
+
+                                const volunteerProfile: Omit<Volunteer, 'uid' | 'rating' | 'isActive'> = {
+                                    preferredMode,
+                                    supportCategories: state.volunteer.categoryInfo.categories.map(
+                                        (category) => categoryNames[category],
+                                    ),
+                                    skills: [
+                                        ...new Set([
+                                            ...state.volunteer.skillsInfo.selectedSkills,
+                                            ...state.volunteer.skillsInfo.customSkills,
+                                        ]),
+                                    ],
+                                    availability: (Object.entries(state.volunteer.availabilityInfo.schedule) as [
+                                        DayKey,
+                                        typeof state.volunteer.availabilityInfo.schedule[DayKey],
+                                    ][]).flatMap(([day, timeSlots]) =>
+                                        timeSlots.length > 0
+                                            ? [{ day: dayNames[day], timeSlots }]
+                                            : [],
+                                    ),
+                                };
+
+                                batch.set(doc(db, 'volunteers', createdUser.uid), {
+                                    ...volunteerProfile,
+                                    uid: createdUser.uid,
+                                    rating: 0,
+                                    isActive: true,
+                                });
+                            }
+
+                            await batch.commit();
+                            goNext();
+                            return true;
+                        } catch (error) {
+                            if (createdUser) {
+                                try {
+                                    await deleteUser(createdUser);
+                                } catch (cleanupError) {
+                                    console.error('Failed to remove Firebase account after signup error:', cleanupError);
+                                    throw new Error(
+                                        'Signup did not complete and the new account could not be cleaned up. Please contact support before trying again.',
+                                        { cause: cleanupError },
+                                    );
+                                }
+                            }
+
+                            throw error;
+                        }
                     },
                 }));
                 break;

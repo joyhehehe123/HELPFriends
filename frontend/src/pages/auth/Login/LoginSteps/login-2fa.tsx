@@ -1,5 +1,6 @@
-import '../../Signup/SignupSteps/signup.css';
 import './login.css';
+import '../../auth-feedback.css';
+import { createAuthFeedback } from '../../auth-feedback';
 
 interface LoginTwoFactorProps {
     onBack?: () => void;
@@ -55,6 +56,7 @@ export default function createLoginTwoFactorStep({
     const submitButton = container.querySelector<HTMLButtonElement>('.signup-button')!;
     const backButton = container.querySelector<HTMLButtonElement>('.back-link')!;
     const resendButton = container.querySelector<HTMLButtonElement>('.resend-link')!;
+    const showFeedback = createAuthFeedback(form);
 
     let cooldownTimer: number | undefined;
 
@@ -89,9 +91,10 @@ export default function createLoginTwoFactorStep({
         resendButton.textContent = 'Sending...';
         const sent = await onResend();
         if (sent) {
-            alert('A new code has been sent to your email.');
+            showFeedback('A new code has been sent to your email.', 'info');
             startCooldown();
         } else {
+            showFeedback('Unable to resend the code. Please try again.');
             resendButton.disabled = false;
             resendButton.textContent = 'Send again';
         }
@@ -108,14 +111,20 @@ export default function createLoginTwoFactorStep({
 
         const otp = otpInput.value.trim();
         if (!/^\d{6}$/.test(otp)) {
-            alert('Please enter the 6-digit code sent to your email.');
+            showFeedback('Please enter the 6-digit code sent to your email.');
             return;
         }
 
         submitButton.disabled = true;
         submitButton.textContent = 'Verifying...';
-        const verified = await onNext(otp);
-        if (verified === false) {
+        try {
+            const verified = await onNext(otp);
+            if (verified === false) {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Verify';
+            }
+        } catch (error) {
+            showFeedback(error instanceof Error ? error.message : 'Unable to verify the code.');
             submitButton.disabled = false;
             submitButton.textContent = 'Verify';
         }

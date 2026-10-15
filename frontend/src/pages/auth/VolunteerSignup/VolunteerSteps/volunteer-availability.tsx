@@ -1,4 +1,6 @@
 import './volunteer.css';
+import '../../auth-feedback.css';
+import { createAuthFeedback } from '../../auth-feedback';
 import { icons } from './icons';
 import type { AvailabilityInfoData, DayKey, TimeSlot, WeeklySchedule } from '../Voluteer';
 
@@ -81,8 +83,10 @@ export default function createAvailabilityStep({
     const form = container.querySelector<HTMLFormElement>('form')!;
     const backButton = container.querySelector<HTMLButtonElement>('.back-button');
     const dayList = container.querySelector<HTMLElement>('#dayList')!;
+    const showFeedback = createAuthFeedback(form);
 
     const schedule = cloneSchedule(availabilityInfo.schedule);
+    let copyOpenDay: DayKey | null = null;
 
     const commit = (): void => {
         setAvailabilityInfo({ schedule: cloneSchedule(schedule) });
@@ -107,15 +111,34 @@ export default function createAvailabilityStep({
                         <div class="vol-slot-actions">
                             <button type="button" class="vol-icon-btn" data-action="remove" data-day="${day.key}" data-index="${index}" aria-label="Remove this time on ${day.label}">${icons.close}</button>
                             <button type="button" class="vol-icon-btn" data-action="add" data-day="${day.key}" data-index="${index}" aria-label="Add another time on ${day.label}">${icons.plusCircle}</button>
-                            <button type="button" class="vol-icon-btn" data-action="copy" data-day="${day.key}" data-index="${index}" aria-label="Copy ${day.label}'s times to all other days">${icons.copy}</button>
+                            <button type="button" class="vol-icon-btn" data-action="copy" data-day="${day.key}" aria-label="Copy ${day.label}'s times to other days">${icons.copy}</button>
                         </div>
                     </div>
                 `).join('');
+
+            const copyPopover = copyOpenDay === day.key
+                ? `
+                    <div class="vol-copy-popover" role="dialog" aria-label="Copy times to other days">
+                        <strong>Copy ${day.label}'s times to:</strong>
+                        ${days.filter((other) => other.key !== day.key).map((other) => `
+                            <label class="vol-copy-option">
+                                <input type="checkbox" data-copy-target="${other.key}" />
+                                ${other.label}
+                            </label>
+                        `).join('')}
+                        <div class="vol-copy-actions">
+                            <button type="button" class="vol-btn vol-btn--secondary" data-action="copy-cancel">Cancel</button>
+                            <button type="button" class="vol-btn vol-btn--primary" data-action="copy-apply" data-day="${day.key}">Copy</button>
+                        </div>
+                    </div>
+                `
+                : '';
 
             return `
                 <div class="vol-day-row">
                     <div class="vol-day-badge" title="${day.label}" aria-label="${day.label}">${day.letter}</div>
                     <div class="vol-day-slots">${body}</div>
+                    ${copyPopover}
                 </div>
             `;
         }).join('');
@@ -128,6 +151,13 @@ export default function createAvailabilityStep({
         const dayKey = button.dataset.day as DayKey;
         const index = Number(button.dataset.index);
         const action = button.dataset.action;
+
+        if (action === 'copy-cancel') {
+            copyOpenDay = null;
+            render();
+            return;
+        }
+
         const dayLabel = days.find((day) => day.key === dayKey)!.label;
         const slots = schedule[dayKey];
 
@@ -141,7 +171,7 @@ export default function createAvailabilityStep({
             } else {
                 const previousEnd = toMinutes(slots[index].end);
                 if (previousEnd >= toMinutes(LAST_TIME)) {
-                    alert(`There is no time left after ${toLabel(slots[index].end)} on ${dayLabel}.`);
+                    showFeedback(`There is no time left after ${toLabel(slots[index].end)} on ${dayLabel}.`);
                     return;
                 }
                 const newEnd = Math.min(previousEnd + 120, toMinutes(LAST_TIME));
@@ -150,17 +180,18 @@ export default function createAvailabilityStep({
         }
 
         if (action === 'copy') {
-            if (!confirm(`Copy ${dayLabel}'s times to all other days? This replaces their current availability.`)) {
-                return;
-            }
-            const source = slots.map((slot) => ({ ...slot }));
-            days.forEach((day) => {
-                if (day.key !== dayKey) {
-                    schedule[day.key] = source.map((slot) => ({ ...slot }));
-                }
-            });
+            copyOpenDay = copyOpenDay === dayKey ? null : dayKey;
         }
 
+        if (action === 'copy-apply') {
+            const popover = button.closest('.vol-copy-popover')!;
+            popover.querySelectorAll<HTMLInputElement>('input[data-copy-target]:checked').forEach((checkbox) => {
+                schedule[checkbox.dataset.copyTarget as DayKey] = slots.map((slot) => ({ ...slot }));
+            });
+            copyOpenDay = null;
+        }
+
+        showFeedback('');
         render();
         commit();
     });
@@ -187,7 +218,7 @@ export default function createAvailabilityStep({
 
         const hasAvailability = days.some((day) => schedule[day.key].length > 0);
         if (!hasAvailability) {
-            alert('Please add your availability for at least one day.');
+            showFeedback('Please add your availability for at least one day.');
             return;
         }
 
@@ -196,17 +227,18 @@ export default function createAvailabilityStep({
 
             for (let i = 0; i < sorted.length; i++) {
                 if (toMinutes(sorted[i].end) <= toMinutes(sorted[i].start)) {
-                    alert(`On ${day.label}, the end time must be after the start time.`);
+                    showFeedback(`On ${day.label}, the end time must be after the start time.`);
                     return;
                 }
                 if (i > 0 && toMinutes(sorted[i].start) < toMinutes(sorted[i - 1].end)) {
-                    alert(`On ${day.label}, your time slots overlap. Please adjust them.`);
+                    showFeedback(`On ${day.label}, your time slots overlap. Please adjust them.`);
                     return;
                 }
             }
         }
 
         commit();
+        showFeedback('');
         onNext();
     });
 
