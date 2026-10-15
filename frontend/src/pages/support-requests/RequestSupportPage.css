@@ -1,26 +1,23 @@
-/* Shared layout for the support request pages. Sizes follow the Figma frames (1920px wide) at 80%. */
-
 .request-support {
     flex: 1;
     padding-bottom: 48px;
     background: var(--color-bg-primary);
     color: var(--color-text-primary);
-    font-family: var(--font-heading); /* Figma uses Poppins for all text */
+    font-family: var(--font-heading);
     font-size: 20px;
     line-height: 1.5;
     letter-spacing: normal;
     text-align: left;
-    color-scheme: light; /* light date/time pickers */
+    color-scheme: light;
 }
 
-/* Sizes include padding and border, like Figma (Joy's global.css does this for the whole app) */
 .request-support *,
 .request-support *::before,
 .request-support *::after {
     box-sizing: border-box;
 }
 
-/* Overrides the centred #root styles (Vite index.css, team global.css) on these pages */
+/* Undo the centred #root styles on these pages */
 #root:has(.request-support) {
     width: 100%;
     max-width: none;
@@ -28,14 +25,12 @@
     text-align: left;
 }
 
-/* Content column (1500px of 1920px in Figma) */
 .request-support__body {
     width: min(78%, 1200px);
     margin: 0 auto;
     padding-top: 40px;
 }
 
-/* Row with the Back link under the navbar */
 .page-top {
     display: flex;
     flex-wrap: wrap;
@@ -47,8 +42,6 @@
 .page-top + .request-support__body {
     padding-top: 18px;
 }
-
-/* ───────────────────────────────────── Chips ───────────────────────────────────── */
 
 .category-chip,
 .role-chip {

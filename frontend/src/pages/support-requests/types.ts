@@ -1,10 +1,8 @@
-import { type SupportRequest } from '../../types/supportRequest';
+import { type RequestStatus, type Role, type SupportCategory, type SupportMode } from '../../types/constants';
 
-// Same values as SupportRequest
-export type SupportCategory = SupportRequest['category'];
-export type SupportMode = SupportRequest['supportMode'];
+export type { RequestStatus, SupportCategory, SupportMode };
 
-// ───────────────────────────────────── Form ──────────────────────────────────────
+// ─── Form ──────────────────────────────────────────────────────────────────────
 
 // One date/time row in the form
 export interface ProposedSlotInput {
@@ -28,27 +26,24 @@ export interface ValidSupportRequestDraft extends SupportRequestDraft {
     supportMode: SupportMode;
 }
 
-// ─────────────────────────────────── Matching ────────────────────────────────────
+// ─── Matching ──────────────────────────────────────────────────────────────────
 
 export interface VolunteerFilters {
     skill: string; // '' = any skill
-    from: string;  // "YYYY-MM-DD", '' = any date
-    to: string;    // "YYYY-MM-DD", '' = same as from
+    from: string; // Format: "YYYY-MM-DD", '' = any date
+    to: string; // Format: "YYYY-MM-DD", '' = same as from
     mode: SupportMode;
 }
 
-// ─────────────────────────────────── Requests ────────────────────────────────────
-
-// Same values as RequestStatus in Joy's types/constants.ts
-export type RequestStatus = 'Pending' | 'Accepted' | 'Rejected' | 'Cancelled' | 'Scheduled';
+// ─── Requests ──────────────────────────────────────────────────────────────────
 
 // Who is looking at the request
-export type RequestRole = 'Seeker' | 'Volunteer';
+export type RequestRole = Role;
 
 export interface PersonSummary {
     userId: string;
     fullName: string;
-    profilePic: string;
+    profilePic: string | null;
 }
 
 // Saved request with the names to show (Firestore has no joins)
@@ -59,10 +54,10 @@ export interface SupportRequestRecord {
     description: string;
     supportMode: SupportMode;
     proposedTimeSlots: Date[];
-    duration: number;     // Minutes
+    duration: number; // Duration in minutes
     status: RequestStatus;
     createdAt: Date;
-    respondedAt?: Date;   // Accepted or rejected
+    respondedAt?: Date; // Accepted, Rejected
     cancelledAt?: Date;
     scheduledAt?: Date;
     seeker: PersonSummary;

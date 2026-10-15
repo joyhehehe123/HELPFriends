@@ -1,12 +1,12 @@
 import './signup.css';
+import '../../auth-feedback.css';
+import { createAuthFeedback } from '../../auth-feedback';
 
 interface TwoFactorProps {
     onBack?: () => void;
     onResend: () => Promise<boolean>;
     onNext: (otp: string) => void | Promise<boolean>;
 }
-
-const RESEND_COOLDOWN_SECONDS = 60;
 
 export default function createTwoFactorStep({
     onBack,
@@ -18,7 +18,7 @@ export default function createTwoFactorStep({
     container.innerHTML = `
         <div class="signup-header">
             <h2>Two-Factor Authentication</h2>
-            <p>Enter the 6-digit code sent to your registered email to activate this account</p>
+            <p>Enter a 6-digit code to continue. Email delivery and code verification are not connected yet; any 6 digits will work.</p>
         </div>
 
         <form class="signup-form signup-form--otp">
@@ -30,6 +30,7 @@ export default function createTwoFactorStep({
                 autocomplete="one-time-code"
                 maxlength="6"
                 placeholder="Enter OTP"
+                aria-label="Six-digit verification code"
                 required
             />
 
@@ -54,45 +55,18 @@ export default function createTwoFactorStep({
     const submitButton = container.querySelector<HTMLButtonElement>('.signup-button')!;
     const backButton = container.querySelector<HTMLButtonElement>('.back-link')!;
     const resendButton = container.querySelector<HTMLButtonElement>('.resend-link')!;
-
-    let cooldownTimer: number | undefined;
-
-    const startCooldown = () => {
-        let remaining = RESEND_COOLDOWN_SECONDS;
-        resendButton.disabled = true;
-        resendButton.textContent = `Send again (${remaining}s)`;
-        window.clearInterval(cooldownTimer);
-        cooldownTimer = window.setInterval(() => {
-            remaining -= 1;
-            if (remaining <= 0) {
-                window.clearInterval(cooldownTimer);
-                resendButton.disabled = false;
-                resendButton.textContent = 'Send again';
-                return;
-            }
-            resendButton.textContent = `Send again (${remaining}s)`;
-        }, 1000);
-    };
-
-    // A code was just sent when the previous step finished, so start on cooldown.
-    startCooldown();
+    const showFeedback = createAuthFeedback(form);
 
     backButton.addEventListener('click', () => {
-        window.clearInterval(cooldownTimer);
         onBack?.();
     });
 
     resendButton.addEventListener('click', async () => {
-        if (resendButton.disabled) return;
         resendButton.disabled = true;
-        resendButton.textContent = 'Sending...';
         const sent = await onResend();
-        if (sent) {
-            alert('A new code has been sent to your email.');
-            startCooldown();
-        } else {
+        if (!sent) {
+            showFeedback('Email code delivery is not connected yet.', 'info');
             resendButton.disabled = false;
-            resendButton.textContent = 'Send again';
         }
     });
 
@@ -107,14 +81,20 @@ export default function createTwoFactorStep({
 
         const otp = otpInput.value.trim();
         if (!/^\d{6}$/.test(otp)) {
-            alert('Please enter the 6-digit code sent to your email.');
+            showFeedback('Please enter a 6-digit code.');
             return;
         }
 
         submitButton.disabled = true;
         submitButton.textContent = 'Verifying...';
-        const verified = await onNext(otp);
-        if (verified === false) {
+        try {
+            const verified = await onNext(otp);
+            if (verified === false) {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Verify';
+            }
+        } catch (error) {
+            showFeedback(error instanceof Error ? error.message : 'Unable to verify the code.');
             submitButton.disabled = false;
             submitButton.textContent = 'Verify';
         }

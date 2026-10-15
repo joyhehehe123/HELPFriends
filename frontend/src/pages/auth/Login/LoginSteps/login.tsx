@@ -1,5 +1,5 @@
-import '../../Signup/SignupSteps/signup.css';
 import './login.css';
+import { createAuthFeedback, getAuthErrorMessage } from '../../auth-feedback';
 
 export interface LoginInfoData {
     email: string;
@@ -24,11 +24,11 @@ export default function createLoginStep({
     const container = document.createElement('div');
     container.className = 'signup-card login-card';
     container.innerHTML = `
-        <div class="signup-header">
+        <div class="login-header">
             <h2>Login</h2>
         </div>
 
-        <form class="signup-form">
+        <form class="signup-form" novalidate>
             <div class="signup-field">
                 <label for="loginEmail">Student Email</label>
                 <input id="loginEmail" type="email" autocomplete="email" required />
@@ -58,6 +58,7 @@ export default function createLoginStep({
     const forgotButton = container.querySelector<HTMLButtonElement>('.forgot-link')!;
     const registerButton = container.querySelector<HTMLButtonElement>('.register-link')!;
     const submitButton = container.querySelector<HTMLButtonElement>('.login-button')!;
+    const showFeedback = createAuthFeedback(form);
 
     emailInput.value = loginInfo.email;
     passwordInput.value = loginInfo.password;
@@ -70,10 +71,12 @@ export default function createLoginStep({
     };
 
     emailInput.addEventListener('input', (event) => {
+        showFeedback('');
         updateLoginInfo('email', (event.target as HTMLInputElement).value);
     });
 
     passwordInput.addEventListener('input', (event) => {
+        showFeedback('');
         updateLoginInfo('password', (event.target as HTMLInputElement).value);
     });
 
@@ -96,21 +99,27 @@ export default function createLoginStep({
         };
 
         if (!currentInfo.email || !currentInfo.password) {
-            alert('Please enter your email and password.');
+            showFeedback('Please enter your email and password.');
             return;
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(currentInfo.email)) {
-            alert('Please enter a valid email address.');
+            showFeedback('Please enter a valid email address.');
             return;
         }
 
         setLoginInfo(currentInfo);
         submitButton.disabled = true;
         submitButton.textContent = 'Logging in...';
-        const result = await onNext();
-        if (result === false) {
+        try {
+            const result = await onNext();
+            if (result === false) {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Login';
+            }
+        } catch (error) {
+            showFeedback(getAuthErrorMessage(error, 'Unable to log in.'));
             submitButton.disabled = false;
             submitButton.textContent = 'Login';
         }

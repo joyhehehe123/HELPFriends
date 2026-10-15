@@ -5,9 +5,9 @@ import './PickerInput.css';
 interface PickerInputProps {
     id: string;
     type: 'date' | 'time';
-    value: string; // "YYYY-MM-DD" or "HH:mm"
+    value: string; // Format: "YYYY-MM-DD" or "HH:mm"
     onChange: (value: string) => void;
-    placeholder: string; // "Select Date" / "Select Time"
+    placeholder: string;
     min?: string;
     max?: string;
     invalid?: boolean;
@@ -40,7 +40,6 @@ const openPicker = (event: MouseEvent<HTMLInputElement>) => {
     }
 };
 
-// Date/time input that looks the same in every browser language (Figma: "Select Date", "Select Time")
 export default function PickerInput({
     id,
     type,

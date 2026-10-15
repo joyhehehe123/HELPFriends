@@ -1,4 +1,6 @@
 import './volunteer.css';
+import '../../auth-feedback.css';
+import { createAuthFeedback } from '../../auth-feedback';
 import { icons } from './icons';
 import type { SupportMode, SupportModeInfoData } from '../Voluteer';
 
@@ -51,6 +53,7 @@ export default function createSupportModeStep({
     const backButton = container.querySelector<HTMLButtonElement>('.back-button');
     const tiles = Array.from(container.querySelectorAll<HTMLButtonElement>('.vol-tile'));
     const submitButton = container.querySelector<HTMLButtonElement>('.next-button')!;
+    const showFeedback = createAuthFeedback(form);
 
     const selected = new Set<SupportMode>(supportModeInfo.modes);
 
@@ -63,6 +66,7 @@ export default function createSupportModeStep({
             tile.classList.toggle('is-selected', isSelected);
             tile.setAttribute('aria-pressed', String(isSelected));
         });
+        showFeedback('');
     };
 
     tiles.forEach((tile) => {
@@ -91,15 +95,21 @@ export default function createSupportModeStep({
 
         const modes = currentModes();
         if (modes.length === 0) {
-            alert('Please choose a support mode before continuing.');
+            showFeedback('Please choose a support mode before continuing.');
             return;
         }
 
         setSupportModeInfo({ modes });
         submitButton.disabled = true;
         submitButton.textContent = 'Submitting...';
-        const submitted = await onNext();
-        if (submitted !== true) {
+        try {
+            const submitted = await onNext();
+            if (submitted !== true) {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Submit';
+            }
+        } catch (error) {
+            showFeedback(error instanceof Error ? error.message : 'Unable to submit your volunteer registration.');
             submitButton.disabled = false;
             submitButton.textContent = 'Submit';
         }

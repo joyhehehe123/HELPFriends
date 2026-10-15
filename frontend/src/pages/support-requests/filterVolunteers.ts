@@ -23,7 +23,7 @@ export const isAvailableInRange = (volunteer: VolunteerProfile, from: string, to
     return isAvailableOnAnyDay(volunteer, getDaysInRange(from, to));
 };
 
-// Skips inactive volunteers and the student themself (FR)
+// Skip inactive volunteers and the student themself
 export const filterVolunteers = (
     volunteers: VolunteerProfile[],
     category: SupportCategory,

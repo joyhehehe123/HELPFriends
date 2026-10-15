@@ -7,13 +7,12 @@ import './VolunteerCard.css';
 
 interface VolunteerCardProps {
     volunteer: VolunteerProfile;
-    isSending?: boolean; // The request is being sent to this volunteer
-    disabled?: boolean;  // Another request is being sent
+    isSending?: boolean;
+    disabled?: boolean;
     onViewDetails: (volunteer: VolunteerProfile) => void;
     onSelect: (volunteer: VolunteerProfile) => void;
 }
 
-// Volunteer card in the matching list (Figma: Volunteer Filtering & Matching)
 export default function VolunteerCard({
     volunteer,
     isSending = false,

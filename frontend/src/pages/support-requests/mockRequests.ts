@@ -2,18 +2,17 @@ import mrBalls from '../../assets/mrballs.jpg';
 import { DEFAULT_DURATION_MINUTES } from './constants';
 import { type PersonSummary, type SupportRequestRecord } from './types';
 
-// Logged-in student for the demo (until login is connected), same picture as the Figma navbar
+// Logged-in student until login is connected
 export const MOCK_CURRENT_USER: PersonSummary = { userId: 'mock-me', fullName: 'Mr. Balls', profilePic: mrBalls };
 
-// Names from the Figma design
-const WAKA_WAKA: PersonSummary = { userId: 'mock-waka', fullName: 'Waka Waka', profilePic: '' };
-const NIKKI: PersonSummary = { userId: 'mock-nikki', fullName: 'Nikki', profilePic: '' };
-const JIN: PersonSummary = { userId: 'mock-jin', fullName: 'Jin', profilePic: '' };
-const HELLA: PersonSummary = { userId: 'mock-hella', fullName: 'Hella', profilePic: '' };
-// The Figma's received request also comes from "Mr. Balls", so this one has its own id
+const WAKA_WAKA: PersonSummary = { userId: 'mock-waka', fullName: 'Waka Waka', profilePic: null };
+const NIKKI: PersonSummary = { userId: 'mock-nikki', fullName: 'Nikki', profilePic: null };
+const JIN: PersonSummary = { userId: 'mock-jin', fullName: 'Jin', profilePic: null };
+const HELLA: PersonSummary = { userId: 'mock-hella', fullName: 'Hella', profilePic: null };
+// Another student with the same name, for a received request
 const MR_BALLS_SEEKER: PersonSummary = { userId: 'mock-mr-balls', fullName: 'Mr. Balls', profilePic: mrBalls };
 
-// Today + days at "HH:mm", so the demo dates never get old
+// Date from today, so the test dates never get old
 export const daysFromToday = (days: number, time: string): Date => {
     const [hours, minutes] = time.split(':').map(Number);
     const date = new Date();
@@ -22,7 +21,7 @@ export const daysFromToday = (days: number, time: string): Date => {
     return date;
 };
 
-// Test data until Firestore is connected: 3 sent and 3 received requests
+// Test data until Firestore is connected
 export const createMockRequests = (): SupportRequestRecord[] => [
     {
         requestId: 'R1012',

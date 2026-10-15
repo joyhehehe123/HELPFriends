@@ -11,7 +11,7 @@ import './RequestSupportPage.css';
 import './SupportRequestsPage.css';
 
 interface SupportRequestsPageProps {
-    initialRequestId?: string; // Open this request first (e.g. right after sending it)
+    initialRequestId?: string;
     onNewRequest: () => void;
     onFindAnotherVolunteer: (request: SupportRequestRecord) => void;
     onSchedule: (request: SupportRequestRecord) => void;
@@ -30,7 +30,6 @@ const EMPTY_TEXT: Record<Tab, string> = {
     received: 'No one has sent you a support request yet.',
 };
 
-// Sent and received support requests (Figma: Support Requests)
 export default function SupportRequestsPage({
     initialRequestId,
     onNewRequest,

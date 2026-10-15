@@ -12,7 +12,6 @@ function Star() {
     );
 }
 
-// Filled stars only, like the Figma design
 export default function StarRating({ rating }: StarRatingProps) {
     if (rating <= 0) return <span className="star-rating__new">New volunteer</span>;
 

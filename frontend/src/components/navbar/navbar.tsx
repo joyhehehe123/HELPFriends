@@ -11,12 +11,13 @@ function Navbar() {
                 <span id='logo-friends'>Friends</span>
             </Link>
             <div id='nav-links'>
-                <Link to='' className='nav-link link'><p className='nav-text'>Request a Support</p></Link>
-                <Link to='' className='nav-link link'><p className='nav-text'>My Support Requests</p></Link>
+                <Link to='/request-support' className='nav-link link'><p className='nav-text'>Request a Support</p></Link>
+                <Link to='/support-requests' className='nav-link link'><p className='nav-text'>My Support Requests</p></Link>
                 <Link to='/support-sessions' className='nav-link link'><p className='nav-text'>My Support Sessions</p></Link>
             </div>
             <div id='bell-and-profile'>
-                <Link to='' id='bell' className='bell link'><Bell /></Link>
+                <Link to='/notifications' id='bell' className='bell link'><Bell /></Link>
+
                 <Link to='' id='profile' className='link'><img src={profilePic} /></Link>
             </div>
         </nav>

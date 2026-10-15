@@ -1,4 +1,3 @@
-/* Same box for both looks, so "Back" sits in the same place (Figma) */
 .hf-back-link {
     display: inline-flex;
     align-items: center;
