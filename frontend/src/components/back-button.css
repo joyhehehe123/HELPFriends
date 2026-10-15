@@ -24,4 +24,5 @@
 .back-button p {
     margin: 0;
     color: var(--color-tertiary);
+    font-size: var(--text-md);
 }

@@ -10,7 +10,7 @@ function SupportSessions() {
          <div className='wrapper'>
             <Link to='/support-sessions/active' className='card link' id='active-sessions'>
                <div className='title-subtitle'>
-                  <p className='title'>ACTIVE SESSIONS</p>
+                  <p className='status-title'>ACTIVE SESSIONS</p>
                   <p className='subtitle'>
                      As a Support Seeker /<br/>
                      As a Volunteer
@@ -20,7 +20,7 @@ function SupportSessions() {
             </Link>
             <Link to='/support-sessions/completed' className='card link' id='completed-sessions'>
                <div className='title-subtitle'>
-                  <p className='title'>COMPLETED SESSIONS</p>
+                  <p className='status-title'>COMPLETED SESSIONS</p>
                   <p className='subtitle'>
                      As a Support Seeker /<br/>
                      As a Volunteer
@@ -30,7 +30,7 @@ function SupportSessions() {
             </Link>
             <Link to='/support-sessions/cancelled' className='card link' id='cancelled-sessions'>
                <div className='title-subtitle'>
-                  <p className='title'>CANCELLED SESSIONS</p>
+                  <p className='status-title'>CANCELLED SESSIONS</p>
                   <p className='subtitle'>
                      As a Support Seeker /<br/>
                      As a Volunteer

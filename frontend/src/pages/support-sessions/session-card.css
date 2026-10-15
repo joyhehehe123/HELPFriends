@@ -21,7 +21,7 @@
     display: flex;
     flex-direction: row;
     gap: 20px;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
     font-family: var(--font-heading);
     font-weight: var(--weight-regular);
@@ -46,7 +46,7 @@
     border-radius: var(--radius-sm);
 }
 
-.status-cancelled {
+.cancelled-msg {
     background-color: var(--color-status-msg-negative);
 }
 
@@ -59,9 +59,11 @@
     font-size: var(--weight-regular);
 }
 
-.session-brief-details h4 {
+.support-title {
     margin: 0px;
     color: var(--color-tertiary);
+    font-size: var(--text-md);
+    font-weight: var(--weight-medium);
 }
 
 .card-buttons {
