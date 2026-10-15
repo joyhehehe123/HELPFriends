@@ -4,11 +4,12 @@ import type { SupportSession } from "../../types/supportSession";
 import type { Feedback } from "../../types/feedback";
 import { getFeedbackBySession } from "../../services/feedbackService";
 import { getUser } from "../../services/userService";
-import { Clock, CircleX, CircleCheckBig, Star } from "lucide-react";
+import { Clock, CircleX, CircleCheckBig, Star, Volleyball } from "lucide-react";
 import getStatusMessage from "./status-msg";
 import defaultProfilePic from "../../assets/hamster.jpg";
 import "./session-details-card.css"
 import Button from "../../components/Button";
+import VolunteerCard from "../../components/VolunteerCard";
 
 type Props = { session: SupportSession, role: Role, status: SessionStatus};
 
@@ -16,7 +17,10 @@ function SessionDetailsCard({ session, role, status }: Props) {
     const [feedback, setFeedback] = useState<Feedback | null>(null);
     const [otherName, setOtherName] = useState<string>();
     const [otherProfilePic, SetOtherProfilePic] = useState<string>(defaultProfilePic);
+
     const otherRole = role === "Support Seeker" ? "Volunteer" : "Support Seeker";
+    const myId = role === "Support Seeker" ? session.seekerId : session.volunteerId;
+    const cancelledBy = session.cancelledBy === myId ? "You" : `${otherName} (${otherRole})`;
 
     const sessionDate = session.dateTime.toDate();
     const timeDiff = Math.round((+sessionDate - Date.now()) / (1000 * 60));
@@ -45,6 +49,7 @@ function SessionDetailsCard({ session, role, status }: Props) {
 
     return (
         <div className="details-card">
+            {/* Card chips */}
             <div className="chips">
                 <div className="support-cat-and-role">
                     <p className="support-category">{session.category.toUpperCase()} SUPPORT</p>
@@ -67,6 +72,8 @@ function SessionDetailsCard({ session, role, status }: Props) {
                     </p>
                 </div>
             </div>
+
+            {/* Support session details with grid layout*/}
             <p className="support-title">{session.title}</p>
             <div className="grid">
                 <div className="session-details" id="session-id">
@@ -102,6 +109,7 @@ function SessionDetailsCard({ session, role, status }: Props) {
                 <p>{session.description}</p>
             </div>
 
+            {/* No feedback */}
             {(status === "Completed" && role === "Volunteer" && !feedback) && (
                 <p id="no-feedback-msg">No feedback has been provided yet.</p>
             )}
@@ -140,7 +148,24 @@ function SessionDetailsCard({ session, role, status }: Props) {
                 </div>
             )}
 
-            {/* Action Button */}
+            {/* Cancel information */}
+            {status === "Cancelled" && (
+                <div className="cancel-info">
+                    <div className="cancelled-by">
+                        <p className="element">CANCELLED BY:</p>
+                        <p>{cancelledBy}</p>
+                    </div>
+                    <div className="cancel-reason">
+                        <p className="element">REASON:</p>
+                        {session.cancelledReason 
+                            ? <p className="has-reason">{session.cancelledReason}</p>
+                            : <p className="no-reason">No cancel reason provided.</p>
+                        }
+                    </div>
+                </div>
+            )}
+
+            {/* Action Buttons */}
             {(status === "Active" && timeDiff > 0) && (timeDiff > 120
                 ? <Button size="sm" className="card-button action-button">Cancel</Button>
                 : <Button size="sm" className="card-button action-button" disabled>Cancel</Button>
@@ -153,8 +178,6 @@ function SessionDetailsCard({ session, role, status }: Props) {
                 ? <Button size="sm" className="card-button action-button">Edit Feedback</Button>
                 : <Button size="sm" className="card-button action-button">Rate</Button>
             )}
-
-
         </div>
     )
 }
