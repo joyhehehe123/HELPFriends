@@ -5,6 +5,7 @@
   --color-secondary: #37cc96;
   --color-secondary-light: #d7fff8;
   --color-tertiary: #2563eb;
+  --color-quaternary: #dff7f3;
 
   --color-gradient-horizontal: linear-gradient(to right, var(--color-primary) 0%, var(--color-secondary) 100%);
   --color-gradient-vertical: linear-gradient(to bottom, var(--color-primary) 0%, var(--color-secondary) 100%);
@@ -44,7 +45,7 @@
   --color-status-accepted: #b8e2c2;
   --color-status-pending: #f5d98b;
   --color-status-rejected: #ffcece;
-  --color-status-msg-positive: #b8e2c2;
+  --color-status-msg-positive: var(--color-quaternary);
   --color-status-msg-negative: #ffcece;
 
   /* Typography */
@@ -91,7 +92,6 @@
   flex-direction: column;
   box-sizing: border-box;
   font-family: var(--font-body);
-  font-weight: var(--weight-regular);
   font-weight: var(--weight-regular);
 }
 

@@ -6,4 +6,4 @@ export type SupportMode = 'Virtual' | 'Physical';
 export type RequestStatus = 'Pending' | 'Accepted' | 'Rejected' | 'Cancelled' | 'Scheduled';
 export type SessionStatus = 'Active' | 'Completed' | 'Cancelled';
 export type NotificationCategory = 'Support Request' | 'Support Session' | 'Feedback' | 'General';
-export type Role = 'Seeker' | 'Volunteer';
+export type Role = 'Support Seeker' | 'Volunteer';
