@@ -25,7 +25,6 @@ function ArrowIcon() {
     );
 }
 
-// Notifications list and details (Figma: Notifications, No Notification Selected)
 export default function NotificationsPage({ onViewRequest, onViewSessions }: NotificationsPageProps) {
     const currentUserId = useCurrentUserId() ?? MOCK_CURRENT_USER.userId;
     const [items, setItems] = useState<NotificationItem[]>([]);

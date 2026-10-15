@@ -11,7 +11,6 @@ interface VolunteerDetailsModalProps {
     onClose: () => void;
 }
 
-// Volunteer details popup (Figma: Volunteer Details)
 export default function VolunteerDetailsModal({ volunteer, onClose }: VolunteerDetailsModalProps) {
     const titleId = `volunteer-details-${volunteer.volunteerId}`;
 

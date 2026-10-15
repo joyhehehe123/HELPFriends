@@ -3,10 +3,9 @@ import './BackLink.css';
 interface BackLinkProps {
     onClick: () => void;
     variant?: 'plain' | 'pill';
-    label?: string; // Longer name for screen readers, e.g. "Back to support requests"
+    label?: string; // Name for screen readers
 }
 
-// "< Back" at the top of a page
 export default function BackLink({ onClick, variant = 'plain', label }: BackLinkProps) {
     return (
         <button type="button" className={`hf-back-link hf-back-link--${variant}`} onClick={onClick} aria-label={label}>

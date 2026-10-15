@@ -3,7 +3,6 @@ import { type RequestRole, type RequestStatus, type SupportRequestRecord } from 
 
 type DateView = 'sent' | 'received' | 'details';
 
-// "Pending", "Accepted", ... (colours in RequestSupportPage.css)
 export function StatusPill({ status }: { status: RequestStatus }) {
     return <span className={`status-pill status-pill--${status.toLowerCase()}`}>{status}</span>;
 }
@@ -42,7 +41,7 @@ function ResultIcon({ positive }: { positive: boolean }) {
     );
 }
 
-// Label and date for the current status, e.g. "Accepted on 11/09/2026"
+// Get the label and date of the current status
 const getStatusDate = (request: SupportRequestRecord, view: DateView): [string, Date] => {
     if (view === 'received') return ['Received', request.createdAt];
     if (request.status === 'Accepted' && request.respondedAt) return ['Accepted', request.respondedAt];
@@ -55,7 +54,7 @@ const getStatusDate = (request: SupportRequestRecord, view: DateView): [string, 
 interface StatusDateProps {
     request: SupportRequestRecord;
     view: DateView;
-    icon?: 'clock' | 'result'; // Figma: clock in lists, tick or cross on most details pages
+    icon?: 'clock' | 'result'; // Clock in lists, tick or cross in details
 }
 
 export function StatusDate({ request, view, icon = 'clock' }: StatusDateProps) {

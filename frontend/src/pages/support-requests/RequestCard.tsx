@@ -9,10 +9,9 @@ interface RequestCardProps {
     onViewDetails: (requestId: string) => void;
 }
 
-// One request in the Sent / Received list (Figma: Support Requests)
 export default function RequestCard({ request, view, onViewDetails }: RequestCardProps) {
     const titleId = `request-card-${request.requestId}`;
-    // Figma: sent requests say "To:" until the volunteer answers, then "From:"
+    // Sent requests show "To:" until the volunteer answers
     const hasAnswer = request.status !== 'Pending' && request.status !== 'Cancelled';
     const person = view === 'received'
         ? `From: ${request.seeker.fullName}`

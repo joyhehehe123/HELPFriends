@@ -1,4 +1,3 @@
-/* "match-card" because Haiqal's signup.css already uses .volunteer-card */
 .match-card {
     display: flex;
     align-items: center;
@@ -14,8 +13,8 @@
 
 .match-card__info {
     flex: 1;
-    min-width: 0; /* needed for text-overflow */
-    max-width: 545px; /* long availability ends with "..." (Figma) */
+    min-width: 0;
+    max-width: 545px;
 }
 
 .match-card__title-row {

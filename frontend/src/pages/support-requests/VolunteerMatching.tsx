@@ -21,7 +21,6 @@ interface VolunteerMatchingProps {
 
 type LoadStatus = 'loading' | 'error' | 'ready';
 
-// Volunteer matching page (Figma: Volunteer Filtering & Matching, No Results)
 export default function VolunteerMatching({ request, currentUserId, onBack, onRequestSent }: VolunteerMatchingProps) {
     const defaultFilters: VolunteerFilters = { skill: '', from: '', to: '', mode: request.supportMode };
 
@@ -60,7 +59,6 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
         setReloadCount((count) => count + 1);
     };
 
-    // SELECT sends the request straight away (Figma)
     const sendRequest = async (volunteer: VolunteerProfile) => {
         setSendingTo(volunteer.volunteerId);
         setSendError('');
@@ -83,7 +81,6 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
             <div className="request-support__body matching-body">
                 <h1 className="visually-hidden">Volunteer Matching</h1>
 
-                {/* Filters */}
                 <section className="matching-filters" aria-labelledby="filter-heading">
                     <h2 id="filter-heading" className="matching-heading">Filter Volunteers</h2>
 
@@ -122,7 +119,6 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
                     </div>
                 </section>
 
-                {/* Results */}
                 <section aria-labelledby="results-heading" aria-busy={status === 'loading'}>
                     {(status !== 'ready' || matches.length > 0) && (
                         <h2 id="results-heading" className="matching-heading matching-heading--results">

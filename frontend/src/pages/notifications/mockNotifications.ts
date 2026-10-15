@@ -2,7 +2,7 @@ import { formatClockTime, formatShortDate } from '../../utils/dateTime';
 import { daysFromToday, MOCK_CURRENT_USER } from '../support-requests/mockRequests';
 import { type NotificationItem } from './types';
 
-// Test data until Firestore is connected (Figma: Notifications)
+// Test data until Firestore is connected
 export const createMockNotifications = (): NotificationItem[] => {
     const sessionTime = daysFromToday(-1, '13:00');
     const session = `Your support session “Python Tutorial” at ${formatClockTime(sessionTime)} on ${formatShortDate(sessionTime)} with support volunteer Waka Waka`;

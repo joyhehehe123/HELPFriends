@@ -4,7 +4,7 @@ import { formatDayMonth, toDateInputValue } from '../../utils/dateTime';
 import './DateRangeSelect.css';
 
 interface DateRange {
-    from: string; // "YYYY-MM-DD"
+    from: string; // Format: "YYYY-MM-DD"
     to: string;
 }
 
@@ -21,14 +21,13 @@ function CalendarIcon() {
     );
 }
 
-// "20/10 - 29/10"
+// Show the range as "20/10 - 29/10"
 const describeRange = ({ from, to }: DateRange): string => {
     if (!from && !to) return '';
     if (!from || !to || from === to) return formatDayMonth(from || to);
     return `${formatDayMonth(from)} - ${formatDayMonth(to)}`;
 };
 
-// Availability filter (Figma: "20/10 - 29/10")
 export default function DateRangeSelect({ from, to, onChange }: DateRangeSelectProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [today] = useState(() => toDateInputValue(new Date()));

@@ -15,14 +15,14 @@
 }
 
 .app-modal::backdrop {
-    background: rgba(0, 0, 0, 0.3); /* Figma popup overlay */
+    background: rgba(0, 0, 0, 0.3);
 }
 
 .app-modal__content {
     padding: 1.5rem;
 }
 
-/* No page scroll while a modal is open */
+/* No page scroll while a popup is open */
 html:has(.app-modal[open]) {
     overflow: hidden;
 }
