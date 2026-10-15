@@ -3,7 +3,7 @@ import { Bell } from 'lucide-react';
 import profilePic from '../../assets/mrballs.jpg';
 import './navbar.css';
 
-function Navbar() {
+function AppNavbar() {
     return (
         <nav className='navbar'>
             <Link to='' className='logo link'>
@@ -24,4 +24,4 @@ function Navbar() {
     )
 }
 
-export default Navbar;
+export default AppNavbar;
