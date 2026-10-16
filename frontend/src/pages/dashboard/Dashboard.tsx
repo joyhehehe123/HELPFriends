@@ -30,10 +30,9 @@ interface DashboardData {
   requests: SupportRequest[];
 }
 
-/* ---------- Placeholder data (replace with real API data) ---------- */
 const data: DashboardData = {
-  userName: "Mr.Balls",
-  avatarUrl: "", // e.g. "/assets/mr-balls.png"
+  userName: "Lemon",
+  avatarUrl: "", 
   stats: { requests: 1, upcoming: 2, attended: 7 },
   sessions: [
     {
