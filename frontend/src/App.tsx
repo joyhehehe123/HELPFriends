@@ -1,6 +1,7 @@
 import { Routes, Route, Outlet, useNavigate } from "react-router-dom";
-import { useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { onAuthStateChange } from "./services/authService.ts";
+import { ProtectedRoute } from "./ProtectedRoute.tsx";
 import "./App.css";
 
 import Navbar from "./components/MainNavbar";
@@ -82,8 +83,14 @@ function AppShell() {
 
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChange((user) => {
+      setIsAuthenticated(!!user);
+      setIsLoading(false);
+
       if (user) {
         console.log(`Current user UID: ${user.uid}`);
         console.log(`Current user email: ${user.email}`);
@@ -114,7 +121,7 @@ function App() {
           <Route path='/profile/volunteer-profile' element={<VolunteerProfilePage />} />
         </Route>
 
-          <Route element={<AppShell />}>
+        <Route element={<ProtectedRoute  isAuthenticated={isAuthenticated} isLoading={isLoading} ><AppShell /></ProtectedRoute>}>
           <Route path="/support-sessions" element={<SupportSessionsMenu />} />
           <Route path="/support-sessions/active" element={<SupportSessions status="Active" />} /> 
           <Route path="/support-sessions/completed" element={<SupportSessions status="Completed" />} /> 
