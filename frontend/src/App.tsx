@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import "./App.css";
 
 import Navbar from "./components/MainNavbar";
-import AppNavbar from "./components/navbar/navbar";
+import AppNavbar from "./components/navbar/app-navbar.tsx";
 
 import Index from "./pages/index/index";
 import Login from './pages/auth/Login/LoginFlow.tsx';
@@ -13,10 +13,9 @@ import VolunteerProfile from './pages/profiles/VolunteerDetails.tsx';
 import Signup from './pages/auth/Signup/SignupFlow.tsx';
 import Dashboard from './pages/dashboard/Dashboard.tsx';
 
-import SupportSessionsMenu from "./pages/support-sessions/my-support-sessions";
-import SupportSessions from "./pages/support-sessions/support-sessions";
-import SessionDetails from "./pages/support-sessions/session-details";
-import { NotificationsRoute, RequestSupportRoute, SupportRequestsRoute } from './pages/support-requests/SupportRoutes';
+import SupportSessionsMenu from "./pages/support-sessions/support-sessions-menu/support-sessions-menu.tsx";
+import SupportSessions from "./pages/support-sessions/sessions-display/support-sessions.tsx";
+import SessionDetails from "./pages/support-sessions/session-details/session-details.tsx";
 
 // import SupportShell from './pages/support-requests/SupportShell'
 
@@ -110,9 +109,6 @@ function App() {
           <Route path="/support-sessions/active/:sessionId" element={<SessionDetails />} />
           <Route path="/support-sessions/completed/:sessionId" element={<SessionDetails />} /> 
           <Route path="/support-sessions/cancelled/:sessionId" element={<SessionDetails />} />
-          <Route path='/request-support' element={<RequestSupportRoute />} />
-          <Route path='/support-requests' element={<SupportRequestsRoute />} />
-          <Route path='/notifications' element={<NotificationsRoute />} />
         </Route>
       </Routes>
     </>
