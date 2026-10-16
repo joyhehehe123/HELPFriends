@@ -1,5 +1,6 @@
 import { Routes, Route, Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
+import { onAuthStateChange } from "./services/authService.ts";
 import "./App.css";
 
 import Navbar from "./components/MainNavbar";
@@ -81,6 +82,18 @@ function AppShell() {
 
 
 function App() {
+  useEffect(() => {
+    const unsubscribe = onAuthStateChange((user) => {
+      if (user) {
+        console.log(`Current user UID: ${user.uid}`);
+        console.log(`Current user email: ${user.email}`);
+      } else {
+        console.log("No user is logged in");
+      }
+    })
+    return () => unsubscribe();
+  }, [])
+
   return (
     <>
       <Routes>
