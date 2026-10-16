@@ -1,72 +1,9 @@
 import "./Dashboard.css";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AppNavbar from "../../components/AppNavbar";
-
-type Role = "student" | "volunteer";
-type Status = "active" | "pending" | "accepted" | "completed" | "cancelled" | "rejected";
-
-interface Session {
-  title: string;
-  mode: string;
-  date: string;
-  start: string;
-  end: string;
-  status: Status;
-}
-
-interface SupportRequest {
-  title: string;
-  to: string;
-  mode: string;
-  status: Status;
-}
-
-interface DashboardData {
-  userName: string;
-  avatarUrl: string;
-  stats: { requests: number; upcoming: number; attended: number };
-  sessions: Session[];
-  requests: SupportRequest[];
-}
-
-const data: DashboardData = {
-  userName: "Lemon",
-  avatarUrl: "", 
-  stats: { requests: 1, upcoming: 2, attended: 7 },
-  sessions: [
-    {
-      title: "Academic Support - Python Tutorial",
-      mode: "Virtual",
-      date: "Wed, 16/09/2026",
-      start: "1:00 PM",
-      end: "1:30 PM",
-      status: "active",
-    },
-    {
-      title: "Academic Support - Java Tutorial",
-      mode: "Virtual",
-      date: "Wed, 16/09/2026",
-      start: "3:00 PM",
-      end: "4:00 PM",
-      status: "active",
-    },
-  ],
-  requests: [
-    {
-      title: "Academic Support - Python Tutorial Continuation",
-      to: "Waka Waka",
-      mode: "Virtual",
-      status: "pending",
-    },
-    {
-      title: "Academic Support - Python Tutorial",
-      to: "Waka Waka",
-      mode: "Virtual",
-      status: "accepted",
-    },
-  ],
-};
+import { onAuthChange } from "../../services/authService";
+import { getDashboardData, type DashboardData, type DashboardRole, type DashboardStatus } from "../../services/dashboardService";
 
 function el<K extends keyof HTMLElementTagNameMap>(
   tag: K,
@@ -112,11 +49,11 @@ function createStatCard(label: string, value: number, href: string): HTMLElement
   return card;
 }
 
-function createStatusPill(status: Status): HTMLElement {
+function createStatusPill(status: DashboardStatus): HTMLElement {
   return el("span", `dash-status dash-status--${status}`, capitalise(status));
 }
 
-function createSessionItem(s: Session): HTMLElement {
+function createSessionItem(s: DashboardData["sessions"][number]): HTMLElement {
   const item = el("li", "dash-item");
 
   const body = el("div", "dash-item__body");
@@ -134,7 +71,7 @@ function createSessionItem(s: Session): HTMLElement {
   return item;
 }
 
-function createRequestItem(r: SupportRequest): HTMLElement {
+function createRequestItem(r: DashboardData["requests"][number]): HTMLElement {
   const item = el("li", "dash-item");
 
   const body = el("div", "dash-item__body");
@@ -172,12 +109,12 @@ function createPanel(
   return panel;
 }
 
-function createRoleToggle(active: Role, onChange: (role: Role) => void): HTMLElement {
+function createRoleToggle(active: DashboardRole, onChange: (role: DashboardRole) => void): HTMLElement {
   const wrap = el("div", "dash-toggle");
   wrap.setAttribute("role", "group");
   wrap.setAttribute("aria-label", "Dashboard view");
 
-  (["student", "volunteer"] as Role[]).forEach((role) => {
+  (["student", "volunteer"] as DashboardRole[]).forEach((role) => {
     const btn = el(
       "button",
       `dash-toggle__btn${role === active ? " dash-toggle__btn--active" : ""}`,
@@ -193,12 +130,17 @@ function createRoleToggle(active: Role, onChange: (role: Role) => void): HTMLEle
   return wrap;
 }
 
-function createDashboard(initialRole: Role = "student"): HTMLElement {
+function createDashboard(
+  data: DashboardData,
+  initialRole: DashboardRole,
+  onRoleChange: (role: DashboardRole) => void,
+  canVolunteer: boolean
+): HTMLElement {
   const page = el("div", "dash-page");
   const main = el("main", "dash-main");
   page.appendChild(main);
 
-  function render(role: Role) {
+  function render(role: DashboardRole) {
     main.replaceChildren();
 
     // Welcome row
@@ -208,7 +150,8 @@ function createDashboard(initialRole: Role = "student"): HTMLElement {
       el("h1", "dash-welcome__title heading", `Welcome back, ${data.userName}!`),
       el("p", "dash-welcome__subtitle heading", "Here\u2019s an overview of your HELPFriends journey.")
     );
-    welcome.append(text, createRoleToggle(role, render));
+    if (canVolunteer) welcome.append(text, createRoleToggle(role, onRoleChange));
+    else welcome.appendChild(text);
 
     // Stat cards
     const stats = el("div", "dash-stats");
@@ -242,12 +185,56 @@ const DASHBOARD_LINKS = [
 export default function Dashboard() {
   const navigate = useNavigate();
   const contentRef = useRef<HTMLDivElement>(null);
+  const [role, setRole] = useState<DashboardRole>("student");
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const dashboard = createDashboard();
+    let isCurrent = true;
+    const unsubscribe = onAuthChange((user) => {
+      if (!user) {
+        navigate("/login", { replace: true });
+        return;
+      }
+
+      setIsLoading(true);
+      setError(null);
+      void getDashboardData(
+        user.uid,
+        role,
+        user.displayName || user.email?.split("@")[0] || "User",
+        user.photoURL
+      ).then((dashboardData) => {
+        if (isCurrent) {
+          setRole(dashboardData.role);
+          setData(dashboardData);
+        }
+      }).catch((loadError: unknown) => {
+        if (isCurrent) {
+          console.error("Error loading dashboard: ", loadError);
+          setError("Unable to load your dashboard. Please try again.");
+        }
+      }).finally(() => {
+        if (isCurrent) setIsLoading(false);
+      });
+    });
+
+    return () => {
+      isCurrent = false;
+      unsubscribe();
+    };
+  }, [navigate, role]);
+
+  useEffect(() => {
+    if (!data || !contentRef.current) return;
+    const dashboard = createDashboard(data, role, (nextRole) => {
+      setData(null);
+      setRole(nextRole);
+    }, data.isVolunteer);
     contentRef.current?.replaceChildren(dashboard);
     return () => dashboard.remove();
-  }, []);
+  }, [data, role]);
 
   return (
     <div className="dash-layout">
@@ -255,11 +242,14 @@ export default function Dashboard() {
         links={DASHBOARD_LINKS}
         notificationsHref="/notifications"
         activeHref="/dashboard"
-        userName={data.userName}
-        userPhoto={data.avatarUrl || undefined}
+        userName={data?.userName || "Account"}
+        userPhoto={data?.avatarUrl || undefined}
         onNavigate={navigate}
       />
-      <div className="dash-content" ref={contentRef} />
+      <div className="dash-content" ref={contentRef} aria-live="polite">
+        {isLoading && <p className="dash-message">Loading your dashboard…</p>}
+        {!isLoading && error && <p className="dash-message dash-message--error" role="alert">{error}</p>}
+      </div>
     </div>
   );
 }

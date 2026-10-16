@@ -65,6 +65,22 @@
     cursor: default;
 }
 
+.profile-tab--logout {
+    margin-top: var(--space-4);
+}
+
+.profile-tab:disabled {
+    cursor: wait;
+    opacity: 0.7;
+}
+
+.profile-logout-error {
+    margin: 0;
+    color: #b42318;
+    font-size: var(--text-sm);
+    text-align: center;
+}
+
 /* ---------- Cards and section titles ---------- */
 
 .profile-card {
