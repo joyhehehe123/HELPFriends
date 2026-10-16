@@ -7,10 +7,10 @@
 .picker-input__field {
     box-sizing: border-box;
     width: 100%;
-    height: 64px;
-    padding: 0 64px 0 25px;
+    height: 46px;
+    padding: 0 48px 0 var(--space-3);
     border: 1px solid var(--color-border-input);
-    border-radius: 12px;
+    border-radius: var(--radius-sm);
     background: var(--color-bg-secondary);
     font: inherit;
     color: transparent;
@@ -45,8 +45,8 @@
 }
 
 .picker-input__text {
-    left: 25px;
-    right: 64px;
+    left: var(--space-3);
+    right: 48px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -58,26 +58,14 @@
 }
 
 .picker-input__icon {
-    right: 21px;
-    width: 38px;
-    height: 38px;
+    right: 14px;
+    width: 22px;
+    height: 22px;
     color: var(--color-tertiary);
 }
 
 @media (max-width: 900px) {
     .picker-input__field {
-        height: 52px;
-        padding: 0 48px 0 16px;
-    }
-
-    .picker-input__text {
-        left: 16px;
-        right: 48px;
-    }
-
-    .picker-input__icon {
-        right: 16px;
-        width: 22px;
-        height: 22px;
+        height: 42px;
     }
 }
