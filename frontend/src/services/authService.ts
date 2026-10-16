@@ -69,6 +69,6 @@ export const getCurrentUid = (): string | null => {
 
 // ─── Listen for Auth State Changes ─────────────────────────────────────────────
 
-export const onAuthChange = (callback: (user: AuthUser | null) => void): (() => void) => {
+export const onAuthStateChange = (callback: (user: AuthUser | null) => void): (() => void) => {
     return onAuthStateChanged(auth, callback);
 };
