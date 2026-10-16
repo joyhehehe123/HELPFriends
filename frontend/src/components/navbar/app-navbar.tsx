@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom';
 import { Bell } from 'lucide-react';
 import profilePic from '../../assets/mrballs.jpg';
-import './navbar.css';
+import './app-navbar.css';
 
 function AppNavbar() {
     return (
-        <nav className='navbar'>
-            <Link to='' className='logo link'>
+        <nav className='app-navbar-main'>
+            <Link to='/dashboard' className='logo link'>
                 <span id='logo-help'>HELP</span>
                 <span id='logo-friends'>Friends</span>
             </Link>
@@ -17,8 +17,7 @@ function AppNavbar() {
             </div>
             <div id='bell-and-profile'>
                 <Link to='/notifications' id='bell' className='bell link'><Bell /></Link>
-
-                <Link to='' id='profile' className='link'><img src={profilePic} /></Link>
+                <Link to='/profile' id='profile' className='link'><img src={profilePic} /></Link>
             </div>
         </nav>
     )
