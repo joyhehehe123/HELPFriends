@@ -16,6 +16,7 @@ import Dashboard from './pages/dashboard/Dashboard.tsx';
 import SupportSessionsMenu from "./pages/support-sessions/my-support-sessions";
 import SupportSessions from "./pages/support-sessions/support-sessions";
 import SessionDetails from "./pages/support-sessions/session-details";
+import { NotificationsRoute, RequestSupportRoute, SupportRequestsRoute } from './pages/support-requests/SupportRoutes';
 
 // import SupportShell from './pages/support-requests/SupportShell'
 
@@ -109,6 +110,9 @@ function App() {
           <Route path="/support-sessions/active/:sessionId" element={<SessionDetails />} />
           <Route path="/support-sessions/completed/:sessionId" element={<SessionDetails />} /> 
           <Route path="/support-sessions/cancelled/:sessionId" element={<SessionDetails />} />
+          <Route path='/request-support' element={<RequestSupportRoute />} />
+          <Route path='/support-requests' element={<SupportRequestsRoute />} />
+          <Route path='/notifications' element={<NotificationsRoute />} />
         </Route>
       </Routes>
     </>
