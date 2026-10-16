@@ -4,8 +4,9 @@
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    padding: 30px 150px;
-    background: var(--color-gradient-light);
+    padding-top: 40px;
+    padding-bottom: 40px;
+    gap: 30px;
 }
 
 .header {
@@ -17,10 +18,12 @@
     justify-content: space-between;
 }
 
-.header p {
+.header h1 {
+    font-family: var(--font-heading);
     font-size: var(--text-xl);
     font-weight: var(--weight-bold);
-    color: var(--color-tertiary)
+    color: var(--color-tertiary);
+    margin: 0px;
 }
 
 .tabs {
@@ -36,6 +39,8 @@
     border: 0px;
     background-color: #ffffff;
     color: #000000;
+    font-size: var(--text-sm);
+    font-family: var(--font-heading);
 }
 
 .active-tab {
@@ -45,5 +50,7 @@
     border: 0px;
     background-color: var(--color-tertiary);
     color: #ffffff;
+    font-size: var(--text-sm);
     font-weight: var(--weight-medium);
+    font-family: var(--font-heading);
 }

@@ -1,4 +1,6 @@
 import './signup.css';
+import '../../auth-feedback.css';
+import { createAuthFeedback, getAuthErrorMessage } from '../../auth-feedback';
 
 interface SetPasswordProps {
     onBack?: () => void;
@@ -19,7 +21,7 @@ export default function createSetPasswordStep({
             <p>Enter your password to finalize the registration</p>
         </div>
 
-        <form class="signup-form">
+        <form class="signup-form" novalidate>
             <div class="signup-field">
                 <label for="password">Enter Password</label>
                 <input id="password" type="password" autocomplete="new-password" minlength="${MIN_PASSWORD_LENGTH}" required />
@@ -47,6 +49,10 @@ export default function createSetPasswordStep({
     const confirmPasswordInput = container.querySelector<HTMLInputElement>('#confirmPassword')!;
     const submitButton = container.querySelector<HTMLButtonElement>('.signup-button')!;
     const backButton = container.querySelector<HTMLButtonElement>('.back-link')!;
+    const showFeedback = createAuthFeedback(form);
+
+    passwordInput.addEventListener('input', () => showFeedback(''));
+    confirmPasswordInput.addEventListener('input', () => showFeedback(''));
 
     backButton.addEventListener('click', () => {
         onBack?.();
@@ -61,24 +67,30 @@ export default function createSetPasswordStep({
         const confirmPassword = confirmPasswordInput.value;
 
         if (!password || !confirmPassword) {
-            alert('Please fill in both password fields.');
+            showFeedback('Please fill in both password fields.');
             return;
         }
 
         if (password.length < MIN_PASSWORD_LENGTH) {
-            alert(`Password must be at least ${MIN_PASSWORD_LENGTH} characters long.`);
+            showFeedback(`Password must be at least ${MIN_PASSWORD_LENGTH} characters long.`);
             return;
         }
 
         if (password !== confirmPassword) {
-            alert('Passwords do not match.');
+            showFeedback('Passwords do not match.');
             return;
         }
 
         submitButton.disabled = true;
         submitButton.textContent = 'Setting password...';
-        const created = await onNext(password);
-        if (created === false) {
+        try {
+            const created = await onNext(password);
+            if (created === false) {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Set Password';
+            }
+        } catch (error) {
+            showFeedback(getAuthErrorMessage(error, 'Unable to create your account.'));
             submitButton.disabled = false;
             submitButton.textContent = 'Set Password';
         }

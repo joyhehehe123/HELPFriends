@@ -1,8 +1,11 @@
 :root {
   /* Colors */
   --color-primary: #52d5ff;
+  --color-primary-light: #d0f3ff;
   --color-secondary: #37cc96;
+  --color-secondary-light: #d7fff8;
   --color-tertiary: #2563eb;
+  --color-quaternary: #dff7f3;
 
   --color-gradient-horizontal: linear-gradient(to right, var(--color-primary) 0%, var(--color-secondary) 100%);
   --color-gradient-vertical: linear-gradient(to bottom, var(--color-primary) 0%, var(--color-secondary) 100%);
@@ -42,7 +45,7 @@
   --color-status-accepted: #b8e2c2;
   --color-status-pending: #f5d98b;
   --color-status-rejected: #ffcece;
-  --color-status-msg-positive: #b8e2c2;
+  --color-status-msg-positive: var(--color-quaternary);
   --color-status-msg-negative: #ffcece;
 
   /* Typography */
@@ -72,6 +75,7 @@
 
   --shadow-card: 5px 5px 10px rgba(37, 99, 235, 0.25);
   --shadow-card-dark: 5px 5px 30px rgb(37, 99, 235, 0.5);
+  --shadow-drop: 0px 4px 20px 0px rgba(37, 99, 235, 0.25);
 }
 
 * {
@@ -89,12 +93,12 @@
   box-sizing: border-box;
   font-family: var(--font-body);
   font-weight: var(--weight-regular);
-  font-weight: var(--weight-regular);
 }
 
 body {
   margin: 0;
   min-height: 100%;
+  background: var(--color-bg-primary);
 }
 
 .heading, .logo {

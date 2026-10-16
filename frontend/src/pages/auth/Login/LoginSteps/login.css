@@ -1,44 +1,272 @@
-/* Login-specific additions. Card, input, button and link styles are shared from signup.css. */
+/* Login + 2FA styles. Self-contained: only depends on the variables in global.css.
+   Everything inside the card is scoped under .login-card so it can't clash with signup.css. */
+
+/* ---------- Page layout ---------- */
+
+.login-page {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background: var(--color-bg-secondary);
+}
+
+.login-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-5) var(--space-3);
+}
+
+/* ---------- Card ---------- */
 
 .login-card {
+    /* ~24px: the size the labels, inputs and links use in the design */
+    --login-text-lg: calc(var(--text-lg) * 1.2);
+    --login-gap-lg: 4.4rem;
+
     width: min(700px, 100%);
-}
-
-.login-button {
-    width: 11rem;
-}
-
-.forgot-link {
-    align-self: flex-start;
-    padding: 0;
-    border: none;
-    background: none;
-    font-family: var(--font-body);
-    font-size: var(--text-base);
-    font-weight: var(--weight-bold);
+    padding: 3.125rem;
+    background: var(--color-bg-primary);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    font-family: var(--font-heading);
+    font-weight: var(--weight-regular);
     color: var(--color-text-primary);
-    cursor: pointer;
-}
-
-.forgot-link:hover,
-.register-link:hover {
-    text-decoration: underline;
-}
-
-.login-register {
-    margin: var(--space-3) 0 0;
     text-align: center;
-    font-size: var(--text-base);
+}
+
+/* ---------- Headings ---------- */
+
+.login-card h2 {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-weight: var(--weight-bold);
+    font-size: calc(var(--text-xl) * 1.5);
+    line-height: 1.3;
+    color: var(--color-text-primary);
+}
+
+.login-card .login-header {
+    margin-bottom: 5.5rem;
+}
+
+.login-card .signup-header {
+    margin-bottom: var(--login-gap-lg);
+}
+
+.login-card .signup-header p {
+    max-width: 30rem;
+    margin: var(--space-2) auto 0;
+    font-size: var(--text-lg);
+    line-height: 1.6;
     color: var(--color-text-muted-default);
 }
 
-.register-link {
+/* ---------- Form + fields ---------- */
+
+.login-card .signup-form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.login-card .signup-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    text-align: left;
+}
+
+.login-card .signup-field + .signup-field {
+    margin-top: var(--space-4);
+}
+
+.login-card .signup-field label {
+    font-size: var(--login-text-lg);
+    color: var(--color-text-muted-default);
+}
+
+.login-card input {
+    width: 100%;
+    height: 3.3rem;
+    padding: 0 var(--space-3);
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-secondary);
+    font-family: var(--font-heading);
+    font-size: var(--login-text-lg);
+    font-weight: var(--weight-regular);
+    color: var(--color-text-primary);
+}
+
+.login-card input::placeholder {
+    color: var(--color-text-muted-default);
+}
+
+.login-card input:focus-visible {
+    outline: 2px solid var(--color-border-btn);
+    outline-offset: 2px;
+}
+
+/* OTP box: taller, rounder, centred text */
+.login-card .otp-input {
+    height: 4.9rem;
+    border-radius: var(--radius-md);
+    text-align: center;
+}
+
+/* ---------- Buttons ---------- */
+
+.login-card .signup-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--login-gap-lg);
+}
+
+.login-card .signup-button {
+    width: min(20rem, 100%);
+    height: 4.9rem;
+    border: none;
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-btn-primary);
+    font-family: var(--font-heading);
+    font-size: var(--login-text-lg);
+    font-weight: var(--weight-bold);
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: filter 0.15s ease;
+}
+
+.login-card .login-button {
+    width: 11rem;
+}
+
+.login-card .signup-button:hover:not(:disabled) {
+    filter: brightness(0.92);
+}
+
+.login-card .signup-button:focus-visible {
+    outline: 2px solid var(--color-border-btn);
+    outline-offset: 3px;
+}
+
+.login-card .signup-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ---------- Text-style buttons (links) ---------- */
+
+.login-card .forgot-link,
+.login-card .register-link,
+.login-card .back-link,
+.login-card .resend-link {
     padding: 0;
     border: none;
     background: none;
-    font-family: var(--font-body);
-    font-size: var(--text-base);
-    font-weight: var(--weight-bold);
+    font-family: var(--font-heading);
+    font-size: var(--login-text-lg);
     color: var(--color-text-primary);
     cursor: pointer;
+}
+
+.login-card .forgot-link,
+.login-card .register-link,
+.login-card .resend-link {
+    font-weight: var(--weight-bold);
+}
+
+.login-card .back-link {
+    font-weight: var(--weight-regular);
+}
+
+.login-card .forgot-link:hover,
+.login-card .register-link:hover,
+.login-card .back-link:hover,
+.login-card .resend-link:hover:not(:disabled) {
+    text-decoration: underline;
+}
+
+.login-card .resend-link:disabled {
+    color: var(--color-text-muted-default);
+    cursor: not-allowed;
+}
+
+/* Login page */
+.login-card .forgot-link {
+    align-self: flex-start;
+    margin-top: var(--space-1);
+}
+
+.login-card .login-register {
+    margin: var(--space-3) 0 0;
+    font-size: var(--login-text-lg);
+    color: var(--color-text-muted-default);
+}
+
+/* 2FA page */
+.login-card .signup-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-3);
+    margin-top: 1.75rem;
+    padding: 0 0.75rem;
+}
+
+.login-card .resend-text {
+    font-size: var(--login-text-lg);
+    color: var(--color-text-muted-default);
+}
+
+.login-card .back-link {
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Solid left-pointing triangle, drawn in CSS */
+.login-card .back-arrow {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-right: 0.55rem;
+    border-top: 0.45rem solid transparent;
+    border-bottom: 0.45rem solid transparent;
+    border-right: 0.8rem solid currentColor;
+}
+
+/* ---------- Small screens ---------- */
+
+@media (max-width: 600px) {
+    .login-card {
+        --login-text-lg: var(--text-md);
+        --login-gap-lg: var(--space-5);
+        padding: var(--space-5) var(--space-4);
+    }
+
+    .login-card h2 {
+        font-size: var(--text-xl);
+    }
+
+    .login-card .login-header {
+        margin-bottom: var(--space-5);
+    }
+
+    .login-card .signup-header p {
+        font-size: var(--text-md);
+    }
+
+    .login-card input,
+    .login-card .otp-input,
+    .login-card .signup-button {
+        height: 3.25rem;
+    }
+
+    .login-card .signup-links {
+        justify-content: center;
+    }
 }

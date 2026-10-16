@@ -1,11 +1,63 @@
 import './signup.css';
+import '../../auth-feedback.css';
+import { createAuthFeedback } from '../../auth-feedback';
 
 export interface SignupInfoData {
     studentId: string;
     fullName: string;
     studentEmail: string;
+    faculty: string;
+    program: string;
     volunteer: boolean;
 }
+
+const FACULTY_PROGRAMS = {
+    'Faculty of Business, Economics and Accounting (FBEA)': [
+        'Diploma in Business',
+        'Bachelor in Accounting (Honours)',
+        'Bachelor in International Business (Honours)',
+        'Bachelor of Marketing (Honours)',
+        'Bachelor of Business (Entrepreneurship) (Honours)',
+        'Bachelor of Business (Finance) (Honours)',
+        'Bachelor of Business (Human Resource Management) (Honours)',
+        'Bachelor of Business Analytics (Honours)',
+        'Bachelor of Business Psychology (Honours)',
+        'Bachelor of Economics (Honours)',
+        'Bachelor of Management (Honours)',
+    ],
+    'Faculty of Computing and Digital Technology (FCDT)': [
+        'Diploma in Information Technology',
+        'Bachelor of Information Technology (Honours)',
+        'Bachelor in Information Technology (Data Analytics) (Honours)',
+        'Bachelor of Computer Science (Honours)',
+        'Master of Data Science',
+        'Master in Artificial Intelligence',
+        'Master in Cybersecurity',
+    ],
+    'Faculty of Behavioural Sciences': [
+        'Bachelor of Psychology (Honours)',
+        'Master of Clinical Psychology',
+        'Master in Counselling',
+        'Master of Philosophy (Psychology)',
+        'Doctor of Philosophy (Psychology)',
+    ],
+    'Faculty of Communication, Media and Creative Industries': [
+        'Diploma in Communication',
+        'Bachelor of Communication (Public Relations) (Honours)',
+        'Bachelor of Communication (Marketing Communication) (Honours)',
+        'Bachelor in Communication (Media Studies) (Honours)',
+        'Master in Communication and Creative Industries',
+    ],
+    'Faculty of Law and Government': [
+        'Bachelor of Laws (Honours)',
+        'UK Degree Transfer Programme (Law)',
+        'Master of Cyber Law',
+    ],
+    'Faculty of University Foundation Studies': [
+        'Foundation in Arts',
+        'Foundation in Science',
+    ],
+} as const;
 
 interface SignupProps {
     signupInfo: SignupInfoData;
@@ -25,7 +77,7 @@ export default function createSignupStep({
             <h2>Sign Up</h2>
         </div>
 
-        <form class="signup-form">
+        <form class="signup-form" novalidate>
             <div class="signup-field">
                 <label for="studentId">Student ID</label>
                 <input id="studentId" type="text" autocomplete="off" required />
@@ -39,6 +91,21 @@ export default function createSignupStep({
             <div class="signup-field">
                 <label for="studentEmail">Student Email</label>
                 <input id="studentEmail" type="email" autocomplete="email" required />
+            </div>
+
+            <div class="signup-field">
+                <label for="faculty">Faculty</label>
+                <select id="faculty" required>
+                    <option value="" disabled>Select Faculty</option>
+                    ${Object.keys(FACULTY_PROGRAMS).map((faculty) => `<option value="${faculty}">${faculty}</option>`).join('')}
+                </select>
+            </div>
+
+            <div class="signup-field">
+                <label for="program">Program</label>
+                <select id="program" required disabled>
+                    <option value="" disabled selected>Select Program</option>
+                </select>
             </div>
 
             <label class="volunteer-card" for="volunteer">
@@ -59,35 +126,76 @@ export default function createSignupStep({
     const studentIdInput = container.querySelector<HTMLInputElement>('#studentId')!;
     const fullNameInput = container.querySelector<HTMLInputElement>('#fullName')!;
     const studentEmailInput = container.querySelector<HTMLInputElement>('#studentEmail')!;
+    const facultySelect = container.querySelector<HTMLSelectElement>('#faculty')!;
+    const programSelect = container.querySelector<HTMLSelectElement>('#program')!;
     const volunteerInput = container.querySelector<HTMLInputElement>('#volunteer')!;
     const submitButton = container.querySelector<HTMLButtonElement>('.signup-button')!;
+    const showFeedback = createAuthFeedback(form);
 
+    let currentSignupInfo = { ...signupInfo };
     studentIdInput.value = signupInfo.studentId;
     fullNameInput.value = signupInfo.fullName;
     studentEmailInput.value = signupInfo.studentEmail;
+    facultySelect.value = signupInfo.faculty;
     volunteerInput.checked = signupInfo.volunteer;
 
-    const updateSignupInfo = (field: keyof SignupInfoData, value: string | boolean) => {
-        setSignupInfo({
-            ...signupInfo,
-            [field]: value,
-        });
+    const renderPrograms = (faculty: string, selectedProgram = '') => {
+        programSelect.replaceChildren();
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = 'Select Program';
+        placeholder.disabled = true;
+        placeholder.selected = true;
+        programSelect.appendChild(placeholder);
+
+        const programs = Object.entries(FACULTY_PROGRAMS)
+            .find(([facultyName]) => facultyName === faculty)?.[1] ?? [];
+        for (const program of programs) {
+            const option = document.createElement('option');
+            option.value = program;
+            option.textContent = program;
+            programSelect.appendChild(option);
+        }
+
+        programSelect.disabled = !faculty;
+        programSelect.value = programs.some((program) => program === selectedProgram) ? selectedProgram : '';
     };
 
+    const updateSignupInfo = (updates: Partial<SignupInfoData>) => {
+        currentSignupInfo = { ...currentSignupInfo, ...updates };
+        setSignupInfo(currentSignupInfo);
+    };
+
+    renderPrograms(signupInfo.faculty, signupInfo.program);
+
     studentIdInput.addEventListener('input', (event) => {
-        updateSignupInfo('studentId', (event.target as HTMLInputElement).value);
+        showFeedback('');
+        updateSignupInfo({ studentId: (event.target as HTMLInputElement).value });
     });
 
     fullNameInput.addEventListener('input', (event) => {
-        updateSignupInfo('fullName', (event.target as HTMLInputElement).value);
+        showFeedback('');
+        updateSignupInfo({ fullName: (event.target as HTMLInputElement).value });
     });
 
     studentEmailInput.addEventListener('input', (event) => {
-        updateSignupInfo('studentEmail', (event.target as HTMLInputElement).value);
+        showFeedback('');
+        updateSignupInfo({ studentEmail: (event.target as HTMLInputElement).value });
+    });
+
+    facultySelect.addEventListener('change', () => {
+        showFeedback('');
+        renderPrograms(facultySelect.value);
+        updateSignupInfo({ faculty: facultySelect.value, program: '' });
+    });
+
+    programSelect.addEventListener('change', () => {
+        showFeedback('');
+        updateSignupInfo({ program: programSelect.value });
     });
 
     volunteerInput.addEventListener('change', (event) => {
-        updateSignupInfo('volunteer', (event.target as HTMLInputElement).checked);
+        updateSignupInfo({ volunteer: (event.target as HTMLInputElement).checked });
     });
 
     form.addEventListener('submit', async (event) => {
@@ -99,20 +207,29 @@ export default function createSignupStep({
             studentId: studentIdInput.value.trim(),
             fullName: fullNameInput.value.trim(),
             studentEmail: studentEmailInput.value.trim(),
+            faculty: facultySelect.value,
+            program: programSelect.value,
             volunteer: volunteerInput.checked,
         };
 
-        if (!currentInfo.studentId || !currentInfo.fullName || !currentInfo.studentEmail) {
-            alert('Please fill in all fields.');
+        if (
+            !currentInfo.studentId ||
+            !currentInfo.fullName ||
+            !currentInfo.studentEmail ||
+            !currentInfo.faculty ||
+            !currentInfo.program
+        ) {
+            showFeedback('Please fill in all fields.');
             return;
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(currentInfo.studentEmail)) {
-            alert('Please enter a valid email address.');
+            showFeedback('Please enter a valid email address.');
             return;
         }
 
+        currentSignupInfo = currentInfo;
         setSignupInfo(currentInfo);
         submitButton.disabled = true;
         submitButton.textContent = 'Sending code...';

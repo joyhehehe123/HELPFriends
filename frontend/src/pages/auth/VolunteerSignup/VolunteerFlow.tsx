@@ -157,11 +157,7 @@ export default function createVolunteerMultiStepForm({ initialData }: MultiStepF
                             return true;
                         } catch (error) {
                             console.error('Volunteer registration failed', error);
-                            const message = error instanceof Error
-                                ? error.message
-                                : 'The registration request failed for an unknown reason.';
-                            alert(`We could not submit your volunteer registration. ${message}`);
-                            return false;
+                            throw error;
                         }
                     },
                 }));
