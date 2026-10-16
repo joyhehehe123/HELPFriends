@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import type { SupportSession } from "../../types/supportSession";
-import type { Role, SessionStatus } from "../../types/constants";
-import { getUser } from "../../services/userService";
-import { getFeedbackBySession } from "../../services/feedbackService";
-import Button from "../../components/Button";
-import getStatusMessage from "./status-msg";
+import type { SupportSession } from "../../../types/supportSession";
+import type { Role, SessionStatus } from "../../../types/constants";
+import { getUser } from "../../../services/userService";
+import { getFeedbackBySession } from "../../../services/feedbackService";
+import Button from "../../../components/Button";
+import getStatusMessage from "../functions/status-msg";
 import { Clock, CircleCheckBig, CircleX } from "lucide-react";
-import "./session-card.css"
+import "./session-preview-card.css";
 
 type Props = { session: SupportSession, role: Role, status: SessionStatus };
 

@@ -18,7 +18,28 @@
     justify-content: space-between;
 }
 
-.header h1 {
+.status-heading {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.chevron {
+    color: var(--color-tertiary);
+}
+
+.chevron:hover {
+    opacity: 60%;
+}
+
+.chevron[aria-disabled="true"] {
+    opacity: 30%;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.status-heading > h1 {
     font-family: var(--font-heading);
     font-size: var(--text-xl);
     font-weight: var(--weight-bold);

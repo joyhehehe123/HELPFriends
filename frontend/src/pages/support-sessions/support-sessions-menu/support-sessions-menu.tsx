@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
-import './my-support-sessions.css';
-import happyCat from '../../assets/happycat.png';
-import goodCat from '../../assets/goodcat.png';
-import sadCat from '../../assets/sadcat.png';
+import './support-sessions-menu.css';
+import happyCat from '../../../assets/happycat.png';
+import goodCat from '../../../assets/goodcat.png';
+import sadCat from '../../../assets/sadcat.png';
 
 function SupportSessions() {
    return (

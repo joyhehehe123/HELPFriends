@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
-import type { Role, SessionStatus } from "../../types/constants";
-import type { SupportSession } from "../../types/supportSession";
-import type { Feedback } from "../../types/feedback";
-import { getFeedbackBySession } from "../../services/feedbackService";
-import { getUser } from "../../services/userService";
+import type { Role, SessionStatus } from "../../../types/constants";
+import type { SupportSession } from "../../../types/supportSession";
+import type { Feedback } from "../../../types/feedback";
+import { getFeedbackBySession } from "../../../services/feedbackService";
+import { getUser } from "../../../services/userService";
 import { Clock, CircleX, CircleCheckBig, Star } from "lucide-react";
-import getStatusMessage from "./status-msg";
-import defaultProfilePic from "../../assets/hamster.jpg";
+import getStatusMessage from "../functions/status-msg";
+import defaultProfilePic from "../../../assets/hamster.jpg";
 import "./session-details-card.css"
-import Button from "../../components/Button";
+import Button from "../../../components/Button";
 
 type Props = { session: SupportSession, role: Role, status: SessionStatus};
 

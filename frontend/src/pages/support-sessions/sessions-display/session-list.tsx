@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { getCurrentUid } from "../../services/authService";
-import { getSupportSessionsByStudentAndStatus } from "../../services/supportSessionService";
-import type { SupportSession } from "../../types/supportSession";
-import type { Role, SessionStatus } from "../../types/constants";
-import SessionCards from "./session-card";
-import sillycat from "../../assets/sillycat.png"
+import { getCurrentUid } from "../../../services/authService";
+import { getSupportSessionsByStudentAndStatus } from "../../../services/supportSessionService";
+import type { SupportSession } from "../../../types/supportSession";
+import type { Role, SessionStatus } from "../../../types/constants";
+import SessionCards from "./session-preview-card";
+import sillycat from "../../../assets/sillycat.png"
 import "./session-list.css"
 
 type Props = { role: Role, status: SessionStatus };
