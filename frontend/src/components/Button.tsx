@@ -6,6 +6,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     size?: 'md' | 'sm';
     shape?: 'rounded' | 'pill';
     fullWidth?: boolean;
+    upperCase?: boolean;
 }
 
 export default function Button({
@@ -13,6 +14,7 @@ export default function Button({
     size = 'md',
     shape = 'rounded',
     fullWidth = false,
+    upperCase = true,
     type = 'button', // Avoid submitting forms by accident
     className = '',
     ...props
@@ -23,6 +25,7 @@ export default function Button({
         `hf-button--${size}`,
         shape === 'pill' ? 'hf-button--pill' : '',
         fullWidth ? 'hf-button--full' : '',
+        upperCase ? 'hf-button--uppercase' : '',
         className,
     ].filter(Boolean).join(' ');
 
