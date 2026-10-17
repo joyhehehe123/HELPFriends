@@ -5,7 +5,7 @@
     align-items: center;
     justify-content: space-between;
     font-size: var(--text-md);
-    padding: 30px 50px;
+    padding: 30px;
     background-color: #ffffff;
     border: 5px solid var(--color-primary);
     border-radius: var(--radius-lg);

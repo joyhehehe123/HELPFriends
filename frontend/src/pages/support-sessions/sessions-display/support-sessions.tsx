@@ -12,6 +12,9 @@ type Props = { status: SessionStatus };
 function SupportSessions({ status }: Props) {
     const navigate = useNavigate();
 
+    const [refreshKey, setRefreshKey] = useState(0);
+    const refresh = () => setRefreshKey((k) => k + 1);
+
     const [activeTab, setActiveTab] = useState<Role>("Support Seeker");
     const [seekerSessionsCount, setSeekerSessionsCount] = useState<number>(0);
     const [volunteerSessionsCount, setVolunteerSessionsCount] = useState<number>(0);
@@ -47,7 +50,7 @@ function SupportSessions({ status }: Props) {
             }
         }
         fetchSessions();
-    }, [status])
+    }, [status, refreshKey])
 
     return (
         <section className="content">
@@ -81,7 +84,7 @@ function SupportSessions({ status }: Props) {
                 </div>
             </div>
 
-            <SessionList role={activeTab} status={status}/>
+            <SessionList role={activeTab} status={status} refreshKey={refreshKey} onUpdated={refresh}/>
         </section>
     );
 }

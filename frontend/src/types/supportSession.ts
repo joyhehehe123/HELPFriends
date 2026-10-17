@@ -17,7 +17,7 @@ export interface SupportSession {
     completedAt?: Timestamp;
     cancelledAt?: Timestamp;
     cancelledBy?: string; // UID of the student who cancelled the session
-    cancelledReason?: string;
+    cancelledReason?: string | null;
     requestId: string; // Reference to the associated SupportRequest
     seekerId: string;
     volunteerId: string;
