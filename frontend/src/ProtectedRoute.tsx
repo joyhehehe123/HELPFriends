@@ -1,4 +1,6 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import { useEffect } from "react";
+import { Navigate, Outlet } from "react-router-dom";
+import { useToast } from "./components/toast/Toast";
 
 type ProtectedRouteProps = {
     isAuthenticated: boolean;
@@ -10,9 +12,16 @@ type ProtectedRouteProps = {
 export const ProtectedRoute = ({
     isAuthenticated,
     isLoading,
-    redirectPath = '/login',
+    redirectPath = "/login",
     children,
 }: ProtectedRouteProps) => {
+    const { showToast } = useToast();
+    const blocked = !isLoading && !isAuthenticated;
+
+    useEffect(() => {
+        if (blocked) showToast('Please log in to continue');
+    }, [blocked, showToast]);
+
     if (isLoading) {
         return <p>Checking authentication...</p>;
     }
