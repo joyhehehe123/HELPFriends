@@ -1,7 +1,8 @@
 import './LoginSteps/login.css';
 import createLoginStep from './LoginSteps/login';
 import type { LoginInfoData } from './LoginSteps/login';
-import { login } from '../../../services/authService';
+import createLoginTwoFactorStep from './LoginSteps/login-2fa';
+import { login, logout } from '../../../services/authService';
 
 interface LoginFlowProps {
     initialData?: Partial<LoginInfoData>;
@@ -27,7 +28,7 @@ export default function createLoginFlow({ initialData }: LoginFlowProps = {}): H
     const content = document.createElement('main');
     content.className = 'signup-content';
 
-    const renderStep = () => {
+    const renderLoginStep = () => {
         content.replaceChildren();
         content.appendChild(createLoginStep({
             loginInfo: state.loginInfo,
@@ -38,13 +39,28 @@ export default function createLoginFlow({ initialData }: LoginFlowProps = {}): H
             onRegister: () => navigate('/signup'),
             onNext: async () => {
                 await login(state.loginInfo.email, state.loginInfo.password);
+                renderTwoFactorStep();
+                return true;
+            },
+        }));
+    };
+
+    const renderTwoFactorStep = () => {
+        content.replaceChildren();
+        content.appendChild(createLoginTwoFactorStep({
+            onBack: async () => {
+                await logout();
+                renderLoginStep();
+            },
+            onResend: async () => true,
+            onNext: async () => {
                 navigate('/dashboard');
                 return true;
             },
         }));
     };
 
-    renderStep();
+    renderLoginStep();
 
     container.append(content);
     return container;
