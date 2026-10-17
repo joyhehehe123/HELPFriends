@@ -6,6 +6,7 @@ import { getSupportSessionsByStudentAndStatus } from "../../../services/supportS
 import type { SessionStatus, Role } from "../../../types/constants";
 import SessionList from "./session-list";
 import "./support-sessions.css";
+import Button from "../../../components/Button";
 
 type Props = { status: SessionStatus };
 
@@ -75,12 +76,12 @@ function SupportSessions({ status }: Props) {
                         }} />
                 </div>
                 <div className="tabs">
-                    <button className={activeTab === "Support Seeker" ? "active-tab" : "tab"} onClick={() => setActiveTab("Support Seeker")}>
+                    <Button size="sm" upperCase={false} className={activeTab === "Support Seeker" ? "active-tab" : "tab"} onClick={() => setActiveTab("Support Seeker")}>
                         As a Support Seeker ({seekerSessionsCount})
-                    </button>
-                    <button className={activeTab === "Volunteer" ? "active-tab" : "tab"} onClick={() => setActiveTab("Volunteer")}>
+                    </Button>
+                    <Button size="sm" upperCase={false} className={activeTab === "Volunteer" ? "active-tab" : "tab"} onClick={() => setActiveTab("Volunteer")}>
                         As a Volunteer ({volunteerSessionsCount})
-                    </button>
+                    </Button>
                 </div>
             </div>
 
