@@ -3,16 +3,22 @@ import type { Role, SessionStatus } from "../../../types/constants";
 import type { SupportSession } from "../../../types/supportSession";
 import type { Feedback } from "../../../types/feedback";
 import { getFeedbackBySession } from "../../../services/feedbackService";
+import { markAsCompleted, cancelSession } from "../../../services/supportSessionService";
 import { getUser } from "../../../services/userService";
+import { useToast } from "../../../components/toast/Toast";
 import { Clock, CircleX, CircleCheckBig, Star } from "lucide-react";
+import { useConfirm } from "../../../components/confirm/confirm-context";
 import getStatusMessage from "../functions/status-msg";
 import defaultProfilePic from "../../../assets/hamster.jpg";
 import "./session-details-card.css"
 import Button from "../../../components/Button";
 
-type Props = { session: SupportSession, role: Role, status: SessionStatus};
+type Props = { session: SupportSession, role: Role, status: SessionStatus, onUpdated?: () => void };
 
-function SessionDetailsCard({ session, role, status }: Props) {
+function SessionDetailsCard({ session, role, status, onUpdated }: Props) {
+    const { showToast } = useToast();
+    const confirm = useConfirm();
+
     const [feedback, setFeedback] = useState<Feedback | null>(null);
     const [otherName, setOtherName] = useState<string>();
     const [otherProfilePic, SetOtherProfilePic] = useState<string>(defaultProfilePic);
@@ -28,8 +34,39 @@ function SessionDetailsCard({ session, role, status }: Props) {
     const day = sessionDate.toLocaleDateString("en-US", { weekday: "short" });
     const time = sessionDate.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true });
 
-    const cancelledDate = session.cancelledAt?.toDate()
-        .toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric" });
+    const cancelledAt = session.cancelledAt?.toDate();
+    const cancelledDate = cancelledAt?.toLocaleDateString("en-GB", {day: "2-digit", month: "2-digit", year: "numeric" });
+    
+    const handleCancel = async () => {
+        const { confirmed, reason } = await confirm({
+            title: `Confirm to cancel session "${session.title}"?`,
+            message: "This cannot be undone.",
+            confirmText: "Cancel session",
+            cancelText: "Keep session",
+            askReason: true
+        });
+
+        if (!confirmed) return;
+        try {
+            await cancelSession(session.uid, reason);
+            showToast("Session cancelled successfully.");
+            onUpdated?.();
+        } catch (error) {
+            showToast(error instanceof Error ? error.message : "Could not cancel the session");
+        }
+    };
+
+    const handleComplete = async () => {
+        try {
+            await markAsCompleted(session.uid);
+            showToast("Session marked as completed");
+            onUpdated?.();
+            // window.scrollTo({ top: 0, behavior: "smooth" });
+            // navigate(`/support-sessions/completed/${session.uid}`);
+        } catch (error) {
+            showToast(error instanceof Error ? error.message : "Could not complete the session");
+        }
+    };
 
     useEffect(() => {
         if (status === 'Completed') {
@@ -166,11 +203,11 @@ function SessionDetailsCard({ session, role, status }: Props) {
 
             {/* Action Buttons */}
             {(status === "Active" && timeDiff > 0) && (timeDiff > 120
-                ? <Button size="sm" className="card-button action-button">Cancel</Button>
+                ? <Button size="sm" className="card-button action-button" onClick={handleCancel}>Cancel</Button>
                 : <Button size="sm" className="card-button action-button" disabled>Cancel</Button>
             )}
             {(status === "Active" && timeDiff < 0) && (Math.abs(timeDiff) > session.duration
-                ? <Button size="sm" className="card-button action-button">Mark As Completed</Button>
+                ? <Button size="sm" className="card-button action-button" onClick={handleComplete}>Mark As Completed</Button>
                 : <Button size="sm" className="card-button action-button" disabled>Mark As Completed</Button>
             )}
             {(status === "Completed" && role === "Support Seeker") && (feedback

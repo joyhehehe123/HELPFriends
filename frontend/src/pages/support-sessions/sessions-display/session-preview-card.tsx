@@ -4,10 +4,11 @@ import type { SupportSession } from "../../../types/supportSession";
 import type { Role, SessionStatus } from "../../../types/constants";
 import { getUser } from "../../../services/userService";
 import { getFeedbackBySession } from "../../../services/feedbackService";
-import { markAsCompleted } from "../../../services/supportSessionService";
+import { markAsCompleted, cancelSession } from "../../../services/supportSessionService";
 import Button from "../../../components/Button";
 import { Clock, CircleCheckBig, CircleX } from "lucide-react";
 import { useToast } from "../../../components/toast/Toast";
+import { useConfirm } from "../../../components/confirm/confirm-context";
 import getStatusMessage from "../functions/status-msg";
 import "./session-preview-card.css";
 
@@ -15,6 +16,7 @@ type Props = { session: SupportSession, role: Role, status: SessionStatus, onUpd
 
 function SessionCards({ session, role, status, onUpdated }: Props) {
     const navigate = useNavigate();
+    const confirm = useConfirm();
     const { showToast } = useToast();
 
     const [otherName, setOtherName] = useState<string>();
@@ -34,22 +36,32 @@ function SessionCards({ session, role, status, onUpdated }: Props) {
     const myId = role === "Support Seeker" ? session.seekerId : session.volunteerId;
     const cancelledBy = session.cancelledBy === myId ? "you" : `${otherName} (${otherRole})`;
 
-    // const handleCancel = async () => {
-    //     try {
-    //         await cancelSession(session.uid, reason);      // reason from your dialog or input
-    //         showToast("Session cancelled");
-    //         onUpdated?.();                                 // the list re-fetches, and this card moves out
-    //     } catch (error) {
-    //         showToast(error instanceof Error ? error.message : "Could not cancel the session");
-    //     }
-    // };
+    const handleCancel = async () => {
+        const { confirmed, reason } = await confirm({
+            title: `Confirm to cancel session "${session.title}"?`,
+            message: "This cannot be undone.",
+            confirmText: "Cancel session",
+            cancelText: "Keep session",
+            askReason: true
+        });
+
+        if (!confirmed) return;
+        try {
+            await cancelSession(session.uid, reason);      // reason from your dialog or input
+            showToast("Session cancelled successfully.");
+            onUpdated?.();                                 // the list re-fetches, and this card moves out
+        } catch (error) {
+            showToast(error instanceof Error ? error.message : "Could not cancel the session");
+        }
+    };
 
     const handleComplete = async () => {
         try {
             await markAsCompleted(session.uid);
             showToast("Session marked as completed");
             onUpdated?.();
-            window.scrollTo({ top: 0, behavior: "smooth" });
+            // navigate(`/support-sessions/completed/${session.uid}`);
+            // window.scrollTo({ top: 0, behavior: "smooth" });
         } catch (error) {
             showToast(error instanceof Error ? error.message : "Could not complete the session");
         }
@@ -99,14 +111,16 @@ function SessionCards({ session, role, status, onUpdated }: Props) {
             </div>
             <div className="card-buttons">
                 <Button size="sm" className="card-button" 
-                    onClick={() => navigate(`/support-sessions/${status.toLowerCase()}/${session.uid}`,
-                        { state: { session, role, status } 
-                    })}
+                    onClick={() => navigate(
+                        `/support-sessions/${status.toLowerCase()}/${session.uid}`,
+                        // { state: { session, role, status } }
+                    )}
                 >
                     View Details
                 </Button>
+
                 {(status === "Active" && timeDiff > 0) && (timeDiff > 120
-                    ? <Button size="sm" className="card-button" >Cancel</Button>
+                    ? <Button size="sm" className="card-button" onClick={handleCancel}>Cancel</Button>
                     : <Button size="sm" className="card-button" disabled>Cancel</Button>
                 )}
                 {(status === "Active" && timeDiff < 0) && (Math.abs(timeDiff) > session.duration

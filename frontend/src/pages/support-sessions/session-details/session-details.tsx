@@ -1,27 +1,38 @@
-import { Timestamp } from "firebase/firestore";
-import { useLocation, Navigate, useNavigate } from "react-router-dom";
-import type { Role, SessionStatus } from "../../../types/constants";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate, Navigate } from "react-router-dom";
+import type { Role } from "../../../types/constants";
 import type { SupportSession } from "../../../types/supportSession";
+import { getSupportSession } from "../../../services/supportSessionService";
+import { getCurrentUid } from "../../../services/authService";
 import SessionDetailsCard from "./session-details-card";
-// import BackButton from "../../../components/back-button";
 import BackLink from "../../../components/BackLink";
 import "./session-details.css";
 
-type Props = { session: SupportSession, role: Role, status: SessionStatus };
-
 function SessionDetails() {
-    const { state } = useLocation();
+    const [refreshKey, setRefreshKey] = useState(0);
+    const refresh = () => setRefreshKey((k) => k + 1);
+
     const navigate = useNavigate();
-    
-    if (!state) return <Navigate to="/support-sessions" />;
-    const { session: raw, role, status } = state as Props;
-    const toTs = (t: any) => t && new Timestamp(t.seconds, t.nanoseconds);
-    const session: SupportSession = {
-        ...raw,
-        dateTime: toTs(raw.dateTime),
-        cancelledAt: toTs(raw.cancelledAt),
-        completedAt: toTs(raw.completedAt),
-    };
+    const { sessionId } = useParams();
+    const [session, setSession] = useState<SupportSession | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (!sessionId) {
+            setLoading(false);
+            return;
+        }
+        setLoading(true);
+        getSupportSession(sessionId)
+            .then(setSession)
+            .catch(console.error)
+            .finally(() => setLoading(false));
+    }, [sessionId, refreshKey]);
+
+    if (loading) return <p>Loading...</p>;
+    if (!session) return <Navigate to="/support-sessions" replace />;   // bad or missing ID
+
+    const role: Role = getCurrentUid() === session.seekerId ? "Support Seeker" : "Volunteer";
 
     return (
         <section id="session-content">
@@ -29,7 +40,7 @@ function SessionDetails() {
                 <BackLink className="back-button" onClick={() => { navigate(-1) }} />
             </div>
             <div className="card-wrapper">
-                <SessionDetailsCard key={session.uid} session={session} role={role} status={status} />
+                <SessionDetailsCard key={session.uid} session={session} role={role} status={session.status} onUpdated={refresh} />
             </div>
         </section>
     )
