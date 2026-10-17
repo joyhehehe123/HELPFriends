@@ -95,7 +95,7 @@ export default function SupportRequestsPage({
             <div className="request-support">
                 <RequestDetails
                     request={openRequest}
-                    role={openRequest.seeker.userId === currentUserId ? 'Seeker' : 'Volunteer'}
+                    role={openRequest.seeker.userId === currentUserId ? 'Support Seeker' : 'Volunteer'}
                     onBack={closeDetails}
                     backLabel="Back to support requests"
                     onChange={replaceRequest}

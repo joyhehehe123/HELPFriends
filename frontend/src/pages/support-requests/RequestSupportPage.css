@@ -155,3 +155,104 @@
         height: 20px;
     }
 }
+/* global.css style */
+.request-support--flow {
+    padding-bottom: var(--space-5);
+    font-family: inherit;
+    font-size: var(--text-md);
+}
+
+.request-support--flow .request-support__body {
+    width: min(100% - 2 * var(--space-5), 1000px);
+}
+
+.request-support--flow .page-top {
+    gap: var(--space-3) var(--space-4);
+    padding: 20px 50px 0;
+}
+
+.request-support--flow .category-chip {
+    height: auto;
+    padding: 8px 20px;
+    font-family: var(--font-heading);
+    font-size: var(--text-md);
+    font-weight: var(--weight-regular);
+}
+
+.request-support--flow .hf-button {
+    border-radius: var(--radius-sm);
+    font-size: var(--text-md);
+    font-weight: var(--weight-regular);
+}
+
+.request-support--flow .hf-button--md {
+    height: 46px;
+    padding: 0 var(--space-5);
+}
+
+.request-support--flow .hf-button--pill {
+    border-radius: 999px;
+}
+
+.request-support--flow .hf-back-link {
+    gap: var(--space-2);
+    height: auto;
+    padding: 5px 20px 5px 10px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: var(--text-md);
+}
+
+.request-support--flow .hf-back-link:hover {
+    background: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+}
+
+.request-support--flow .user-avatar--lg {
+    width: 56px;
+    height: 56px;
+    font-size: var(--text-lg);
+}
+
+.request-support--flow .user-avatar--xl {
+    width: 72px;
+    height: 72px;
+    font-size: var(--text-xl);
+}
+
+@media (max-width: 900px) {
+    .request-support--flow .request-support__body {
+        width: auto;
+    }
+
+    .request-support--flow .page-top {
+        gap: var(--space-2) var(--space-3);
+        padding: var(--space-3) var(--space-3) 0;
+    }
+
+    .request-support--flow .category-chip {
+        padding: 6px 14px;
+        font-size: var(--text-sm);
+    }
+
+    .request-support--flow .hf-button {
+        font-size: var(--text-sm);
+    }
+
+    .request-support--flow .hf-button--md {
+        height: 40px;
+        padding: 0 var(--space-4);
+    }
+
+    .request-support--flow .user-avatar--lg {
+        width: 48px;
+        height: 48px;
+        font-size: var(--text-md);
+    }
+
+    .request-support--flow .user-avatar--xl {
+        width: 56px;
+        height: 56px;
+        font-size: var(--text-lg);
+    }
+}

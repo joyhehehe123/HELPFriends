@@ -61,7 +61,7 @@ export default function RequestDetails({
     const titleId = `request-${request.requestId}-title`;
     const otherPerson = role === 'Volunteer' ? request.seeker : request.volunteer;
     // The seeker's own pending request has a different layout
-    const isSentLayout = role === 'Seeker' && request.status === 'Pending';
+    const isSentLayout = role === 'Support Seeker' && request.status === 'Pending';
     const firstSlot = request.proposedTimeSlots[0];
 
     const runAction = async (action: RequestAction) => {

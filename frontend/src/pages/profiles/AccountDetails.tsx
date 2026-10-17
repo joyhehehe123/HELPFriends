@@ -1,7 +1,7 @@
 import './profile.css';
 import createProfileLayout from './ProfileLayout';
 import { profileStore, escapeHtml } from './ProfileData';
-import { onAuthChange } from '../../services/authService';
+import { onAuthStateChange } from '../../services/authService';
 import { getUser } from '../../services/userService';
 
 const MAX_AVATAR_BYTES = 5 * 1024 * 1024;
@@ -89,7 +89,7 @@ export default function createAccountDetailsPage({ navigate }: AccountDetailsPro
     const facultyValue = content.querySelector<HTMLElement>('.profile-faculty')!;
     const programValue = content.querySelector<HTMLElement>('.profile-program')!;
 
-    const stopAuthListener = onAuthChange((authUser) => {
+    const stopAuthListener = onAuthStateChange((authUser) => {
         stopAuthListener();
         if (!authUser) return;
 
