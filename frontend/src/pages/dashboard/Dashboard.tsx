@@ -2,7 +2,7 @@ import "./Dashboard.css";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AppNavbar from "../../components/AppNavbar";
-import { onAuthChange } from "../../services/authService";
+import { onAuthStateChange } from "../../services/authService";
 import { getDashboardData, type DashboardData, type DashboardRole, type DashboardStatus } from "../../services/dashboardService";
 
 function el<K extends keyof HTMLElementTagNameMap>(
@@ -192,7 +192,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     let isCurrent = true;
-    const unsubscribe = onAuthChange((user) => {
+    const unsubscribe = onAuthStateChange((user) => {
       if (!user) {
         navigate("/login", { replace: true });
         return;
