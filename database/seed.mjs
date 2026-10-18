@@ -21,7 +21,7 @@ const users = [
         faculty: "Faculty of Computing and Digital Technology",
         program: "Bachelor of Computer Science (Honours)",
         bio: "I love hamster",
-        profilePic: null
+        profilePic: "profilePics/pfpcat.jpg"
     },
     {
         email: "B2400423@helplive.edu.my",
@@ -31,7 +31,7 @@ const users = [
         faculty: "Faculty of Computing and Digital Technology",
         program: "Bachelor of Information Technology (Honours)",
         bio: null,
-        profilePic: null
+        profilePic: "profilePics/Goat.jpg"
     },
     {
         email: "B2300490@helplive.edu.my",
@@ -41,7 +41,7 @@ const users = [
         faculty: "Faculty of Computing and Digital Technology",
         program: "Bachelor of Information Technology (Honours)",
         bio: "I love donuts",
-        profilePic: null
+        profilePic: "profilePics/Freaky_Nikki.jpg"
     },
     {
         email: "B2401344@helplive.edu.my",
@@ -51,7 +51,7 @@ const users = [
         faculty: "Faculty of Computing and Digital Technology",
         program: "Bachelor of Computer Science (Honours)",
         bio: "I love sushi",
-        profilePic: null
+        profilePic: "profilePics/chiikabu.png"
     },
     {
         email: "B2401411@helplive.edu.my",
@@ -61,7 +61,7 @@ const users = [
         faculty: "Faculty of Computing and Digital Technology",
         program: "Bachelor of Information Technology in Data Analytics (Honours)",
         bio: "I love winston",
-        profilePic: null
+        profilePic: "profilePics/Bob.jpg"
     }
 ]
 
