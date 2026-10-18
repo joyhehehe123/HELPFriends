@@ -3,7 +3,7 @@ import '../../auth-feedback.css';
 import { createAuthFeedback } from '../../auth-feedback';
 
 interface LoginTwoFactorProps {
-    onBack?: () => void;
+    onBack?: () => void | Promise<void>;
     onResend: () => Promise<boolean>;
     onNext: (otp: string) => void | Promise<boolean>;
 }
@@ -77,12 +77,17 @@ export default function createLoginTwoFactorStep({
         }, 1000);
     };
 
-    // A code was just sent when the previous step finished, so start on cooldown.
     startCooldown();
 
-    backButton.addEventListener('click', () => {
+    backButton.addEventListener('click', async () => {
         window.clearInterval(cooldownTimer);
-        onBack?.();
+        backButton.disabled = true;
+        try {
+            await onBack?.();
+        } catch (error) {
+            showFeedback(error instanceof Error ? error.message : 'Unable to return to login.');
+            backButton.disabled = false;
+        }
     });
 
     resendButton.addEventListener('click', async () => {
@@ -119,6 +124,9 @@ export default function createLoginTwoFactorStep({
         submitButton.textContent = 'Verifying...';
         try {
             const verified = await onNext(otp);
+            if (verified) {
+                window.clearInterval(cooldownTimer);
+            }
             if (verified === false) {
                 submitButton.disabled = false;
                 submitButton.textContent = 'Verify';

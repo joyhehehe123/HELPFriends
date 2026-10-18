@@ -139,6 +139,23 @@ const requests = [
     {
         uid: "R1001",
         category: "Academic",
+        title: "Mobile Apps Tutorial",
+        description: "Want to learn mobile apps",
+        supportMode: "Physical",
+        proposedTimeSlots: [
+            ts("2026-10-02T14:00:00+08:00"),
+            ts("2026-10-02T15:00:00+08:00")
+        ],
+        status: "Scheduled",
+        createdAt: ts("2026-10-01T09:00:00+08:00"),
+        respondedAt: ts("2026-10-01T10:30:00+08:00"),
+        scheduledAt: ts("2026-10-02T14:00:00+08:00"),
+        seekerName: "Joy Lau Xuan",
+        volunteerName: "Adrinn Awi Goo"
+    },
+    {
+        uid: "R1002",
+        category: "Academic",
         title: "Algebra Revision",
         description: "I would like help revising algebra and solving practice questions.",
         supportMode: "Virtual",
@@ -154,7 +171,7 @@ const requests = [
         volunteerName: "Joy Lau Xuan"
     },
     {
-        uid: "R1002",
+        uid: "R1003",
         category: "Academic",
         title: "Introduction to Programming",
         description: "I need help understanding basic programming concepts and writing simple programs.",
@@ -171,7 +188,7 @@ const requests = [
         volunteerName: "Joy Lau Xuan"
     },
     {
-        uid: "R1003",
+        uid: "R1004",
         category: "Academic",
         title: "Assignment Guidance",
         description: "Idk what I shud do for this assignment... my brain is empty",
@@ -188,7 +205,7 @@ const requests = [
         volunteerName: "Joy Lau Xuan"
     },
     {
-        uid: "R1004",
+        uid: "R1005",
         category: "Technology",
         title: "Git and GitHub Setup",
         description: "I need help setting up Git and GitHub for my programming projects.",
@@ -205,7 +222,7 @@ const requests = [
         volunteerName: "Joy Lau Xuan"
     },
     {
-        uid: "R1005",
+        uid: "R1006",
         category: "Academic",
         title: "Math Tutorial",
         description: "I need help with this algebra thingy",
@@ -222,7 +239,7 @@ const requests = [
         volunteerName: "Sophea Natasha"
     },
     {
-        uid: "R1006",
+        uid: "R1007",
         category: "General Student",
         title: "Managing Study Stress",
         description: "I would like someone to talk to about managing university workload and study stress.",
@@ -239,7 +256,7 @@ const requests = [
         volunteerName: "Joy Lau Xuan"
     },
     {
-        uid: "R1007",
+        uid: "R1008",
         category: "New Student",
         title: "Getting Used to University Life",
         description: "I would appreciate advice on adapting to university life and managing my timetable.",
@@ -256,7 +273,7 @@ const requests = [
         volunteerName: "Joy Lau Xuan"
     },
     {
-        uid: "R1008",
+        uid: "R1009",
         category: "Technology",
         title: "Troubleshooting Development Tools",
         description: "I need help resolving issues with my programming development tools.",
@@ -273,7 +290,7 @@ const requests = [
         volunteerName: "Joy Lau Xuan"
     },
     {
-        uid: "R1009",
+        uid: "R1010",
         category: "Technology",
         title: "Github Installation",
         description: "I have some issues when installing GitHub",
@@ -289,7 +306,7 @@ const requests = [
         volunteerName: "Adrinn Awi Goo"
     },
     {
-        uid: "R1010",
+        uid: "R1011",
         category: "Academic",
         title: "Python Programming Tutorial",
         description: "I need help with this Python class thingy",
@@ -304,7 +321,7 @@ const requests = [
         volunteerName: "Joy Lau Xuan"
     },
     {
-        uid: "R1011",
+        uid: "R1012",
         category: "Technology",
         title: "Delta Force Installation",
         description: "Can u help me to install delta force...hehe..hehe..hehe..",
@@ -319,12 +336,44 @@ const requests = [
         cancelledReason: "Well... ik she would reject this stupid request so i reject myself first heheheheh",
         seekerName: "Kim Ga-In",
         volunteerName: "Adrinn Awi Goo"
+    },
+    {
+        uid: "R1013",
+        category: "Academic",
+        title: "Mobile Apps Tutorial Continuation",
+        description: "Want to continue learning mobile apps.",
+        supportMode: "Physical",
+        proposedTimeSlots: [
+            ts("2026-10-30T14:00:00+08:00"),
+            ts("2026-10-30T15:00:00+08:00"),
+            ts("2026-10-30T16:00:00+08:00")
+        ],
+        status: "Scheduled",
+        createdAt: ts("2026-10-18T15:00:00+08:00"),
+        respondedAt: ts("2026-10-18T16:00:00+08:00"),
+        scheduledAt: ts("2026-10-30T15:00:00+08:00"),
+        seekerName: "Joy Lau Xuan",
+        volunteerName: "Adrinn Awi Goo"
     }
 ];
 
 const sessions = [
     {
         uid: "S1001",
+        category: "Academic",
+        title: "Mobile Apps Tutorial",
+        description: "Want to learn mobile apps",
+        supportMode: "Physical",
+        dateTime: ts("2026-10-02T14:00:00+08:00"),
+        duration: 60,
+        status: "Completed",
+        completedAt: ts("2026-10-02T15:30:00+08:00"),
+        requestId: "R1001",
+        seekerName: "Joy Lau Xuan",
+        volunteerName: "Adrinn Awi Goo"
+    },
+    {
+        uid: "S1002",
         category: "Academic",
         title: "Algebra Revision",
         description: "Revision of algebra concepts and practice questions.",
@@ -333,12 +382,12 @@ const sessions = [
         duration: 60,
         status: "Completed",
         completedAt: ts("2026-10-09T11:00:00+08:00"),
-        requestId: "R1001",
+        requestId: "R1002",
         seekerName: "Kim Ga-In",
         volunteerName: "Joy Lau Xuan"
     },
     {
-        uid: "S1002",
+        uid: "S1003",
         category: "Academic",
         title: "Introduction to Programming",
         description: "Help with basic programming concepts and simple programs.",
@@ -347,12 +396,12 @@ const sessions = [
         duration: 60,
         status: "Completed",
         completedAt: ts("2026-10-09T14:00:00+08:00"),
-        requestId: "R1002",
+        requestId: "R1003",
         seekerName: "Kim Ga-In",
         volunteerName: "Joy Lau Xuan"
     },
     {
-        uid: "S1003",
+        uid: "S1004",
         category: "Technology",
         title: "Git and GitHub Setup",
         description: "Help with setting up Git and GitHub for programming projects.",
@@ -360,12 +409,12 @@ const sessions = [
         dateTime: minutesFromNow(80), // ts("2026-10-16T14:00:00+08:00"),
         duration: 60,
         status: "Active",
-        requestId: "R1004",
+        requestId: "R1005",
         seekerName: "Puteri Aisyah",
         volunteerName: "Joy Lau Xuan"
     },
     {
-        uid: "S1004",
+        uid: "S1005",
         category: "General Student",
         title: "Managing Study Stress",
         description: "Discuss strategies for managing university workload and study stress.",
@@ -373,12 +422,12 @@ const sessions = [
         dateTime: minutesFromNow(300), // ts("2026-10-19T12:00:00+08:00"),
         duration: 60,
         status: "Active",
-        requestId: "R1006",
+        requestId: "R1007",
         seekerName: "Adrinn Awi Goo",
         volunteerName: "Joy Lau Xuan"
     },
     {
-        uid: "S1005",
+        uid: "S1006",
         category: "New Student",
         title: "Getting Used to University Life",
         description: "Advice on adapting to university life and managing a timetable.",
@@ -386,12 +435,12 @@ const sessions = [
         dateTime: minutesFromNow(-50), // ts("2026-10-19T14:00:00+08:00"),
         duration: 60,
         status: "Active",
-        requestId: "R1007",
+        requestId: "R1008",
         seekerName: "Puteri Aisyah",
         volunteerName: "Joy Lau Xuan"
     },
     {
-        uid: "S1006",
+        uid: "S1007",
         category: "Technology",
         title: "Troubleshooting Development Tools",
         description: "Help with resolving programming development tool issues.",
@@ -402,12 +451,12 @@ const sessions = [
         cancelledAt: ts("2026-10-12T03:30:00+08:00"),
         cancelledBy: "Joy Lau Xuan",
         cancelledReason: "The volunteer is unavailable at the scheduled time.",
-        requestId: "R1008",
+        requestId: "R1009",
         seekerName: "Kim Ga-In",
         volunteerName: "Joy Lau Xuan"
     },
     {
-        uid: "S1007",
+        uid: "S1008",
         category: "Academic",
         title: "Assignment Guidance",
         description: "Idk what I shud do for this assignment... my brain is empty",
@@ -415,10 +464,23 @@ const sessions = [
         dateTime: minutesFromNow(-100), // ts("2026-10-23T15:00:00+08:00"),
         duration: 60,
         status: "Active",
-        requestId: "R1003",
+        requestId: "R1004",
         seekerName: "Kim Ga-In",
         volunteerName: "Joy Lau Xuan"
     },
+    {
+        uid: "S1009",
+        category: "Academic",
+        title: "Mobile Apps Tutorial Continuation",
+        description: "Want to continue learning mobile apps.",
+        supportMode: "Physical",
+        dateTime: ts("2026-10-30T15:00:00+08:00"),
+        duration: 60,
+        status: "Active",
+        requestId: "R1013",
+        seekerName: "Joy Lau Xuan",
+        volunteerName: "Adrinn Awi Goo"
+    }
 ];
 
 const feedbacks = [
@@ -426,7 +488,7 @@ const feedbacks = [
         uid: "F1001",
         rating: 5,
         comments: "The session was supoer helpfulll",
-        sessionId: "S1001"
+        sessionId: "S1002"
     }
 ];
 

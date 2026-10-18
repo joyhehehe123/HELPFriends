@@ -50,7 +50,7 @@ export default function Navbar({
     currentPath,
     hide = [],
     user,
-    homeHref = '/',
+    homeHref = '/dashboard',
     loginHref = '/login',
     signUpHref = '/signup',
     profileHref = '/profile',

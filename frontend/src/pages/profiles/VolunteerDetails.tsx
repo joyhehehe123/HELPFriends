@@ -1,4 +1,4 @@
-import './profile.css';
+import './Profile.css';
 import createProfileLayout from './ProfileLayout';
 import { DAYS, profileStore, escapeHtml } from './ProfileData';
 import type { DayKey, SupportMode, VolunteerData } from './ProfileData';
