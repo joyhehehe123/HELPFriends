@@ -1,4 +1,4 @@
-import { Routes, Route, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Routes, Route, Outlet, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { onAuthStateChange } from "./services/authService.ts";
 import { ProtectedRoute } from "./ProtectedRoute.tsx";
