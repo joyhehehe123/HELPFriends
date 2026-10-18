@@ -1,4 +1,4 @@
-import { Routes, Route, Outlet, useNavigate } from "react-router-dom";
+import { Routes, Route, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { onAuthStateChange } from "./services/authService.ts";
 import { ProtectedRoute } from "./ProtectedRoute.tsx";
@@ -6,7 +6,8 @@ import { ToastProvider } from "./components/toast/Toast.tsx";
 import "./App.css";
 
 import Navbar from "./components/MainNavbar";
-import AppNavbar from "./components/AppNavbar";
+// import AppNavbar from "./components/Navbar";
+import AppNavbar from "./components/navbar/app-navbar";
 
 import Index from "./pages/index/index";
 import Login from './pages/auth/Login/LoginFlow.tsx';
@@ -73,6 +74,15 @@ function LoginShell() {
   return (
     <>
       <Navbar />
+      <Outlet />
+    </>
+  )
+}
+
+function AppShell() {
+  return (
+    <>
+      <AppNavbar />
       <Outlet />
     </>
   )
@@ -147,11 +157,10 @@ function App() {
             </Route>
 
             <Route element={<ProtectedRoute  isAuthenticated={isAuthenticated} isLoading={isLoading} />}>
-              <Route path='/dashboard' element={<Dashboard />} />
-              <Route path='/profile' element={<ProfilePage />} />
-              <Route path='/profile/volunteer-profile' element={<VolunteerProfilePage />} />
-
-              <Route element={<SupportRoutesShell />}>
+              <Route element={<AppShell />}>
+                <Route path='/dashboard' element={<Dashboard />} />
+                <Route path='/profile' element={<ProfilePage />} />
+                <Route path='/profile/volunteer-profile' element={<VolunteerProfilePage />} />
                 <Route path="/support-sessions" element={<SupportSessionsMenu />} />
                 <Route path="/support-sessions/active" element={<SupportSessions status="Active" />} /> 
                 <Route path="/support-sessions/completed" element={<SupportSessions status="Completed" />} /> 

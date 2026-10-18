@@ -14,6 +14,10 @@ function AppNavbar() {
             </Link>
             <div id="nav-links">
                 <Link 
+                    to="/dashboard" 
+                    className={`nav-link link ${pathname.startsWith("/dashboard") ? "active-nav-link" : ""}`} 
+                ><p>Dashboard</p></Link>
+                <Link 
                     to="/request-support" 
                     className={`nav-link link ${pathname.startsWith("/request-support") ? "active-nav-link" : ""}`} 
                 ><p>Request a Support</p></Link>
