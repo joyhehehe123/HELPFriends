@@ -7,7 +7,6 @@ import { ConfirmProvider } from "./components/confirm/confirm-context.tsx";
 import "./App.css";
 
 import Navbar from "./components/MainNavbar";
-// import AppNavbar from "./components/Navbar";
 import AppNavbar from "./components/navbar/app-navbar";
 
 import Index from "./pages/index/index";
@@ -87,37 +86,6 @@ function AppShell() {
     </>
   )
 }
-
-// const SUPPORT_NAV_LINKS = [
-//   { label: "Dashboard", href: "/dashboard" },
-//   { label: "Request a Support", href: "/support-request-form" },
-//   { label: "Support Requests", href: "/support-requests" },
-//   { label: "Support Sessions", href: "/support-sessions" },
-// ];
-
-// function SupportRoutesShell() {
-//   const navigate = useNavigate();
-//   const { pathname } = useLocation();
-
-//   return (
-//     <>
-//       <AppNavbar
-//         links={SUPPORT_NAV_LINKS}
-//         notificationsHref="/notifications"
-//         activeHref={
-//           pathname.startsWith("/support-sessions")
-//             ? "/support-sessions"
-//             : pathname === "/request-support"
-//               ? "/support-request-form"
-//               : pathname
-//         }
-//         userName="Mr.Balls"
-//         onNavigate={navigate}
-//       />
-//       <Outlet />
-//     </>
-//   )
-// }
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
