@@ -21,6 +21,10 @@ import SupportSessionsMenu from "./pages/support-sessions/support-sessions-menu/
 import SupportSessions from "./pages/support-sessions/sessions-display/support-sessions.tsx";
 import SessionDetails from "./pages/support-sessions/session-details/session-details.tsx";
 import { ConfirmProvider } from "./components/confirm/confirm-context.tsx";
+
+import SupportRequestForm from "./pages/support-requests/SupportRequestForm.tsx";
+import SupportRequestsPage from "./pages/support-requests/SupportRequestsPage.tsx";
+
 // import SupportShell from './pages/support-requests/SupportShell'
 import {
   NotificationsRoute,
@@ -161,6 +165,11 @@ function App() {
                 <Route path='/dashboard' element={<Dashboard />} />
                 <Route path='/profile' element={<ProfilePage />} />
                 <Route path='/profile/volunteer-profile' element={<VolunteerProfilePage />} />
+
+                <Route path='/support-request-form' element={<RequestSupportRoute/>} />
+                <Route path='/support-requests' element={<SupportRequestsRoute />} />
+                <Route path='/notifications' element={<NotificationsRoute />} />
+
                 <Route path="/support-sessions" element={<SupportSessionsMenu />} />
                 <Route path="/support-sessions/active" element={<SupportSessions status="Active" />} /> 
                 <Route path="/support-sessions/completed" element={<SupportSessions status="Completed" />} /> 
