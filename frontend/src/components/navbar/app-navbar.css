@@ -44,8 +44,15 @@
 .nav-link {
     display: flex;
     align-items: center;
+    border-radius: var(--radius-sm);
+}
+
+.nav-link > p {
+    display: flex;
+    align-items: center;
     padding-left: 20px;
     padding-right: 20px;
+    color: transparent;
     border-radius: var(--radius-sm);
     color: var(--color-text-secondary);
     font-weight: var(--weight-medium);
@@ -53,15 +60,29 @@
 }
 
 .nav-link:hover {
-    background-color: rgba(255, 255, 255, 50%);
+    background-color: rgba(255, 255, 255, 0.5);
     transform: translateY(-1px);
-    /* color: var(--color-tertiary); */
 }
 
 .nav-link:active {
-    background-color: rgba(255, 255, 255, 50%);
+    background-color: rgba(255, 255, 255, 70%);
     color: var(--color-tertiary);
+    font-weight: var(--weight-bold);
     transform: scale(0.95);
+}
+
+.active-nav-link {
+    background-color: rgba(255, 255, 255, 75%);
+}
+
+.active-nav-link > P {
+    /* background-color: rgba(255, 255, 255, 50%);
+    color: var(--color-tertiary); */
+    font-weight: var(--weight-bold);
+    background: var(--color-gradient-horizontal);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 #bell-and-profile {

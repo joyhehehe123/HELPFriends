@@ -1,6 +1,6 @@
 .toast {
     position: fixed;
-    top: 20px;
+    top: 100px;
     left: 50%;
     transform: translate(-50%, -150%);   /* parked above the screen */
     opacity: 0;

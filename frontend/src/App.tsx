@@ -16,9 +16,11 @@ import VolunteerProfile from './pages/profiles/VolunteerDetails.tsx';
 import Signup from './pages/auth/Signup/SignupFlow.tsx';
 import Dashboard from './pages/dashboard/Dashboard.tsx';
 
-import SupportSessionsMenu from "./pages/support-sessions/my-support-sessions";
-import SupportSessions from "./pages/support-sessions/support-sessions";
-import SessionDetails from "./pages/support-sessions/session-details";
+import SupportSessionsMenu from "./pages/support-sessions/support-sessions-menu/support-sessions-menu.tsx";
+import SupportSessions from "./pages/support-sessions/sessions-display/support-sessions.tsx";
+import SessionDetails from "./pages/support-sessions/session-details/session-details.tsx";
+import { ConfirmProvider } from "./components/confirm/confirm-context.tsx";
+// import SupportShell from './pages/support-requests/SupportShell'
 import {
   NotificationsRoute,
   RequestSupportRoute,
@@ -107,7 +109,6 @@ function SupportRoutesShell() {
   )
 }
 
-
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -130,36 +131,38 @@ function App() {
   return (
     <>
       <ToastProvider>
-        <Routes>
+        <ConfirmProvider>
+          <Routes>
 
-          {/* <Route path='/support-request-form' element={<SupportShell />} />
-          <Route path='/support-requests' element={<SupportShell />} />
-          <Route path='/support-sessions' element={<SupportShell />} />
-          <Route path='/notifications' element={<SupportShell />} /> */}
+            {/* <Route path='/support-request-form' element={<SupportShell />} />
+            <Route path='/support-requests' element={<SupportShell />} />
+            <Route path='/support-sessions' element={<SupportShell />} />
+            <Route path='/notifications' element={<SupportShell />} /> */}
 
-          <Route element={<LoginShell />}>
-            <Route path='/' element={<Index />} />
-            <Route path='/signup' element={<SignupPage />} />
-            <Route path='/login' element={<LoginPage />} />
-            <Route path='/reset-password' element={<ResetPasswordPage />} />
-          </Route>
-
-          <Route element={<ProtectedRoute  isAuthenticated={isAuthenticated} isLoading={isLoading} />}>
-            <Route path='/dashboard' element={<Dashboard />} />
-            <Route path='/profile' element={<ProfilePage />} />
-            <Route path='/profile/volunteer-profile' element={<VolunteerProfilePage />} />
-
-            <Route element={<AppShell />}>
-              <Route path="/support-sessions" element={<SupportSessionsMenu />} />
-              <Route path="/support-sessions/active" element={<SupportSessions status="Active" />} /> 
-              <Route path="/support-sessions/completed" element={<SupportSessions status="Completed" />} /> 
-              <Route path="/support-sessions/cancelled" element={<SupportSessions status="Cancelled" />} />
-              <Route path="/support-sessions/active/:sessionId" element={<SessionDetails />} />
-              <Route path="/support-sessions/completed/:sessionId" element={<SessionDetails />} /> 
-              <Route path="/support-sessions/cancelled/:sessionId" element={<SessionDetails />} />
+            <Route element={<LoginShell />}>
+              <Route path='/' element={<Index />} />
+              <Route path='/signup' element={<SignupPage />} />
+              <Route path='/login' element={<LoginPage />} />
+              <Route path='/reset-password' element={<ResetPasswordPage />} />
             </Route>
-          </Route>
-        </Routes>
+
+            <Route element={<ProtectedRoute  isAuthenticated={isAuthenticated} isLoading={isLoading} />}>
+              <Route path='/dashboard' element={<Dashboard />} />
+              <Route path='/profile' element={<ProfilePage />} />
+              <Route path='/profile/volunteer-profile' element={<VolunteerProfilePage />} />
+
+              <Route element={<SupportRoutesShell />}>
+                <Route path="/support-sessions" element={<SupportSessionsMenu />} />
+                <Route path="/support-sessions/active" element={<SupportSessions status="Active" />} /> 
+                <Route path="/support-sessions/completed" element={<SupportSessions status="Completed" />} /> 
+                <Route path="/support-sessions/cancelled" element={<SupportSessions status="Cancelled" />} />
+                <Route path="/support-sessions/active/:sessionId" element={<SessionDetails />} />
+                <Route path="/support-sessions/completed/:sessionId" element={<SessionDetails />} /> 
+                <Route path="/support-sessions/cancelled/:sessionId" element={<SessionDetails />} />
+              </Route>
+            </Route>
+          </Routes>
+        </ConfirmProvider>
       </ToastProvider>
     </>
   )
