@@ -1,8 +1,14 @@
+.details-card-wrapper {
+    background: var(--color-gradient-vertical);
+    border-radius: var(--radius-lg);
+    padding: 5px;
+}
+
 .details-card {
     padding: 30px;
     background-color: #ffffff;
-    border-radius: var(--radius-lg);
-    border: 5px solid var(--color-primary);
+    border-radius: calc(var(--radius-lg) - 5px);
+    border: 5px solid transparent;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;

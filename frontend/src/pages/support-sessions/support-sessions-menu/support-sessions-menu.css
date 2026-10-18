@@ -18,12 +18,26 @@
     align-items: center;
     justify-content: center;
     gap: 50px;
-    padding: 50px;
-    border: 5px solid var(--color-primary);
+    padding: 5px;
     border-radius: var(--radius-lg);
-    background-color: #ffffff;
+    background: var(--color-gradient-vertical);
     box-shadow: var(--shadow-card);
     transition: transform 0.2s ease;
+}
+
+.inner-card {
+    box-sizing: border-box;
+    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 50px;
+    padding: 50px;
+    background-color: #ffffff;
+    border-radius: calc(var(--radius-lg) - 5px);
+    border: 5px solid transparent;
 }
 
 .card:hover {
@@ -45,6 +59,7 @@
     font-size: var(--text-lg);
     font-family: var(--font-heading);
     font-weight: var(--weight-medium);
+    color: var(--color-tertiary);
 }
 
 p {

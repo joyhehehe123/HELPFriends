@@ -38,8 +38,8 @@ function SessionCards({ session, role, status, onUpdated }: Props) {
 
     const handleCancel = async () => {
         const { confirmed, reason } = await confirm({
-            title: `Confirm to cancel session "${session.title}"?`,
-            message: "This cannot be undone.",
+            title: "Confirm to cancel session?",
+            message: `Do you want to cancel session "${session.title}"? This cannot be undone.`,
             confirmText: "Cancel session",
             cancelText: "Keep session",
             askReason: true
@@ -80,57 +80,59 @@ function SessionCards({ session, role, status, onUpdated }: Props) {
     }, [session, role, status])
 
     return (
-        <div className="session-card">
-            <div className="card-brief-details">
-                <div className="card-chips">
-                    <p className="support-category">{(session.category).toUpperCase()} SUPPORT</p>
-                    {status === "Active" 
-                        && <div className="status-msg"> <Clock /><p>{getStatusMessage(timeDiff)}</p></div>
-                    }
-                    {status === "Completed" && (hasFeedback
-                        ? <div className="status-msg"><CircleCheckBig /><p>Feedback provided</p></div>
-                        : <div className="status-msg"><Clock /><p>Waiting for feedback</p></div>
-                    )}
-                    {status === "Cancelled" 
-                        && <div className="status-msg cancelled-msg"><CircleX /><p>Cancelled on {cancelledDate}</p></div>
-                    }
+        <div className="session-card-wrapper">
+            <div className="session-card">
+                <div className="card-brief-details">
+                    <div className="card-chips">
+                        <p className="support-category">{(session.category).toUpperCase()} SUPPORT</p>
+                        {status === "Active" 
+                            && <div className="status-msg"> <Clock /><p>{getStatusMessage(timeDiff)}</p></div>
+                        }
+                        {status === "Completed" && (hasFeedback
+                            ? <div className="status-msg"><CircleCheckBig /><p>Feedback provided</p></div>
+                            : <div className="status-msg"><Clock /><p>Waiting for feedback</p></div>
+                        )}
+                        {status === "Cancelled" 
+                            && <div className="status-msg cancelled-msg"><CircleX /><p>Cancelled on {cancelledDate}</p></div>
+                        }
+                    </div>
+                    <div className="session-brief-details">
+                        <p className="support-title">{session.title}</p>
+                        {status !== "Cancelled" && <p>{date} ({day}) {time}, {session.duration} minutes</p>}
+                        {status !== "Cancelled" && (role === "Support Seeker" 
+                            ? <p>Volunteer: {otherName}</p>
+                            : <p>Support Seeker: {otherName}</p>
+                        )}
+                        {status === "Cancelled" && <p>Cancelled by {cancelledBy}</p>}
+                        {status === "Cancelled"
+                            ? <p>Reason: {session.cancelledReason}</p>
+                            : <p>Mode: {session.supportMode}</p>
+                        }
+                    </div>
                 </div>
-                <div className="session-brief-details">
-                    <p className="support-title">{session.title}</p>
-                    {status !== "Cancelled" && <p>{date} ({day}) {time}, {session.duration} minutes</p>}
-                    {status !== "Cancelled" && (role === "Support Seeker" 
-                        ? <p>Volunteer: {otherName}</p>
-                        : <p>Support Seeker: {otherName}</p>
-                    )}
-                    {status === "Cancelled" && <p>Cancelled by {cancelledBy}</p>}
-                    {status === "Cancelled"
-                        ? <p>Reason: {session.cancelledReason}</p>
-                        : <p>Mode: {session.supportMode}</p>
-                    }
-                </div>
-            </div>
-            <div className="card-buttons">
-                <Button size="sm" className="card-button" 
-                    onClick={() => navigate(
-                        `/support-sessions/${status.toLowerCase()}/${session.uid}`,
-                        // { state: { session, role, status } }
-                    )}
-                >
-                    View Details
-                </Button>
+                <div className="card-buttons">
+                    <Button size="sm" className="card-button" 
+                        onClick={() => navigate(
+                            `/support-sessions/${status.toLowerCase()}/${session.uid}`,
+                            // { state: { session, role, status } }
+                        )}
+                    >
+                        View Details
+                    </Button>
 
-                {(status === "Active" && timeDiff > 0) && (timeDiff > 120
-                    ? <Button size="sm" className="card-button" onClick={handleCancel}>Cancel</Button>
-                    : <Button size="sm" className="card-button" disabled>Cancel</Button>
-                )}
-                {(status === "Active" && timeDiff < 0) && (Math.abs(timeDiff) > session.duration
-                    ? <Button size="sm" className="card-button" onClick={handleComplete}>Mark As Completed</Button>
-                    : <Button size="sm" className="card-button" disabled>Mark As Completed</Button>
-                )}
-                {(status === "Completed" && role === "Support Seeker") && (hasFeedback
-                    ? <Button size="sm" className="card-button">Edit Feedback</Button>
-                    : <Button size="sm" className="card-button">Rate</Button>
-                )}
+                    {(status === "Active" && timeDiff > 0) && (timeDiff > 120
+                        ? <Button size="sm" className="card-button" onClick={handleCancel}>Cancel</Button>
+                        : <Button size="sm" className="card-button" disabled>Cancel</Button>
+                    )}
+                    {(status === "Active" && timeDiff < 0) && (Math.abs(timeDiff) > session.duration
+                        ? <Button size="sm" className="card-button" onClick={handleComplete}>Mark As Completed</Button>
+                        : <Button size="sm" className="card-button" disabled>Mark As Completed</Button>
+                    )}
+                    {(status === "Completed" && role === "Support Seeker") && (hasFeedback
+                        ? <Button size="sm" className="card-button">Edit Feedback</Button>
+                        : <Button size="sm" className="card-button">Rate</Button>
+                    )}
+                </div>
             </div>
         </div>
     );
