@@ -3,11 +3,10 @@ import { useState, useEffect, useRef } from "react";
 import { onAuthStateChange } from "./services/authService.ts";
 import { ProtectedRoute } from "./ProtectedRoute.tsx";
 import { ToastProvider } from "./components/toast/Toast.tsx";
-// import { logout } from "./services/authService.ts";
 import "./App.css";
 
 import Navbar from "./components/MainNavbar";
-import AppNavbar from "./components/navbar/app-navbar.tsx";
+import AppNavbar from "./components/AppNavbar";
 
 import Index from "./pages/index/index";
 import Login from './pages/auth/Login/LoginFlow.tsx';
@@ -21,8 +20,12 @@ import SupportSessionsMenu from "./pages/support-sessions/support-sessions-menu/
 import SupportSessions from "./pages/support-sessions/sessions-display/support-sessions.tsx";
 import SessionDetails from "./pages/support-sessions/session-details/session-details.tsx";
 import { ConfirmProvider } from "./components/confirm/confirm-context.tsx";
-
 // import SupportShell from './pages/support-requests/SupportShell'
+import {
+  NotificationsRoute,
+  RequestSupportRoute,
+  SupportRequestsRoute,
+} from "./pages/support-requests/SupportRoutes";
 
 function LegacyDomRenderer({ render }: { render: () => HTMLElement | null }) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -75,17 +78,38 @@ function LoginShell() {
   )
 }
 
-function AppShell() {
+const SUPPORT_NAV_LINKS = [
+  { label: "Dashboard", href: "/dashboard" },
+  { label: "Request a Support", href: "/support-request-form" },
+  { label: "Support Requests", href: "/support-requests" },
+  { label: "Support Sessions", href: "/support-sessions" },
+];
+
+function SupportRoutesShell() {
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+
   return (
     <>
-      <AppNavbar />
+      <AppNavbar
+        links={SUPPORT_NAV_LINKS}
+        notificationsHref="/notifications"
+        activeHref={
+          pathname.startsWith("/support-sessions")
+            ? "/support-sessions"
+            : pathname === "/request-support"
+              ? "/support-request-form"
+              : pathname
+        }
+        userName="Mr.Balls"
+        onNavigate={navigate}
+      />
       <Outlet />
     </>
   )
 }
 
 function App() {
-  // logout();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -127,7 +151,7 @@ function App() {
               <Route path='/profile' element={<ProfilePage />} />
               <Route path='/profile/volunteer-profile' element={<VolunteerProfilePage />} />
 
-              <Route element={<AppShell />}>
+              <Route element={<SupportRoutesShell />}>
                 <Route path="/support-sessions" element={<SupportSessionsMenu />} />
                 <Route path="/support-sessions/active" element={<SupportSessions status="Active" />} /> 
                 <Route path="/support-sessions/completed" element={<SupportSessions status="Completed" />} /> 

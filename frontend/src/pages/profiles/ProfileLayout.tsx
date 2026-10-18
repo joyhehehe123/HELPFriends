@@ -1,7 +1,8 @@
-import './profile.css';
+import './Profile.css';
 import { createNavbar } from '../../components/Navbar';
 import type { NavigateCallback } from '../../components/Navbar';
 import { profileStore } from './ProfileData';
+import { logout } from '../../services/authService';
 
 export type ProfileTab = 'account' | 'volunteer';
 
@@ -47,6 +48,33 @@ export default function createProfileLayout({
         }
         sidebar.appendChild(button);
     });
+
+    const logoutButton = document.createElement('button');
+    logoutButton.type = 'button';
+    logoutButton.className = 'profile-tab profile-tab--logout';
+    logoutButton.textContent = 'Log Out';
+    const logoutError = document.createElement('p');
+    logoutError.className = 'profile-logout-error';
+    logoutError.setAttribute('role', 'alert');
+    logoutError.hidden = true;
+    sidebar.appendChild(logoutError);
+
+    logoutButton.addEventListener('click', async () => {
+        logoutButton.disabled = true;
+        logoutError.hidden = true;
+        logoutError.textContent = '';
+
+        try {
+            await logout();
+            navigate('/');
+        } catch (cause) {
+            console.error('Unable to log out:', cause);
+            logoutError.textContent = 'Unable to log out. Please try again.';
+            logoutError.hidden = false;
+            logoutButton.disabled = false;
+        }
+    });
+    sidebar.appendChild(logoutButton);
 
     const main = document.createElement('main');
     main.className = 'profile-main';

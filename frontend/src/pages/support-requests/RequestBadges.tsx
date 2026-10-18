@@ -9,8 +9,8 @@ export function StatusPill({ status }: { status: RequestStatus }) {
 
 export function RoleChip({ role }: { role: RequestRole }) {
     return (
-        <span className={`role-chip role-chip--${role.toLowerCase()}`}>
-            {role === 'Seeker' ? 'Support Seeker' : 'Volunteer'}
+        <span className={`role-chip ${role === 'Volunteer' ? 'role-chip--volunteer' : 'role-chip--seeker'}`}>
+            {role}
         </span>
     );
 }

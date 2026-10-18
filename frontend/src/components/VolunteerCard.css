@@ -1,10 +1,10 @@
 .match-card {
     display: flex;
     align-items: center;
-    gap: 41px;
-    padding: 24px 40px;
+    gap: var(--space-5);
+    padding: var(--space-4) var(--space-5);
     border: 3px solid transparent;
-    border-radius: 32px;
+    border-radius: var(--radius-md);
     background:
         linear-gradient(var(--color-bg-card), var(--color-bg-card)) padding-box,
         linear-gradient(to right, var(--color-primary), var(--color-secondary)) border-box;
@@ -14,21 +14,21 @@
 .match-card__info {
     flex: 1;
     min-width: 0;
-    max-width: 545px;
+    max-width: 480px;
 }
 
 .match-card__title-row {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 4px 16px;
-    margin-bottom: 2px;
+    gap: var(--space-1) var(--space-3);
+    margin-bottom: var(--space-1);
 }
 
 .match-card__name {
     margin: 0;
     font-family: var(--font-heading);
-    font-size: 24px;
+    font-size: var(--text-lg);
     font-weight: var(--weight-medium);
     line-height: 1.4;
     letter-spacing: normal;
@@ -37,7 +37,6 @@
 
 .match-card__detail {
     margin: 0;
-    font-size: 20px;
     line-height: 1.5;
     color: var(--color-text-muted-default);
 }
@@ -51,8 +50,8 @@
 .match-card__actions {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    width: 216px;
+    gap: var(--space-3);
+    width: 200px;
     flex-shrink: 0;
     margin-left: auto;
 }
@@ -60,8 +59,8 @@
 @media (max-width: 900px) {
     .match-card {
         flex-wrap: wrap;
-        gap: 16px;
-        padding: 16px;
+        gap: var(--space-3);
+        padding: var(--space-3);
         border-radius: 20px;
     }
 
@@ -71,17 +70,17 @@
     }
 
     .match-card__name {
-        font-size: 18px;
+        font-size: var(--text-md);
     }
 
     .match-card__detail {
-        font-size: 15px;
+        font-size: var(--text-sm);
     }
 
     .match-card__actions {
         flex-direction: row;
         width: 100%;
-        gap: 12px;
+        gap: var(--space-2);
     }
 
     .match-card__actions > * {

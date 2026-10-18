@@ -56,7 +56,7 @@ export default function RequestSupportPage({ startFrom, onRequestSent }: Request
     };
 
     return (
-        <div className="request-support">
+        <div className="request-support request-support--flow">
             {step.name === 'form' && (
                 <SupportRequestForm initialDraft={draft} onSubmit={handleFormSubmit} />
             )}
