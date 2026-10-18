@@ -9,7 +9,6 @@ import { ConfirmProvider } from "./components/confirm/confirm-context.tsx";
 import "./App.css";
 
 import Navbar from "./components/MainNavbar";
-// import AppNavbar from "./components/AppNavbar";
 import AppNavbar from "./components/navbar/app-navbar";
 
 import Index from "./pages/index/index";
@@ -86,72 +85,6 @@ function AppShell() {
   )
 }
 
-const APP_LINKS = [
-  { label: 'Request a Support', href: '/request-support' },
-  { label: 'Support Requests', href: '/support-requests' },
-  { label: 'Support Sessions', href: '/support-sessions' },
-];
-
-// function AppShell() {
-//   const navigate = useNavigate();
-//   const { pathname } = useLocation();
-//   const [user, setUser] = useState<User | null>(null);
-
-//   // Name and photo of the logged-in user for the navbar
-//   useEffect(() => onAuthStateChange((authUser) => {
-//     if (authUser) getUser(authUser.uid).then(setUser);
-//     else setUser(null);
-//   }), []);
-
-//   // Keeps the link highlighted on sub pages, e.g. /support-sessions/active
-//   const activeHref = APP_LINKS.find((link) => pathname.startsWith(link.href))?.href ?? pathname;
-
-//   return (
-//     <>
-//       <AppNavbar
-//         links={APP_LINKS}
-//         notificationsHref="/notifications"
-//         activeHref={activeHref}
-//         userName={user?.fullName ?? ''}
-//         userPhoto={user?.profilePic ?? undefined}
-//         onNavigate={navigate}
-//       />
-//       <Outlet />
-//     </>
-//   )
-// }
-
-const SUPPORT_NAV_LINKS = [
-  { label: "Dashboard", href: "/dashboard" },
-  { label: "Request a Support", href: "/support-request-form" },
-  { label: "Support Requests", href: "/support-requests" },
-  { label: "Support Sessions", href: "/support-sessions" },
-];
-
-// function SupportRoutesShell() {
-//   const navigate = useNavigate();
-//   const { pathname } = useLocation();
-
-//   return (
-//     <>
-//       <AppNavbar
-//         links={SUPPORT_NAV_LINKS}
-//         notificationsHref="/notifications"
-//         activeHref={
-//           pathname.startsWith("/support-sessions")
-//             ? "/support-sessions"
-//             : pathname === "/request-support"
-//               ? "/support-request-form"
-//               : pathname
-//         }
-//         userName="Mr.Balls"
-//         onNavigate={navigate}
-//       />
-//       <Outlet />
-//     </>
-//   )
-// }
-
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -194,6 +127,11 @@ function App() {
                 <Route path='/dashboard' element={<Dashboard />} />
                 <Route path='/profile' element={<ProfilePage />} />
                 <Route path='/profile/volunteer-profile' element={<VolunteerProfilePage />} />
+
+                <Route path='/support-request-form' element={<RequestSupportRoute/>} />
+                <Route path='/support-requests' element={<SupportRequestsRoute />} />
+                <Route path='/notifications' element={<NotificationsRoute />} />
+
                 <Route path="/support-sessions" element={<SupportSessionsMenu />} />
                 <Route path="/support-sessions/active" element={<SupportSessions status="Active" />} /> 
                 <Route path="/support-sessions/completed" element={<SupportSessions status="Completed" />} /> 

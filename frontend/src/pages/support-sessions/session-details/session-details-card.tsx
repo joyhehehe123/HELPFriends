@@ -9,7 +9,7 @@ import { useToast } from "../../../components/toast/Toast";
 import { Clock, CircleX, CircleCheckBig, Star } from "lucide-react";
 import { useConfirm } from "../../../components/confirm/confirm-context";
 import getStatusMessage from "../functions/status-msg";
-import defaultProfilePic from "../../../assets/hamster.jpg";
+import defaultProfilePic from "../../../../public/profilePics/hamster.jpg";
 import "./session-details-card.css"
 import Button from "../../../components/Button";
 
@@ -21,7 +21,7 @@ function SessionDetailsCard({ session, role, status, onUpdated }: Props) {
 
     const [feedback, setFeedback] = useState<Feedback | null>(null);
     const [otherName, setOtherName] = useState<string>();
-    const [otherProfilePic, SetOtherProfilePic] = useState<string>(defaultProfilePic);
+    const [otherProfilePic, setOtherProfilePic] = useState<string>(defaultProfilePic);
 
     const otherRole = role === "Support Seeker" ? "Volunteer" : "Support Seeker";
     const myId = role === "Support Seeker" ? session.seekerId : session.volunteerId;
@@ -80,7 +80,7 @@ function SessionDetailsCard({ session, role, status, onUpdated }: Props) {
             .catch(console.error);
 
         getUser(otherRole === "Volunteer" ? session.volunteerId : session.seekerId)
-            .then((user) => SetOtherProfilePic(user?.profilePic ?? defaultProfilePic));
+            .then((user) => setOtherProfilePic(user?.profilePic ?? defaultProfilePic));
     }, [session, role, status])
 
     return (
