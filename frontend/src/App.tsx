@@ -1,6 +1,8 @@
 import { Routes, Route, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { onAuthStateChange } from "./services/authService.ts";
+import { getUser } from "./services/userService.ts";
+import type { User } from "./types/user.ts";
 import { ProtectedRoute } from "./ProtectedRoute.tsx";
 import { ToastProvider } from "./components/toast/Toast.tsx";
 import { ConfirmProvider } from "./components/confirm/confirm-context.tsx";
@@ -20,12 +22,8 @@ import Dashboard from './pages/dashboard/Dashboard.tsx';
 import SupportSessionsMenu from "./pages/support-sessions/support-sessions-menu/support-sessions-menu.tsx";
 import SupportSessions from "./pages/support-sessions/sessions-display/support-sessions.tsx";
 import SessionDetails from "./pages/support-sessions/session-details/session-details.tsx";
+import { NotificationsRoute, RequestSupportRoute, SupportRequestsRoute } from './pages/support-requests/SupportRoutes';
 
-import {
-  NotificationsRoute,
-  RequestSupportRoute,
-  SupportRequestsRoute,
-} from "./pages/support-requests/SupportRoutes";
 
 function LegacyDomRenderer({ render }: { render: () => HTMLElement | null }) {
   const ref = useRef<HTMLDivElement | null>(null);
