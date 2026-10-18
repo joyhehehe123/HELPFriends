@@ -1,12 +1,14 @@
-import { Routes, Route, Outlet, useNavigate } from "react-router-dom";
+import { Routes, Route, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { onAuthStateChange } from "./services/authService.ts";
+import { getUser } from "./services/userService.ts";
+import type { User } from "./types/user.ts";
 import { ProtectedRoute } from "./ProtectedRoute.tsx";
 import { ToastProvider } from "./components/toast/Toast.tsx";
 import "./App.css";
 
 import Navbar from "./components/MainNavbar";
-import AppNavbar from "./components/navbar/app-navbar.tsx";
+import AppNavbar from "./components/AppNavbar";
 
 import Index from "./pages/index/index";
 import Login from './pages/auth/Login/LoginFlow.tsx';
@@ -74,10 +76,36 @@ function LoginShell() {
   )
 }
 
+const APP_LINKS = [
+  { label: 'Request a Support', href: '/request-support' },
+  { label: 'Support Requests', href: '/support-requests' },
+  { label: 'Support Sessions', href: '/support-sessions' },
+];
+
 function AppShell() {
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const [user, setUser] = useState<User | null>(null);
+
+  // Name and photo of the logged-in user for the navbar
+  useEffect(() => onAuthStateChange((authUser) => {
+    if (authUser) getUser(authUser.uid).then(setUser);
+    else setUser(null);
+  }), []);
+
+  // Keeps the link highlighted on sub pages, e.g. /support-sessions/active
+  const activeHref = APP_LINKS.find((link) => pathname.startsWith(link.href))?.href ?? pathname;
+
   return (
     <>
-      <AppNavbar />
+      <AppNavbar
+        links={APP_LINKS}
+        notificationsHref="/notifications"
+        activeHref={activeHref}
+        userName={user?.fullName ?? ''}
+        userPhoto={user?.profilePic ?? undefined}
+        onNavigate={navigate}
+      />
       <Outlet />
     </>
   )
