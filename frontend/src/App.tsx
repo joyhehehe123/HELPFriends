@@ -6,7 +6,7 @@ import { ToastProvider } from "./components/toast/Toast.tsx";
 import "./App.css";
 
 import Navbar from "./components/MainNavbar";
-import AppNavbar from "./components/navbar/app-navbar.tsx";
+import AppNavbar from "./components/AppNavbar";
 
 import Index from "./pages/index/index";
 import Login from './pages/auth/Login/LoginFlow.tsx';
@@ -16,11 +16,14 @@ import VolunteerProfile from './pages/profiles/VolunteerDetails.tsx';
 import Signup from './pages/auth/Signup/SignupFlow.tsx';
 import Dashboard from './pages/dashboard/Dashboard.tsx';
 
-import SupportSessionsMenu from "./pages/support-sessions/support-sessions-menu/support-sessions-menu.tsx";
-import SupportSessions from "./pages/support-sessions/sessions-display/support-sessions.tsx";
-import SessionDetails from "./pages/support-sessions/session-details/session-details.tsx";
-
-// import SupportShell from './pages/support-requests/SupportShell'
+import SupportSessionsMenu from "./pages/support-sessions/my-support-sessions";
+import SupportSessions from "./pages/support-sessions/support-sessions";
+import SessionDetails from "./pages/support-sessions/session-details";
+import {
+  NotificationsRoute,
+  RequestSupportRoute,
+  SupportRequestsRoute,
+} from "./pages/support-requests/SupportRoutes";
 
 function LegacyDomRenderer({ render }: { render: () => HTMLElement | null }) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -73,10 +76,32 @@ function LoginShell() {
   )
 }
 
-function AppShell() {
+const SUPPORT_NAV_LINKS = [
+  { label: "Dashboard", href: "/dashboard" },
+  { label: "Request a Support", href: "/support-request-form" },
+  { label: "Support Requests", href: "/support-requests" },
+  { label: "Support Sessions", href: "/support-sessions" },
+];
+
+function SupportRoutesShell() {
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+
   return (
     <>
-      <AppNavbar />
+      <AppNavbar
+        links={SUPPORT_NAV_LINKS}
+        notificationsHref="/notifications"
+        activeHref={
+          pathname.startsWith("/support-sessions")
+            ? "/support-sessions"
+            : pathname === "/request-support"
+              ? "/support-request-form"
+              : pathname
+        }
+        userName="Mr.Balls"
+        onNavigate={navigate}
+      />
       <Outlet />
     </>
   )

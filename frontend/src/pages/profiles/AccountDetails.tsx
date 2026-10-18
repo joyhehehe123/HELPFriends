@@ -1,4 +1,4 @@
-import './profile.css';
+import './Profile.css';
 import createProfileLayout from './ProfileLayout';
 import { profileStore, escapeHtml } from './ProfileData';
 import { onAuthStateChange } from '../../services/authService';

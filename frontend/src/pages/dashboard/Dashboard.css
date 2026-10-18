@@ -14,6 +14,17 @@
   flex: 1;
 }
 
+.dash-message {
+  margin: auto;
+  padding: var(--space-5);
+  color: var(--color-text-muted-default);
+  font-size: var(--text-lg);
+}
+
+.dash-message--error {
+  color: var(--color-text-danger, #b42318);
+}
+
 .dash-page {
   display: flex;
   flex-direction: column;
@@ -272,6 +283,7 @@
 .dash-status--completed { background: var(--color-status-completed); color: var(--color-text-status-completed); }
 .dash-status--cancelled { background: var(--color-status-cancelled); color: var(--color-text-status-cancelled); }
 .dash-status--accepted  { background: var(--color-status-accepted);  color: var(--color-text-status-accepted); }
+.dash-status--scheduled { background: var(--color-status-accepted);  color: var(--color-text-status-accepted); }
 .dash-status--pending   { background: var(--color-status-pending);   color: var(--color-text-status-pending); }
 .dash-status--rejected  { background: var(--color-status-rejected);  color: var(--color-text-status-rejected); }
 
