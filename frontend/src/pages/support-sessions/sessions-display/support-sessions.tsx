@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getCurrentUid } from "../../../services/authService";
+import { getUser } from "../../../services/userService";
 import { getSupportSessionsByStudentAndStatus } from "../../../services/supportSessionService";
 import type { SessionStatus, Role } from "../../../types/constants";
 import SessionList from "./session-list";
@@ -16,6 +17,8 @@ function SupportSessions({ status }: Props) {
     const [refreshKey, setRefreshKey] = useState(0);
     const refresh = () => setRefreshKey((k) => k + 1);
 
+    const [uid, setUid] = useState("");
+    const [isVolunteer, setIsVolunteer] = useState<boolean>(true)
     const [activeTab, setActiveTab] = useState<Role>("Support Seeker");
     const [seekerSessionsCount, setSeekerSessionsCount] = useState<number>(0);
     const [volunteerSessionsCount, setVolunteerSessionsCount] = useState<number>(0);
@@ -35,9 +38,18 @@ function SupportSessions({ status }: Props) {
 
     useEffect(() => {        
         const uid = getCurrentUid();
-        // const uid = "poFo7wbZjvcORzhO9sz4EaMxwQv2";
-        // const uid = "n66jreETszcSgvbor2ETABZ5VW33";
         if (!uid) return;
+        setUid(uid);
+
+        const setVolunteer = async () => {
+            try {
+                const isVolunteer = (await getUser(uid))?.isVolunteer;
+                setIsVolunteer(isVolunteer ?? true);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        setVolunteer();
 
         const fetchSessions = async () => {
             try {
@@ -51,7 +63,7 @@ function SupportSessions({ status }: Props) {
             }
         }
         fetchSessions();
-    }, [status, refreshKey])
+    }, [uid, status, refreshKey])
 
     return (
         <section className="content">
@@ -76,10 +88,23 @@ function SupportSessions({ status }: Props) {
                         }} />
                 </div>
                 <div className="tabs">
-                    <Button size="sm" upperCase={false} className={activeTab === "Support Seeker" ? "active-tab" : "tab"} onClick={() => setActiveTab("Support Seeker")}>
+                    <Button 
+                        size="sm" 
+                        upperCase={false} 
+                        className={`tab ${activeTab === "Support Seeker" ? "active-tab" : ""}`} 
+                        onClick={() => setActiveTab("Support Seeker")}
+                    >
                         As a Support Seeker ({seekerSessionsCount})
                     </Button>
-                    <Button size="sm" upperCase={false} className={activeTab === "Volunteer" ? "active-tab" : "tab"} onClick={() => setActiveTab("Volunteer")}>
+                    <Button 
+                        size="sm" 
+                        upperCase={false} 
+                        className={`tab ${(!isVolunteer && volunteerSessionsCount === 0) 
+                            ? "disabled-tab"
+                            : (activeTab === "Volunteer" ? "active-tab" : "")
+                        }`}
+                        onClick={() => setActiveTab("Volunteer")}
+                    >
                         As a Volunteer ({volunteerSessionsCount})
                     </Button>
                 </div>
