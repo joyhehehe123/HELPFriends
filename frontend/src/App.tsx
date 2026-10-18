@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { onAuthStateChange } from "./services/authService.ts";
 import { ProtectedRoute } from "./ProtectedRoute.tsx";
 import { ToastProvider } from "./components/toast/Toast.tsx";
+import { ConfirmProvider } from "./components/confirm/confirm-context.tsx";
 import "./App.css";
 
 import Navbar from "./components/MainNavbar";
@@ -20,8 +21,7 @@ import Dashboard from './pages/dashboard/Dashboard.tsx';
 import SupportSessionsMenu from "./pages/support-sessions/support-sessions-menu/support-sessions-menu.tsx";
 import SupportSessions from "./pages/support-sessions/sessions-display/support-sessions.tsx";
 import SessionDetails from "./pages/support-sessions/session-details/session-details.tsx";
-import { ConfirmProvider } from "./components/confirm/confirm-context.tsx";
-// import SupportShell from './pages/support-requests/SupportShell'
+
 import {
   NotificationsRoute,
   RequestSupportRoute,
@@ -88,36 +88,36 @@ function AppShell() {
   )
 }
 
-const SUPPORT_NAV_LINKS = [
-  { label: "Dashboard", href: "/dashboard" },
-  { label: "Request a Support", href: "/support-request-form" },
-  { label: "Support Requests", href: "/support-requests" },
-  { label: "Support Sessions", href: "/support-sessions" },
-];
+// const SUPPORT_NAV_LINKS = [
+//   { label: "Dashboard", href: "/dashboard" },
+//   { label: "Request a Support", href: "/support-request-form" },
+//   { label: "Support Requests", href: "/support-requests" },
+//   { label: "Support Sessions", href: "/support-sessions" },
+// ];
 
-function SupportRoutesShell() {
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
+// function SupportRoutesShell() {
+//   const navigate = useNavigate();
+//   const { pathname } = useLocation();
 
-  return (
-    <>
-      <AppNavbar
-        links={SUPPORT_NAV_LINKS}
-        notificationsHref="/notifications"
-        activeHref={
-          pathname.startsWith("/support-sessions")
-            ? "/support-sessions"
-            : pathname === "/request-support"
-              ? "/support-request-form"
-              : pathname
-        }
-        userName="Mr.Balls"
-        onNavigate={navigate}
-      />
-      <Outlet />
-    </>
-  )
-}
+//   return (
+//     <>
+//       <AppNavbar
+//         links={SUPPORT_NAV_LINKS}
+//         notificationsHref="/notifications"
+//         activeHref={
+//           pathname.startsWith("/support-sessions")
+//             ? "/support-sessions"
+//             : pathname === "/request-support"
+//               ? "/support-request-form"
+//               : pathname
+//         }
+//         userName="Mr.Balls"
+//         onNavigate={navigate}
+//       />
+//       <Outlet />
+//     </>
+//   )
+// }
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -161,6 +161,11 @@ function App() {
                 <Route path='/dashboard' element={<Dashboard />} />
                 <Route path='/profile' element={<ProfilePage />} />
                 <Route path='/profile/volunteer-profile' element={<VolunteerProfilePage />} />
+
+                <Route path='/support-request-form' element={<RequestSupportRoute/>} />
+                <Route path='/support-requests' element={<SupportRequestsRoute />} />
+                <Route path='/notifications' element={<NotificationsRoute />} />
+
                 <Route path="/support-sessions" element={<SupportSessionsMenu />} />
                 <Route path="/support-sessions/active" element={<SupportSessions status="Active" />} /> 
                 <Route path="/support-sessions/completed" element={<SupportSessions status="Completed" />} /> 
