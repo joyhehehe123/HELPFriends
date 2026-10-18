@@ -1,9 +1,12 @@
 import { Routes, Route, Outlet, useNavigate } from "react-router-dom";
-import { useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
+import { onAuthStateChange } from "./services/authService.ts";
+import { ProtectedRoute } from "./ProtectedRoute.tsx";
+import { ToastProvider } from "./components/toast/Toast.tsx";
 import "./App.css";
 
 import Navbar from "./components/MainNavbar";
-import AppNavbar from "./components/navbar/navbar";
+import AppNavbar from "./components/navbar/app-navbar.tsx";
 
 import Index from "./pages/index/index";
 import Login from './pages/auth/Login/LoginFlow.tsx';
@@ -13,9 +16,9 @@ import VolunteerProfile from './pages/profiles/VolunteerDetails.tsx';
 import Signup from './pages/auth/Signup/SignupFlow.tsx';
 import Dashboard from './pages/dashboard/Dashboard.tsx';
 
-import SupportSessionsMenu from "./pages/support-sessions/my-support-sessions";
-import SupportSessions from "./pages/support-sessions/support-sessions";
-import SessionDetails from "./pages/support-sessions/session-details";
+import SupportSessionsMenu from "./pages/support-sessions/support-sessions-menu/support-sessions-menu.tsx";
+import SupportSessions from "./pages/support-sessions/sessions-display/support-sessions.tsx";
+import SessionDetails from "./pages/support-sessions/session-details/session-details.tsx";
 import { NotificationsRoute, RequestSupportRoute, SupportRequestsRoute } from './pages/support-requests/SupportRoutes';
 
 // import SupportShell from './pages/support-requests/SupportShell'
@@ -82,39 +85,61 @@ function AppShell() {
 
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChange((user) => {
+      setIsAuthenticated(!!user);
+      setIsLoading(false);
+
+      if (user) {
+        console.log(`Current user UID: ${user.uid}`);
+        console.log(`Current user email: ${user.email}`);
+      } else {
+        console.log("No user is logged in");
+      }
+    })
+    return () => unsubscribe();
+  }, [])
+
   return (
     <>
-      <Routes>
+      <ToastProvider>
+        <Routes>
 
-        {/* <Route path='/support-request-form' element={<SupportShell />} />
-        <Route path='/support-requests' element={<SupportShell />} />
-        <Route path='/support-sessions' element={<SupportShell />} />
-        <Route path='/notifications' element={<SupportShell />} /> */}
+          {/* <Route path='/support-request-form' element={<SupportShell />} />
+          <Route path='/support-requests' element={<SupportShell />} />
+          <Route path='/support-sessions' element={<SupportShell />} />
+          <Route path='/notifications' element={<SupportShell />} /> */}
 
-        <Route path='/dashboard' element={<Dashboard />} />
-        <Route path='/profile' element={<ProfilePage />} />
+          <Route element={<LoginShell />}>
+            <Route path='/' element={<Index />} />
+            <Route path='/signup' element={<SignupPage />} />
+            <Route path='/login' element={<LoginPage />} />
+            <Route path='/reset-password' element={<ResetPasswordPage />} />
+          </Route>
 
-        <Route element={<LoginShell />}>
-          <Route path='/signup' element={<SignupPage />} />
-          <Route path='/login' element={<LoginPage />} />
-          <Route path='/reset-password' element={<ResetPasswordPage />} />
-          <Route path='/' element={<Index />} />
-          <Route path='/profile/volunteer-profile' element={<VolunteerProfilePage />} />
-        </Route>
+          <Route element={<ProtectedRoute  isAuthenticated={isAuthenticated} isLoading={isLoading} />}>
+            <Route path='/dashboard' element={<Dashboard />} />
+            <Route path='/profile' element={<ProfilePage />} />
+            <Route path='/profile/volunteer-profile' element={<VolunteerProfilePage />} />
 
-          <Route element={<AppShell />}>
-          <Route path="/support-sessions" element={<SupportSessionsMenu />} />
-          <Route path="/support-sessions/active" element={<SupportSessions status="Active" />} /> 
-          <Route path="/support-sessions/completed" element={<SupportSessions status="Completed" />} /> 
-          <Route path="/support-sessions/cancelled" element={<SupportSessions status="Cancelled" />} />
-          <Route path="/support-sessions/active/:sessionId" element={<SessionDetails />} />
-          <Route path="/support-sessions/completed/:sessionId" element={<SessionDetails />} /> 
-          <Route path="/support-sessions/cancelled/:sessionId" element={<SessionDetails />} />
-          <Route path='/request-support' element={<RequestSupportRoute />} />
-          <Route path='/support-requests' element={<SupportRequestsRoute />} />
-          <Route path='/notifications' element={<NotificationsRoute />} />
-        </Route>
-      </Routes>
+            <Route element={<AppShell />}>
+              <Route path="/support-sessions" element={<SupportSessionsMenu />} />
+              <Route path="/support-sessions/active" element={<SupportSessions status="Active" />} /> 
+              <Route path="/support-sessions/completed" element={<SupportSessions status="Completed" />} /> 
+              <Route path="/support-sessions/cancelled" element={<SupportSessions status="Cancelled" />} />
+              <Route path="/support-sessions/active/:sessionId" element={<SessionDetails />} />
+              <Route path="/support-sessions/completed/:sessionId" element={<SessionDetails />} /> 
+              <Route path="/support-sessions/cancelled/:sessionId" element={<SessionDetails />} />
+              <Route path='/request-support' element={<RequestSupportRoute />} />
+              <Route path='/support-requests' element={<SupportRequestsRoute />} />
+              <Route path='/notifications' element={<NotificationsRoute />} />
+            </Route>
+          </Route>
+        </Routes>
+      </ToastProvider>
     </>
   )
 }
