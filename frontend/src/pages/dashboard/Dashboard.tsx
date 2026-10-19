@@ -238,14 +238,14 @@ export default function Dashboard() {
 
   return (
     <div className="dash-layout">
-      <AppNavbar
+      {/* <AppNavbar
         links={DASHBOARD_LINKS}
         notificationsHref="/notifications"
         activeHref="/dashboard"
         userName={data?.userName || "Account"}
         userPhoto={data?.avatarUrl || undefined}
         onNavigate={navigate}
-      />
+      /> */}
       <div className="dash-content" ref={contentRef} aria-live="polite">
         {isLoading && <p className="dash-message">Loading your dashboard…</p>}
         {!isLoading && error && <p className="dash-message dash-message--error" role="alert">{error}</p>}
