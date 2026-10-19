@@ -9,7 +9,7 @@ import { useToast } from "../../../components/toast/Toast";
 import { Clock, CircleX, CircleCheckBig, Star } from "lucide-react";
 import { useConfirm } from "../../../components/confirm/confirm-context";
 import getStatusMessage from "../functions/status-msg";
-import defaultProfilePic from "../../../../public/profilePics/hamster.jpg";
+import defaultProfilePic from "../../../assets/hamster.jpg";
 import "./session-details-card.css"
 import Button from "../../../components/Button";
 
@@ -39,8 +39,8 @@ function SessionDetailsCard({ session, role, status, onUpdated }: Props) {
     
     const handleCancel = async () => {
         const { confirmed, reason } = await confirm({
-            title: `Confirm to cancel session "${session.title}"?`,
-            message: "This cannot be undone.",
+            title: "Confirm to cancel session?",
+            message: `Do you want to cancel session "${session.title}"? This cannot be undone.`,
             confirmText: "Cancel session",
             cancelText: "Keep session",
             askReason: true
@@ -61,8 +61,6 @@ function SessionDetailsCard({ session, role, status, onUpdated }: Props) {
             await markAsCompleted(session.uid);
             showToast("Session marked as completed");
             onUpdated?.();
-            // window.scrollTo({ top: 0, behavior: "smooth" });
-            // navigate(`/support-sessions/completed/${session.uid}`);
         } catch (error) {
             showToast(error instanceof Error ? error.message : "Could not complete the session");
         }

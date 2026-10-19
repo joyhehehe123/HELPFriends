@@ -66,15 +66,9 @@
 }
 
 .active-tab {
-    display: flex;
-    padding: 15px 30px;
-    border-radius: var(--radius-sm);
-    border: 0px;
-    background-color: var(--color-tertiary);
+    background-color: var(--color-tertiary); 
     color: #ffffff;
-    font-size: var(--text-sm);
     font-weight: var(--weight-medium);
-    font-family: var(--font-heading);
 }
 
 .tabs .tab:hover:not(:disabled) {
