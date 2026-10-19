@@ -23,12 +23,22 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
     const destructive = options?.destructive ?? false;
 
     const dismissBtn = (
-        <Button size="sm" className="modal-btn" variant={destructive ? "primary" : "outline"} onClick={() => finish(false)}>
+        <Button 
+            size="sm" 
+            className="modal-btn" 
+            variant={destructive ? "primary" : "outline"} 
+            onClick={() => finish(false)}
+        >
             {options?.cancelText ?? "Cancel"}
         </Button>
     )
     const confirmBtn = (
-        <Button size="sm" className="modal-btn" variant={destructive ? "outline" : "primary"} onClick={() => finish(true)}>
+        <Button 
+            size="sm" 
+            className="modal-btn" 
+            variant={destructive ? "outline" : "primary"} 
+            onClick={() => finish(true)}
+        >
             {options?.confirmText ?? "Confirm"}
         </Button>
     )
