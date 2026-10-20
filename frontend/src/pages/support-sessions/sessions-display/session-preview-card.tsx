@@ -60,8 +60,6 @@ function SessionCards({ session, role, status, onUpdated }: Props) {
             await markAsCompleted(session.uid);
             showToast("Session marked as completed");
             onUpdated?.();
-            // navigate(`/support-sessions/completed/${session.uid}`);
-            // window.scrollTo({ top: 0, behavior: "smooth" });
         } catch (error) {
             showToast(error instanceof Error ? error.message : "Could not complete the session");
         }
@@ -111,11 +109,10 @@ function SessionCards({ session, role, status, onUpdated }: Props) {
                     </div>
                 </div>
                 <div className="card-buttons">
-                    <Button size="sm" className="card-button" 
-                        onClick={() => navigate(
-                            `/support-sessions/${status.toLowerCase()}/${session.uid}`,
-                            // { state: { session, role, status } }
-                        )}
+                    <Button 
+                        size="sm" 
+                        className="card-button" 
+                        onClick={() => navigate(`/support-sessions/${status.toLowerCase()}/${session.uid}`)}
                     >
                         View Details
                     </Button>

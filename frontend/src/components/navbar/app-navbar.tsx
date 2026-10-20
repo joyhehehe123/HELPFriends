@@ -4,7 +4,7 @@ import type { User } from "../../types/user";
 import { getCurrentUid } from "../../services/authService";
 import { getUser } from "../../services/userService";
 import { Bell } from "lucide-react";
-import defaultProfilePic from "../../../public/profilePics/hamster.jpg";
+import defaultProfilePic from "../../assets/hamster.jpg";
 import "./app-navbar.css";
 
 function AppNavbar() {
@@ -44,10 +44,18 @@ function AppNavbar() {
                     className={`nav-link link ${pathname.startsWith("/support-sessions") ? "active-nav-link" : ""}`}
                 ><p>My Support Sessions</p></Link>
             </div>
+            <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
+                <defs>
+                    <linearGradient id="bell-gradient" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor="#52d5ff" />
+                        <stop offset="100%" stopColor="#37cc96" />
+                    </linearGradient>
+                </defs>
+            </svg>
             <div id="bell-and-profile">
                 <Link 
                     to="/notifications" id="bell" 
-                    className={`bell link ${pathname.startsWith("/notifications") ? "active-nav-link" : ""}`}
+                    className={`bell link ${pathname.startsWith("/notifications") ? "active-bell" : ""}`}
                 ><Bell /></Link>
                 <Link to="/profile" id="profile" className="link"><img src={profilePic} /></Link>
             </div>

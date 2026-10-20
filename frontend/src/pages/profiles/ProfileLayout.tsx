@@ -22,7 +22,6 @@ export default function createProfileLayout({
     const page = document.createElement('div');
     page.className = 'profile-page';
 
-
     const body = document.createElement('div');
     body.className = 'profile-body';
 

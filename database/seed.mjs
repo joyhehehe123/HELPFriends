@@ -10,7 +10,11 @@ const db = getFirestore();
 const auth = getAuth();
 
 const ts = (date) => Timestamp.fromDate(new Date(date));
-const minutesFromNow = (m) => Timestamp.fromDate(new Date(Date.now() + m * 60_000));
+const HALF_HOUR = 30 * 60_000;
+const minutesFromNow = (m) => {
+    const target = Date.now() + m * 60_000;
+    return Timestamp.fromDate(new Date(Math.round(target / HALF_HOUR) * HALF_HOUR));
+};
 
 const users = [
     {
@@ -21,7 +25,7 @@ const users = [
         faculty: "Faculty of Computing and Digital Technology",
         program: "Bachelor of Computer Science (Honours)",
         bio: "I love hamster",
-        profilePic: "profilePics/pfpcat.jpg"
+        profilePic: "/profilePics/pfpcat.jpg"
     },
     {
         email: "B2400423@helplive.edu.my",
@@ -31,7 +35,7 @@ const users = [
         faculty: "Faculty of Computing and Digital Technology",
         program: "Bachelor of Information Technology (Honours)",
         bio: null,
-        profilePic: "profilePics/Goat.jpg"
+        profilePic: null
     },
     {
         email: "B2300490@helplive.edu.my",
@@ -41,17 +45,17 @@ const users = [
         faculty: "Faculty of Computing and Digital Technology",
         program: "Bachelor of Information Technology (Honours)",
         bio: "I love donuts",
-        profilePic: "profilePics/Freaky_Nikki.jpg"
+        profilePic: "/profilePics/nikki.jpg"
     },
     {
         email: "B2401344@helplive.edu.my",
-        fullName: "Puteri A\isyah",
+        fullName: "Puteri A\'isyah",
         studentId: "B2401344",
         isVolunteer: false,
         faculty: "Faculty of Computing and Digital Technology",
         program: "Bachelor of Computer Science (Honours)",
         bio: "I love sushi",
-        profilePic: "profilePics/chiikabu.png"
+        profilePic: "/profilePics/chiikabu.png"
     },
     {
         email: "B2401411@helplive.edu.my",
@@ -61,7 +65,7 @@ const users = [
         faculty: "Faculty of Computing and Digital Technology",
         program: "Bachelor of Information Technology in Data Analytics (Honours)",
         bio: "I love winston",
-        profilePic: "profilePics/Bob.jpg"
+        profilePic: "/profilePics/Bob.jpg"
     }
 ]
 
@@ -211,14 +215,14 @@ const requests = [
         description: "I need help setting up Git and GitHub for my programming projects.",
         supportMode: "Virtual",
         proposedTimeSlots: [
-            minutesFromNow(80), // ts("2026-10-16T14:00:00+08:00"),
-            minutesFromNow(110) // ts("2026-10-16T15:00:00+08:00")
+            minutesFromNow(40), // ts("2026-10-16T14:00:00+08:00"),
+            minutesFromNow(70) // ts("2026-10-16T15:00:00+08:00")
         ],
         status: "Scheduled",
         createdAt: ts("2026-10-10T10:00:00+08:00"),
         respondedAt: ts("2026-10-10T10:30:00+08:00"),
         scheduledAt: ts("2026-10-10T11:00:00+08:00"),
-        seekerName: "Puteri Aisyah",
+        seekerName: "Puteri A\'isyah",
         volunteerName: "Joy Lau Xuan"
     },
     {
@@ -269,7 +273,7 @@ const requests = [
         createdAt: ts("2026-10-11T10:00:00+08:00"),
         respondedAt: ts("2026-10-11T10:30:00+08:00"),
         scheduledAt: ts("2026-10-11T11:00:00+08:00"),
-        seekerName: "Puteri Aisyah",
+        seekerName: "Puteri A\'isyah",
         volunteerName: "Joy Lau Xuan"
     },
     {
@@ -406,11 +410,11 @@ const sessions = [
         title: "Git and GitHub Setup",
         description: "Help with setting up Git and GitHub for programming projects.",
         supportMode: "Virtual",
-        dateTime: minutesFromNow(80), // ts("2026-10-16T14:00:00+08:00"),
+        dateTime: minutesFromNow(40), // ts("2026-10-16T14:00:00+08:00"),
         duration: 60,
         status: "Active",
         requestId: "R1005",
-        seekerName: "Puteri Aisyah",
+        seekerName: "Puteri A\'isyah",
         volunteerName: "Joy Lau Xuan"
     },
     {
@@ -432,11 +436,11 @@ const sessions = [
         title: "Getting Used to University Life",
         description: "Advice on adapting to university life and managing a timetable.",
         supportMode: "Virtual",
-        dateTime: minutesFromNow(-50), // ts("2026-10-19T14:00:00+08:00"),
+        dateTime: minutesFromNow(-20), // ts("2026-10-19T14:00:00+08:00"),
         duration: 60,
         status: "Active",
         requestId: "R1008",
-        seekerName: "Puteri Aisyah",
+        seekerName: "Puteri A\'isyah",
         volunteerName: "Joy Lau Xuan"
     },
     {

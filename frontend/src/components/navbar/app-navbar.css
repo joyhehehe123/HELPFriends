@@ -76,8 +76,6 @@
 }
 
 .active-nav-link > P {
-    /* background-color: rgba(255, 255, 255, 50%);
-    color: var(--color-tertiary); */
     font-weight: var(--weight-bold);
     background: var(--color-gradient-horizontal);
     -webkit-background-clip: text;
@@ -111,6 +109,32 @@
     background-color: rgba(255, 255, 255, 50%);
     color: var(--color-tertiary);
     transform: scale(0.95);
+}
+
+.active-bell {
+    display: flex;
+    align-items: center;
+}
+
+#bell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Normal state: white */
+#bell svg {
+    display: block;
+    stroke: #ffffff;
+}
+
+#bell.active-bell {
+    background-color: rgba(255, 255, 255, 75%);
+}
+
+/* Current page or pressed: gradient */
+#bell.active-bell svg {
+    stroke: url(#bell-gradient);
 }
 
 #profile img {
