@@ -1,4 +1,4 @@
-import { Routes, Route, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Routes, Route, Outlet, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { onAuthStateChange } from "./services/authService.ts";
 import { getUser } from "./services/userService.ts";
@@ -27,9 +27,14 @@ import { NotificationsRoute, RequestSupportRoute, SupportRequestsRoute } from '.
 
 function LegacyDomRenderer({ render }: { render: () => HTMLElement | null }) {
   const ref = useRef<HTMLDivElement | null>(null);
+  const renderRef = useRef(render);
 
   useEffect(() => {
-    const element = render();
+    // Legacy pages manage their own DOM updates internally, so build the
+    // element exactly once per mount. Re-running when `render` identity
+    // changes (inline lambdas recreate it every parent render) would wipe
+    // user input such as the login form fields.
+    const element = renderRef.current();
 
     if (ref.current && element) {
       ref.current.replaceChildren(element);
@@ -40,7 +45,7 @@ function LegacyDomRenderer({ render }: { render: () => HTMLElement | null }) {
         element.parentNode.removeChild(element);
       }
     };
-  }, [render]);
+  }, []);
 
   return <div ref={ref} />;
 }

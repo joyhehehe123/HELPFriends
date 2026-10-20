@@ -1,7 +1,4 @@
 import './Profile.css';
-import { createNavbar } from '../../components/Navbar';
-import type { NavigateCallback } from '../../components/Navbar';
-import { profileStore } from './ProfileData';
 import { logout } from '../../services/authService';
 
 export type ProfileTab = 'account' | 'volunteer';
@@ -25,9 +22,6 @@ export default function createProfileLayout({
     const page = document.createElement('div');
     page.className = 'profile-page';
 
-    const navbar = createNavbar('/profile', navigate as NavigateCallback, {
-        user: { avatarUrl: profileStore.profile.avatarUrl },
-    });
 
     const body = document.createElement('div');
     body.className = 'profile-body';
@@ -81,6 +75,6 @@ export default function createProfileLayout({
     main.appendChild(content);
 
     body.append(sidebar, main);
-    page.append(navbar, body);
+    page.append(body);
     return page;
 }

@@ -63,11 +63,14 @@ export default function createLoginStep({
     emailInput.value = loginInfo.email;
     passwordInput.value = loginInfo.password;
 
+    // Local copy so successive updates don't spread the stale `loginInfo`
+    // captured when this step's DOM was created (typing email then password
+    // would otherwise reset the email in the flow state).
+    const currentInfo: LoginInfoData = { ...loginInfo };
+
     const updateLoginInfo = (field: keyof LoginInfoData, value: string) => {
-        setLoginInfo({
-            ...loginInfo,
-            [field]: value,
-        });
+        currentInfo[field] = value;
+        setLoginInfo({ ...currentInfo });
     };
 
     emailInput.addEventListener('input', (event) => {
