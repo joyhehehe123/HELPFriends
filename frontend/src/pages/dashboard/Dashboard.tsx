@@ -175,12 +175,6 @@ function createDashboard(
   return page;
 }
 
-const DASHBOARD_LINKS = [
-  { label: "Request a Support", href: "/support-request-form" },
-  { label: "Support Requests", href: "/support-requests" },
-  { label: "Support Sessions", href: "/support-sessions" },
-];
-
 export default function Dashboard() {
   const navigate = useNavigate();
   const contentRef = useRef<HTMLDivElement>(null);
