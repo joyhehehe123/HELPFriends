@@ -1,5 +1,6 @@
 import './login.css';
 import { createAuthFeedback, getAuthErrorMessage } from '../../auth-feedback';
+import { configurePasswordToggle } from '../../password-toggle';
 
 export interface LoginInfoData {
     email: string;
@@ -36,7 +37,10 @@ export default function createLoginStep({
 
             <div class="signup-field">
                 <label for="loginPassword">Password</label>
-                <input id="loginPassword" type="password" autocomplete="current-password" required />
+                <div class="password-input-wrapper">
+                    <input id="loginPassword" type="password" autocomplete="current-password" required />
+                    <button type="button" class="password-toggle" aria-label="Show password" aria-pressed="false"></button>
+                </div>
             </div>
 
             <button type="button" class="forgot-link">Forgot Password?</button>
@@ -55,10 +59,13 @@ export default function createLoginStep({
     const form = container.querySelector<HTMLFormElement>('form')!;
     const emailInput = container.querySelector<HTMLInputElement>('#loginEmail')!;
     const passwordInput = container.querySelector<HTMLInputElement>('#loginPassword')!;
+    const passwordToggle = container.querySelector<HTMLButtonElement>('.password-toggle')!;
     const forgotButton = container.querySelector<HTMLButtonElement>('.forgot-link')!;
     const registerButton = container.querySelector<HTMLButtonElement>('.register-link')!;
     const submitButton = container.querySelector<HTMLButtonElement>('.login-button')!;
     const showFeedback = createAuthFeedback(form);
+
+    configurePasswordToggle(passwordToggle, passwordInput, 'password');
 
     emailInput.value = loginInfo.email;
     passwordInput.value = loginInfo.password;
