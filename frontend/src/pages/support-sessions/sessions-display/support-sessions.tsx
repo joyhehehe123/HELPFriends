@@ -98,7 +98,8 @@ function SupportSessions({ status }: Props) {
                     </Button>
                     <Button 
                         size="sm" 
-                        upperCase={false} 
+                        upperCase={false}
+                        disabled={!isVolunteer && volunteerSessionsCount === 0}
                         className={`tab ${(!isVolunteer && volunteerSessionsCount === 0) 
                             ? "disabled-tab"
                             : (activeTab === "Volunteer" ? "active-tab" : "")

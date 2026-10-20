@@ -156,13 +156,13 @@ function SessionDetailsCard({ session, role, status, onUpdated }: Props) {
                             <p className="element">{role === "Support Seeker" ? "YOUR RATING" : "RATING"}</p>
                             <div className="star-rating">
                                 <div className="stars">
-                                    {Array.from({ length: 5}, () => (
-                                        <Star fill="#d5d5d5" strokeWidth={0} size={40} />
+                                    {Array.from({ length: 5}, (_, i) => (
+                                        <Star key={i} fill="#d5d5d5" strokeWidth={0} size={40} />
                                     ))}
                                 </div>
                                 <div className="stars rating">
-                                    {Array.from({ length: feedback.rating}, () => (
-                                        <Star fill="yellow" strokeWidth={0} size={40} />
+                                    {Array.from({ length: feedback.rating}, (_, i) => (
+                                        <Star key={i} fill="yellow" strokeWidth={0} size={40} />
                                     ))}
                                 </div>
                             </div>
