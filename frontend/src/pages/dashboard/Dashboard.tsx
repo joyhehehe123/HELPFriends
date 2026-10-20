@@ -1,7 +1,6 @@
 import "./Dashboard.css";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AppNavbar from "../../components/AppNavbar";
 import { onAuthStateChange } from "../../services/authService";
 import { getDashboardData, type DashboardData, type DashboardRole, type DashboardStatus } from "../../services/dashboardService";
 
@@ -176,12 +175,6 @@ function createDashboard(
   return page;
 }
 
-const DASHBOARD_LINKS = [
-  { label: "Request a Support", href: "/support-request-form" },
-  { label: "Support Requests", href: "/support-requests" },
-  { label: "Support Sessions", href: "/support-sessions" },
-];
-
 export default function Dashboard() {
   const navigate = useNavigate();
   const contentRef = useRef<HTMLDivElement>(null);
@@ -238,14 +231,6 @@ export default function Dashboard() {
 
   return (
     <div className="dash-layout">
-      {/* <AppNavbar
-        links={DASHBOARD_LINKS}
-        notificationsHref="/notifications"
-        activeHref="/dashboard"
-        userName={data?.userName || "Account"}
-        userPhoto={data?.avatarUrl || undefined}
-        onNavigate={navigate}
-      /> */}
       <div className="dash-content" ref={contentRef} aria-live="polite">
         {isLoading && <p className="dash-message">Loading your dashboard…</p>}
         {!isLoading && error && <p className="dash-message dash-message--error" role="alert">{error}</p>}

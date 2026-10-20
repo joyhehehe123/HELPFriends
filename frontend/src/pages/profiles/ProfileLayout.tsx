@@ -1,5 +1,4 @@
 import './Profile.css';
-import { profileStore } from './ProfileData';
 import { logout } from '../../services/authService';
 
 export type ProfileTab = 'account' | 'volunteer';

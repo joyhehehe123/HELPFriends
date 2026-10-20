@@ -1,6 +1,5 @@
 import './signup.css';
 
-// Place your cat image at this path (or change the path to wherever you put it).
 const mascotImage = new URL('../../../../assets/Cat_thumbs.png', import.meta.url).href;
 
 interface ConfirmationProps {
