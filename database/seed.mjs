@@ -496,7 +496,7 @@ const feedbacks = [
     }
 ];
 
-const COLLECTIONS = ["users", "volunteers", "supportRequests", "supportSessions", "feedbacks"];
+const COLLECTIONS = ["volunteers", "supportRequests", "supportSessions", "feedbacks"];
 
 async function clearData() {
     for (const C of COLLECTIONS) {
