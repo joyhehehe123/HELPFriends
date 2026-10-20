@@ -215,8 +215,8 @@ const requests = [
         description: "I need help setting up Git and GitHub for my programming projects.",
         supportMode: "Virtual",
         proposedTimeSlots: [
-            minutesFromNow(80), // ts("2026-10-16T14:00:00+08:00"),
-            minutesFromNow(110) // ts("2026-10-16T15:00:00+08:00")
+            minutesFromNow(40), // ts("2026-10-16T14:00:00+08:00"),
+            minutesFromNow(70) // ts("2026-10-16T15:00:00+08:00")
         ],
         status: "Scheduled",
         createdAt: ts("2026-10-10T10:00:00+08:00"),
@@ -410,7 +410,7 @@ const sessions = [
         title: "Git and GitHub Setup",
         description: "Help with setting up Git and GitHub for programming projects.",
         supportMode: "Virtual",
-        dateTime: minutesFromNow(80), // ts("2026-10-16T14:00:00+08:00"),
+        dateTime: minutesFromNow(40), // ts("2026-10-16T14:00:00+08:00"),
         duration: 60,
         status: "Active",
         requestId: "R1005",
@@ -436,7 +436,7 @@ const sessions = [
         title: "Getting Used to University Life",
         description: "Advice on adapting to university life and managing a timetable.",
         supportMode: "Virtual",
-        dateTime: minutesFromNow(-50), // ts("2026-10-19T14:00:00+08:00"),
+        dateTime: minutesFromNow(-20), // ts("2026-10-19T14:00:00+08:00"),
         duration: 60,
         status: "Active",
         requestId: "R1008",
