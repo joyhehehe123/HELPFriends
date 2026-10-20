@@ -10,7 +10,6 @@ interface PageState {
     openRequestId?: string;
 }
 
-// New key on every visit, so the page starts fresh at the top
 function usePageVisit() {
     const location = useLocation();
     const navigationType = useNavigationType();
@@ -19,7 +18,6 @@ function usePageVisit() {
         window.scrollTo(0, 0);
     }, [location.key]);
 
-    // State from navigate() is used once, not again on Back, Forward or refresh
     const state = navigationType === 'POP' ? {} : ((location.state ?? {}) as PageState);
     return { key: location.key, state };
 }
@@ -45,8 +43,8 @@ export function SupportRequestsRoute() {
         <SupportRequestsPage
             key={key}
             initialRequestId={state.openRequestId}
-            onNewRequest={() => navigate('/request-support')}
-            onFindAnotherVolunteer={(request) => navigate('/request-support', { state: { startFrom: request } })}
+            onNewRequest={() => navigate('/support-request-form')}
+            onFindAnotherVolunteer={(request) => navigate('/support-request-form', { state: { startFrom: request } })}
             onSchedule={() => navigate('/support-sessions')}
         />
     );
