@@ -129,6 +129,23 @@
     box-shadow: 0 0 0 3px rgba(82, 213, 255, 0.35);
 }
 
+.signup-field input[aria-invalid="true"],
+.signup-field select[aria-invalid="true"],
+.signup-field input[aria-invalid="true"]:focus,
+.signup-field select[aria-invalid="true"]:focus {
+    border: 2px solid #b42318;
+    box-shadow: 0 0 0 3px rgba(180, 35, 24, 0.15);
+}
+
+.auth-field-error {
+    margin: 0;
+    color: #912018;
+    font-size: var(--text-sm);
+    line-height: 1.4;
+    text-align: left;
+    font-weight: var(--weight-bold);
+}
+
 .signup-card--password .password-input-wrapper {
     position: relative;
 }

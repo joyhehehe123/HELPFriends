@@ -2,6 +2,7 @@ import './signup.css';
 import '../../auth-feedback.css';
 import { createAuthFeedback, getAuthErrorMessage } from '../../auth-feedback';
 import { configurePasswordToggle } from '../../password-toggle';
+import { scrollToFirstInvalidField, setAuthFieldError } from '../../auth-validation';
 
 interface SetPasswordProps {
     onBack?: () => void;
@@ -58,12 +59,50 @@ export default function createSetPasswordStep({
     const submitButton = container.querySelector<HTMLButtonElement>('.signup-button')!;
     const backButton = container.querySelector<HTMLButtonElement>('.back-link')!;
     const showFeedback = createAuthFeedback(form);
+    const fields = [passwordInput, confirmPasswordInput];
+    const touchedFields = new Set<HTMLInputElement>();
+    let hasSubmitted = false;
+
+    const validatePassword = () => {
+        const message = !passwordInput.value
+            ? 'Enter a password.'
+            : passwordInput.value.length < MIN_PASSWORD_LENGTH
+                ? `Use at least ${MIN_PASSWORD_LENGTH} characters.`
+                : '';
+        setAuthFieldError(passwordInput, message);
+        return !message;
+    };
+
+    const validateConfirmation = () => {
+        const message = !confirmPasswordInput.value
+            ? 'Re-enter your password.'
+            : confirmPasswordInput.value !== passwordInput.value
+                ? 'Passwords do not match.'
+                : '';
+        setAuthFieldError(confirmPasswordInput, message);
+        return !message;
+    };
 
     configurePasswordToggle(passwordToggles[0], passwordInput, 'password');
     configurePasswordToggle(passwordToggles[1], confirmPasswordInput, 'confirmation password');
 
-    passwordInput.addEventListener('input', () => showFeedback(''));
-    confirmPasswordInput.addEventListener('input', () => showFeedback(''));
+    passwordInput.addEventListener('input', () => {
+        showFeedback('');
+        if (hasSubmitted || touchedFields.has(passwordInput)) validatePassword();
+        if (hasSubmitted || touchedFields.has(confirmPasswordInput)) validateConfirmation();
+    });
+    confirmPasswordInput.addEventListener('input', () => {
+        showFeedback('');
+        if (hasSubmitted || touchedFields.has(confirmPasswordInput)) validateConfirmation();
+    });
+
+    fields.forEach((field) => {
+        field.addEventListener('blur', () => {
+            touchedFields.add(field);
+            if (field === passwordInput) validatePassword();
+            else validateConfirmation();
+        });
+    });
 
     backButton.addEventListener('click', () => {
         onBack?.();
@@ -73,22 +112,14 @@ export default function createSetPasswordStep({
         event.preventDefault();
 
         if (submitButton.disabled) return;
+        hasSubmitted = true;
 
         const password = passwordInput.value;
-        const confirmPassword = confirmPasswordInput.value;
-
-        if (!password || !confirmPassword) {
-            showFeedback('Please fill in both password fields.');
-            return;
-        }
-
-        if (password.length < MIN_PASSWORD_LENGTH) {
-            showFeedback(`Password must be at least ${MIN_PASSWORD_LENGTH} characters long.`);
-            return;
-        }
-
-        if (password !== confirmPassword) {
-            showFeedback('Passwords do not match.');
+        const valid = fields.map((field) => field === passwordInput
+            ? validatePassword()
+            : validateConfirmation()).every(Boolean);
+        if (!valid) {
+            scrollToFirstInvalidField(fields);
             return;
         }
 

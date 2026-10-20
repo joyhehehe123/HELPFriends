@@ -110,6 +110,17 @@
     outline-offset: 2px;
 }
 
+.login-card input[aria-invalid="true"] {
+    border: 2px solid #b42318;
+}
+
+.login-card .auth-field-error {
+    margin: 0;
+    color: #912018;
+    font-size: var(--text-sm);
+    line-height: 1.4;
+}
+
 .login-card .password-input-wrapper {
     position: relative;
 }

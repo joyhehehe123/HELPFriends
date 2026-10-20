@@ -1,6 +1,7 @@
 import './signup.css';
 import '../../auth-feedback.css';
 import { createAuthFeedback } from '../../auth-feedback';
+import { scrollToFirstInvalidField, setAuthFieldError } from '../../auth-validation';
 
 export interface SignupInfoData {
     studentId: string;
@@ -131,6 +132,66 @@ export default function createSignupStep({
     const volunteerInput = container.querySelector<HTMLInputElement>('#volunteer')!;
     const submitButton = container.querySelector<HTMLButtonElement>('.signup-button')!;
     const showFeedback = createAuthFeedback(form);
+    const fields = [studentIdInput, fullNameInput, studentEmailInput, facultySelect, programSelect];
+    const touchedFields = new Set<HTMLInputElement | HTMLSelectElement>();
+    let hasSubmitted = false;
+
+    const validateStudentId = () => {
+    let message = '';
+    const studentId = studentIdInput.value.trim();
+
+    if (studentId === '') {
+        message = 'Enter your student ID.';
+    } else if (!/^B\d{7}$/.test(studentId)) {
+        message = 'Student ID must start with B followed by 7 digits.';
+    } else {
+        message = '';
+    }
+
+    setAuthFieldError(studentIdInput, message);
+
+    if (message === '') {
+        return true;
+    } else {
+        return false;
+    }
+};
+    const validateFullName = () => {
+        const message = fullNameInput.value.trim() ? '' : 'Enter your full name.';
+        setAuthFieldError(fullNameInput, message);
+        return !message;
+    };
+
+    const validateEmail = () => {
+        const value = studentEmailInput.value.trim();
+        const message = !value
+            ? 'Enter your student email.'
+            : /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+                ? ''
+                : 'Enter a valid email address.';
+        setAuthFieldError(studentEmailInput, message);
+        return !message;
+    };
+
+    const validateFaculty = () => {
+        const message = facultySelect.value ? '' : 'Select your faculty.';
+        setAuthFieldError(facultySelect, message);
+        return !message;
+    };
+
+    const validateProgram = () => {
+        const message = programSelect.value ? '' : 'Select your program.';
+        setAuthFieldError(programSelect, message);
+        return !message;
+    };
+
+    const validateField = (field: typeof fields[number]) => {
+        if (field === studentIdInput) return validateStudentId();
+        if (field === fullNameInput) return validateFullName();
+        if (field === studentEmailInput) return validateEmail();
+        if (field === facultySelect) return validateFaculty();
+        return validateProgram();
+    };
 
     let currentSignupInfo = { ...signupInfo };
     studentIdInput.value = signupInfo.studentId;
@@ -170,16 +231,19 @@ export default function createSignupStep({
 
     studentIdInput.addEventListener('input', (event) => {
         showFeedback('');
+        if (hasSubmitted || touchedFields.has(studentIdInput)) validateStudentId();
         updateSignupInfo({ studentId: (event.target as HTMLInputElement).value });
     });
 
     fullNameInput.addEventListener('input', (event) => {
         showFeedback('');
+        if (hasSubmitted || touchedFields.has(fullNameInput)) validateFullName();
         updateSignupInfo({ fullName: (event.target as HTMLInputElement).value });
     });
 
     studentEmailInput.addEventListener('input', (event) => {
         showFeedback('');
+        if (hasSubmitted || touchedFields.has(studentEmailInput)) validateEmail();
         updateSignupInfo({ studentEmail: (event.target as HTMLInputElement).value });
     });
 
@@ -187,11 +251,21 @@ export default function createSignupStep({
         showFeedback('');
         renderPrograms(facultySelect.value);
         updateSignupInfo({ faculty: facultySelect.value, program: '' });
+        if (hasSubmitted || touchedFields.has(facultySelect)) validateFaculty();
+        if (hasSubmitted || touchedFields.has(programSelect)) validateProgram();
     });
 
     programSelect.addEventListener('change', () => {
         showFeedback('');
         updateSignupInfo({ program: programSelect.value });
+        if (hasSubmitted || touchedFields.has(programSelect)) validateProgram();
+    });
+
+    fields.forEach((field) => {
+        field.addEventListener('blur', () => {
+            touchedFields.add(field);
+            validateField(field);
+        });
     });
 
     volunteerInput.addEventListener('change', (event) => {
@@ -202,6 +276,7 @@ export default function createSignupStep({
         event.preventDefault();
 
         if (submitButton.disabled) return;
+        hasSubmitted = true;
 
         const currentInfo: SignupInfoData = {
             studentId: studentIdInput.value.trim(),
@@ -212,20 +287,9 @@ export default function createSignupStep({
             volunteer: volunteerInput.checked,
         };
 
-        if (
-            !currentInfo.studentId ||
-            !currentInfo.fullName ||
-            !currentInfo.studentEmail ||
-            !currentInfo.faculty ||
-            !currentInfo.program
-        ) {
-            showFeedback('Please fill in all fields.');
-            return;
-        }
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(currentInfo.studentEmail)) {
-            showFeedback('Please enter a valid email address.');
+        const valid = fields.map(validateField).every(Boolean);
+        if (!valid) {
+            scrollToFirstInvalidField(fields);
             return;
         }
 

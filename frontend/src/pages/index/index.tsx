@@ -25,7 +25,7 @@ function App() {
         <div className="home-actions">
           <div className="home-actions__buttons">
             <a className="home-cta" href="/signup">
-              <span className="home-cta__label">Register now</span>
+              <span className="home-cta__label">Signup now</span>
             </a>
             <a className="home-cta" href="/login">
               <span className="home-cta__label">Login</span>
