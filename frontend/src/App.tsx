@@ -1,8 +1,6 @@
 import { Routes, Route, Outlet, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { onAuthStateChange } from "./services/authService.ts";
-import { getUser } from "./services/userService.ts";
-import type { User } from "./types/user.ts";
 import { ProtectedRoute } from "./ProtectedRoute.tsx";
 import { ToastProvider } from "./components/toast/Toast.tsx";
 import { ConfirmProvider } from "./components/confirm/confirm-context.tsx";
