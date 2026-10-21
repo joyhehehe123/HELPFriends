@@ -1,5 +1,7 @@
 import './login.css';
 import { createAuthFeedback, getAuthErrorMessage } from '../../auth-feedback';
+import { configurePasswordToggle } from '../../password-toggle';
+import { scrollToFirstInvalidField, setAuthFieldError } from '../../auth-validation';
 
 export interface LoginInfoData {
     email: string;
@@ -36,7 +38,10 @@ export default function createLoginStep({
 
             <div class="signup-field">
                 <label for="loginPassword">Password</label>
-                <input id="loginPassword" type="password" autocomplete="current-password" required />
+                <div class="password-input-wrapper">
+                    <input id="loginPassword" type="password" autocomplete="current-password" required />
+                    <button type="button" class="password-toggle" aria-label="Show password" aria-pressed="false"></button>
+                </div>
             </div>
 
             <button type="button" class="forgot-link">Forgot Password?</button>
@@ -55,10 +60,33 @@ export default function createLoginStep({
     const form = container.querySelector<HTMLFormElement>('form')!;
     const emailInput = container.querySelector<HTMLInputElement>('#loginEmail')!;
     const passwordInput = container.querySelector<HTMLInputElement>('#loginPassword')!;
+    const passwordToggle = container.querySelector<HTMLButtonElement>('.password-toggle')!;
     const forgotButton = container.querySelector<HTMLButtonElement>('.forgot-link')!;
     const registerButton = container.querySelector<HTMLButtonElement>('.register-link')!;
     const submitButton = container.querySelector<HTMLButtonElement>('.login-button')!;
     const showFeedback = createAuthFeedback(form);
+    const fields = [emailInput, passwordInput];
+    const touchedFields = new Set<HTMLInputElement>();
+    let hasSubmitted = false;
+
+    const validateEmail = () => {
+        const value = emailInput.value.trim();
+        const message = !value
+            ? 'Enter your email address.'
+            : /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+                ? ''
+                : 'Enter a valid email address.';
+        setAuthFieldError(emailInput, message);
+        return !message;
+    };
+
+    const validatePassword = () => {
+        const message = passwordInput.value ? '' : 'Enter your password.';
+        setAuthFieldError(passwordInput, message);
+        return !message;
+    };
+
+    configurePasswordToggle(passwordToggle, passwordInput, 'password');
 
     emailInput.value = loginInfo.email;
     passwordInput.value = loginInfo.password;
@@ -75,12 +103,22 @@ export default function createLoginStep({
 
     emailInput.addEventListener('input', (event) => {
         showFeedback('');
+        if (hasSubmitted || touchedFields.has(emailInput)) validateEmail();
         updateLoginInfo('email', (event.target as HTMLInputElement).value);
     });
 
     passwordInput.addEventListener('input', (event) => {
         showFeedback('');
+        if (hasSubmitted || touchedFields.has(passwordInput)) validatePassword();
         updateLoginInfo('password', (event.target as HTMLInputElement).value);
+    });
+
+    fields.forEach((field) => {
+        field.addEventListener('blur', () => {
+            touchedFields.add(field);
+            if (field === emailInput) validateEmail();
+            else validatePassword();
+        });
     });
 
     forgotButton.addEventListener('click', () => {
@@ -95,20 +133,17 @@ export default function createLoginStep({
         event.preventDefault();
 
         if (submitButton.disabled) return;
+        hasSubmitted = true;
 
         const currentInfo: LoginInfoData = {
             email: emailInput.value.trim(),
             password: passwordInput.value,
         };
 
-        if (!currentInfo.email || !currentInfo.password) {
-            showFeedback('Please enter your email and password.');
-            return;
-        }
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(currentInfo.email)) {
-            showFeedback('Please enter a valid email address.');
+        const isEmailValid = validateEmail();
+        const isPasswordValid = validatePassword();
+        if (!isEmailValid || !isPasswordValid) {
+            scrollToFirstInvalidField(fields);
             return;
         }
 

@@ -129,6 +129,55 @@
     box-shadow: 0 0 0 3px rgba(82, 213, 255, 0.35);
 }
 
+.signup-field input[aria-invalid="true"],
+.signup-field select[aria-invalid="true"],
+.signup-field input[aria-invalid="true"]:focus,
+.signup-field select[aria-invalid="true"]:focus {
+    border: 2px solid #b42318;
+    box-shadow: 0 0 0 3px rgba(180, 35, 24, 0.15);
+}
+
+.auth-field-error {
+    margin: 0;
+    color: #912018;
+    font-size: var(--text-sm);
+    line-height: 1.4;
+    text-align: left;
+    font-weight: var(--weight-bold);
+}
+
+.signup-card--password .password-input-wrapper {
+    position: relative;
+}
+
+.signup-card--password .password-input-wrapper input {
+    padding-right: 4.5rem;
+}
+
+.signup-card--password .password-toggle {
+    position: absolute;
+    top: 50%;
+    right: var(--space-4);
+    transform: translateY(-50%);
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--color-text-primary);
+    font: inherit;
+    cursor: pointer;
+}
+
+.signup-card--password .password-toggle-icon {
+    display: block;
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.signup-card--password .password-toggle:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
 .otp-input {
     height: 4.25rem;
     border-radius: var(--radius-lg);
