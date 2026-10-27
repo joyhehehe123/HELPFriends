@@ -131,8 +131,8 @@ function App() {
                 <Route path='/profile' element={<ProfilePage />} />
                 <Route path='/profile/volunteer-profile' element={<VolunteerProfilePage />} />
 
-                <Route path='/support-request-form' element={<RequestSupportRoute/>} />
-                <Route path='/support-requests' element={<SupportRequestsRoute />} />
+                <Route path='/support-request-form/*' element={<RequestSupportRoute/>} />
+                <Route path='/support-requests/*' element={<SupportRequestsRoute />} />
                 <Route path='/notifications' element={<NotificationsRoute />} />
 
                 <Route path="/support-sessions" element={<SupportSessionsMenu />} />
