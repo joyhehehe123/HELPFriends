@@ -1,13 +1,14 @@
 import { useEffect } from 'react';
 import { useLocation, useNavigate, useNavigationType } from 'react-router-dom';
 import NotificationsPage from '../notifications/NotificationsPage';
+import { REQUEST_FORM_PATH, SUPPORT_REQUESTS_PATH, VOLUNTEER_MATCHING_PATH } from './constants';
 import RequestSupportPage from './RequestSupportPage';
 import SupportRequestsPage from './SupportRequestsPage';
 import { type SupportRequestRecord } from './types';
 
 interface PageState {
     startFrom?: SupportRequestRecord;
-    openRequestId?: string;
+    visitKey?: string; // Set when moving inside the same page
 }
 
 function usePageVisit() {
@@ -18,8 +19,9 @@ function usePageVisit() {
         window.scrollTo(0, 0);
     }, [location.key]);
 
-    const state = navigationType === 'POP' ? {} : ((location.state ?? {}) as PageState);
-    return { key: location.key, state };
+    const locationState = (location.state ?? {}) as PageState;
+    const state = navigationType === 'POP' ? {} : locationState;
+    return { key: locationState.visitKey ?? location.key, state };
 }
 
 export function RequestSupportRoute() {
@@ -29,22 +31,23 @@ export function RequestSupportRoute() {
     return (
         <RequestSupportPage
             key={key}
+            visitKey={key}
             startFrom={state.startFrom}
-            onRequestSent={(record) => navigate('/support-requests', { state: { openRequestId: record.requestId } })}
+            onRequestSent={(record) => navigate(`${SUPPORT_REQUESTS_PATH}/${record.requestId}`)}
         />
     );
 }
 
 export function SupportRequestsRoute() {
     const navigate = useNavigate();
-    const { key, state } = usePageVisit();
+    const { key } = usePageVisit();
 
     return (
         <SupportRequestsPage
             key={key}
-            initialRequestId={state.openRequestId}
-            onNewRequest={() => navigate('/support-request-form')}
-            onFindAnotherVolunteer={(request) => navigate('/support-request-form', { state: { startFrom: request } })}
+            visitKey={key}
+            onNewRequest={() => navigate(REQUEST_FORM_PATH)}
+            onFindAnotherVolunteer={(request) => navigate(VOLUNTEER_MATCHING_PATH, { state: { startFrom: request } })}
             onSchedule={() => navigate('/support-sessions')}
         />
     );
@@ -57,7 +60,7 @@ export function NotificationsRoute() {
     return (
         <NotificationsPage
             key={key}
-            onViewRequest={(requestId) => navigate('/support-requests', { state: { openRequestId: requestId } })}
+            onViewRequest={(requestId) => navigate(`${SUPPORT_REQUESTS_PATH}/${requestId}`)}
             onViewSessions={() => navigate('/support-sessions')}
         />
     );

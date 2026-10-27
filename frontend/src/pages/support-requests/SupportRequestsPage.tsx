@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
+import { Navigate, useMatch, useNavigate } from 'react-router-dom';
 import sadCat from '../../assets/sadcat.png';
 import Button from '../../components/Button';
+import { SUPPORT_REQUESTS_PATH } from './constants';
 import { MOCK_CURRENT_USER } from './mockRequests';
 import RequestCard from './RequestCard';
 import RequestDetails from './RequestDetails';
@@ -11,7 +13,7 @@ import './RequestSupportPage.css';
 import './SupportRequestsPage.css';
 
 interface SupportRequestsPageProps {
-    initialRequestId?: string;
+    visitKey: string; // Same for the list and details, so the tab is kept
     onNewRequest: () => void;
     onFindAnotherVolunteer: (request: SupportRequestRecord) => void;
     onSchedule: (request: SupportRequestRecord) => void;
@@ -31,17 +33,19 @@ const EMPTY_TEXT: Record<Tab, string> = {
 };
 
 export default function SupportRequestsPage({
-    initialRequestId,
+    visitKey,
     onNewRequest,
     onFindAnotherVolunteer,
     onSchedule,
 }: SupportRequestsPageProps) {
+    const navigate = useNavigate();
+    const openRequestId = useMatch(`${SUPPORT_REQUESTS_PATH}/:requestId`)?.params.requestId ?? null;
     const currentUserId = useCurrentUserId() ?? MOCK_CURRENT_USER.userId;
     const [tab, setTab] = useState<Tab>('sent');
     const [lists, setLists] = useState<RequestLists>({ sent: [], received: [] });
     const [status, setStatus] = useState<LoadStatus>('loading');
     const [reloadCount, setReloadCount] = useState(0);
-    const [openRequestId, setOpenRequestId] = useState<string | null>(initialRequestId ?? null);
+    const [cameFromList, setCameFromList] = useState(false);
 
     useEffect(() => {
         let isLatestLoad = true; // Ignore old responses
@@ -68,15 +72,15 @@ export default function SupportRequestsPage({
     const openRequest = [...lists.sent, ...lists.received].find((item) => item.requestId === openRequestId);
 
     const openDetails = (requestId: string) => {
-        setOpenRequestId(requestId);
-        window.scrollTo({ top: 0 });
+        setCameFromList(true);
+        navigate(`${SUPPORT_REQUESTS_PATH}/${requestId}`, { state: { visitKey } });
     };
 
     // Back to the tab the request is in
     const closeDetails = () => {
         if (openRequest) setTab(openRequest.seeker.userId === currentUserId ? 'sent' : 'received');
-        setOpenRequestId(null);
-        window.scrollTo({ top: 0 });
+        if (cameFromList) navigate(-1);
+        else navigate(SUPPORT_REQUESTS_PATH, { replace: true, state: { visitKey } });
     };
 
     // Show the new status in the list too
@@ -88,6 +92,11 @@ export default function SupportRequestsPage({
 
     if (openRequestId && status === 'loading') {
         return <div className="request-support" aria-busy="true" />;
+    }
+
+    // No request with this id
+    if (openRequestId && status === 'ready' && !openRequest) {
+        return <Navigate to={SUPPORT_REQUESTS_PATH} replace state={{ visitKey }} />;
     }
 
     if (openRequest) {

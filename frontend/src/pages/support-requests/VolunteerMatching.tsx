@@ -5,8 +5,6 @@ import Button from '../../components/Button';
 import VolunteerCard from '../../components/VolunteerCard';
 import VolunteerDetailsModal from '../../components/VolunteerDetailsModal';
 import { type VolunteerProfile } from '../../types/volunteerProfile';
-import { SUPPORT_MODES } from './constants';
-import DateRangeSelect from './DateRangeSelect';
 import { filterVolunteers } from './filterVolunteers';
 import { fetchVolunteerProfiles, submitSupportRequest } from './supportRequestApi';
 import { type SupportRequestRecord, type ValidSupportRequestDraft, type VolunteerFilters } from './types';
@@ -22,9 +20,7 @@ interface VolunteerMatchingProps {
 type LoadStatus = 'loading' | 'error' | 'ready';
 
 export default function VolunteerMatching({ request, currentUserId, onBack, onRequestSent }: VolunteerMatchingProps) {
-    const defaultFilters: VolunteerFilters = { skill: '', from: '', to: '', mode: request.supportMode };
-
-    const [filters, setFilters] = useState<VolunteerFilters>(defaultFilters);
+    const [filters, setFilters] = useState<VolunteerFilters>({ skill: '' });
     const [volunteers, setVolunteers] = useState<VolunteerProfile[]>([]);
     const [status, setStatus] = useState<LoadStatus>('loading');
     const [reloadCount, setReloadCount] = useState(0);
@@ -50,9 +46,7 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
         };
     }, [request.category, reloadCount]);
 
-    const matches = filterVolunteers(volunteers, request.category, filters, currentUserId);
-
-    const updateFilters = (changes: Partial<VolunteerFilters>) => setFilters((current) => ({ ...current, ...changes }));
+    const matches = filterVolunteers(volunteers, request, filters, currentUserId);
 
     const retryLoading = () => {
         setStatus('loading');
@@ -72,7 +66,7 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
     };
 
     return (
-        <main>
+        <main className="matching-page">
             <div className="page-top">
                 <BackLink onClick={onBack} label="Back to the support request form" />
                 <span className="category-chip matching-chip">{request.category} Support</span>
@@ -82,44 +76,21 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
                 <h1 className="visually-hidden">Volunteer Matching</h1>
 
                 <section className="matching-filters" aria-labelledby="filter-heading">
-                    <h2 id="filter-heading" className="matching-heading">Filter Volunteers</h2>
+                    <h2 id="filter-heading" className="matching-heading">Filter Skills</h2>
 
-                    <div className="matching-filters__controls">
-                        <label className="visually-hidden" htmlFor="skill-filter">Skill</label>
-                        <input
-                            id="skill-filter"
-                            className="matching-filters__skill"
-                            type="search"
-                            placeholder="Skill"
-                            autoComplete="off"
-                            value={filters.skill}
-                            onChange={(event) => updateFilters({ skill: event.target.value })}
-                        />
-
-                        <DateRangeSelect from={filters.from} to={filters.to} onChange={updateFilters} />
-
-                        <span className="matching-filters__divider" aria-hidden="true" />
-
-                        <fieldset className="mode-toggle">
-                            <legend className="visually-hidden">Support mode</legend>
-                            {SUPPORT_MODES.map((mode) => (
-                                <label key={mode} className="mode-toggle__option">
-                                    <input
-                                        className="mode-toggle__input"
-                                        type="radio"
-                                        name="mode-filter"
-                                        value={mode}
-                                        checked={filters.mode === mode}
-                                        onChange={() => updateFilters({ mode })}
-                                    />
-                                    <span className="mode-toggle__label">{mode}</span>
-                                </label>
-                            ))}
-                        </fieldset>
-                    </div>
+                    <label className="visually-hidden" htmlFor="skill-filter">Skill</label>
+                    <input
+                        id="skill-filter"
+                        className="matching-filters__skill"
+                        type="search"
+                        placeholder="Skill"
+                        autoComplete="off"
+                        value={filters.skill}
+                        onChange={(event) => setFilters({ skill: event.target.value })}
+                    />
                 </section>
 
-                <section aria-labelledby="results-heading" aria-busy={status === 'loading'}>
+                <section className="matching-results" aria-labelledby="results-heading" aria-busy={status === 'loading'}>
                     {(status !== 'ready' || matches.length > 0) && (
                         <h2 id="results-heading" className="matching-heading matching-heading--results">
                             Matching Volunteers
@@ -146,7 +117,7 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
                             <img className="no-matches__image" src={sadCat} alt="" />
                             <p className="no-matches__title">No volunteers match your filters</p>
                             <p className="no-matches__text">Please try again.</p>
-                            <Button shape="pill" className="no-matches__button" onClick={() => setFilters(defaultFilters)}>
+                            <Button shape="pill" className="no-matches__button" onClick={onBack}>
                                 Reset filters
                             </Button>
                         </div>

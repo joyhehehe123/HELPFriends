@@ -1,3 +1,13 @@
+/* Fill the height under the navbar so the sad cat can sit in the middle */
+.request-support--flow:has(> .matching-page),
+.matching-page,
+.matching-body,
+.matching-results {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
 .page-top + .request-support__body.matching-body {
     padding-top: var(--space-4);
 }
@@ -16,16 +26,11 @@
     margin-bottom: var(--space-3);
 }
 
-.matching-filters__controls {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 2px auto;
-    align-items: center;
-    gap: var(--space-3);
-}
-
 .matching-filters__skill {
+    display: block;
     box-sizing: border-box;
     width: 100%;
+    max-width: 480px;
     height: 46px;
     padding: 0 var(--space-3);
     border: none;
@@ -42,57 +47,6 @@
 .matching-filters__skill:focus {
     outline: none;
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
-}
-
-.matching-filters__divider {
-    width: 2px;
-    height: 46px;
-    background: #a9bbbf;
-}
-
-.mode-toggle {
-    display: flex;
-    gap: var(--space-3);
-    margin: 0;
-    padding: 0;
-    border: none;
-}
-
-.mode-toggle__option {
-    position: relative;
-}
-
-.mode-toggle__input {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: 0;
-    opacity: 0;
-}
-
-.mode-toggle__label {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-    width: 140px;
-    height: 46px;
-    border-radius: var(--radius-sm);
-    background: var(--color-bg-secondary);
-    font-family: var(--font-heading);
-    color: var(--color-text-primary);
-    cursor: pointer;
-}
-
-.mode-toggle__input:checked + .mode-toggle__label {
-    background: var(--color-tertiary);
-    font-weight: var(--weight-medium);
-    color: var(--color-text-secondary);
-}
-
-.mode-toggle__input:focus-visible + .mode-toggle__label {
-    outline: 3px solid rgba(37, 99, 235, 0.35);
-    outline-offset: 2px;
 }
 
 .matching-heading--results {
@@ -131,9 +85,11 @@
 }
 
 .no-matches {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     padding-top: var(--space-5);
     text-align: center;
 }
@@ -163,31 +119,13 @@
 }
 
 @media (max-width: 900px) {
-    .matching-filters__controls {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        gap: var(--space-2);
-    }
-
-    .matching-filters__skill,
-    .mode-toggle__label {
-        height: 42px;
-    }
-
-    .matching-filters__divider {
-        display: none;
-    }
-
-    .mode-toggle {
-        grid-column: 1 / -1;
-        gap: var(--space-2);
-    }
-
-    .mode-toggle__option {
-        flex: 1;
-    }
-
-    .mode-toggle__label {
+    .page-top + .request-support__body.matching-body {
         width: 100%;
+    }
+
+    .matching-filters__skill {
+        max-width: none;
+        height: 42px;
     }
 
     .no-matches__image {
