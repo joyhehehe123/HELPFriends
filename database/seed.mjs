@@ -517,6 +517,8 @@ async function clearData() {
             // Account does not exist, delete nothing
         }
     }
+
+    await batch.commit();
 }
 
 async function getOrCreateAuthUser(email) {
