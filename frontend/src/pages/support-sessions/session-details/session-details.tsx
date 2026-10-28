@@ -39,9 +39,7 @@ function SessionDetails() {
             <div className="back-container">
                 <BackLink className="back-button" onClick={() => { navigate(-1) }} />
             </div>
-            <div className="card-wrapper">
-                <SessionDetailsCard key={session.uid} session={session} role={role} status={session.status} onUpdated={refresh} />
-            </div>
+            <SessionDetailsCard key={session.uid} session={session} role={role} status={session.status} onUpdated={refresh} />
         </section>
     )
 }

@@ -1,3 +1,9 @@
+.card-wrapper {
+    margin: 0 auto 50px;
+    width: 100%;
+    max-width: 1000px;
+}
+
 .details-card-wrapper {
     background: var(--color-gradient-vertical);
     border-radius: var(--radius-lg);
@@ -115,6 +121,10 @@
     width: 40px;
     height: fit-content;
     border-radius: var(--radius-lg);
+}
+
+.details-card-support-title {
+    font-size: var(--text-lg);
 }
 
 .support-description, .cancel-info {
