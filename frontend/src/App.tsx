@@ -20,8 +20,8 @@ import Dashboard from './pages/dashboard/Dashboard.tsx';
 import SupportSessionsMenu from "./pages/support-sessions/support-sessions-menu/support-sessions-menu.tsx";
 import SupportSessions from "./pages/support-sessions/sessions-display/support-sessions.tsx";
 import SessionDetails from "./pages/support-sessions/session-details/session-details.tsx";
-import { NotificationsRoute, RequestSupportRoute, SupportRequestsRoute } from './pages/support-requests/SupportRoutes';
 
+import { NotificationsRoute, RequestSupportRoute, SupportRequestsRoute } from './pages/support-requests/SupportRoutes';
 
 function LegacyDomRenderer({ render }: { render: () => HTMLElement | null }) {
   const ref = useRef<HTMLDivElement | null>(null);
