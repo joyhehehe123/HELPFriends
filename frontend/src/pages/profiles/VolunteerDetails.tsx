@@ -2,6 +2,10 @@ import './Profile.css';
 import createProfileLayout from './ProfileLayout';
 import { DAYS, profileStore, escapeHtml } from './ProfileData';
 import type { DayKey, SupportMode, VolunteerData } from './ProfileData';
+import { getCurrentUid } from '../../services/authService';
+import { getVolunteer, updateVolunteer } from '../../services/volunteerService';
+import type { Day } from '../../types/constants';
+import type { Volunteer } from '../../types/volunteer';
 
 const ICON_PLUS = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>`;
 const ICON_X = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>`;
@@ -12,8 +16,48 @@ const ICON_BUILDING = `<svg viewBox="0 0 24 24" width="56" height="56" fill="non
 
 const MAX_SKILL_LENGTH = 30;
 
+const WEEKDAY_NAMES: Record<DayKey, Day> = {
+    mon: 'Monday',
+    tue: 'Tuesday',
+    wed: 'Wednesday',
+    thu: 'Thursday',
+    fri: 'Friday',
+};
+
 function clone<T>(value: T): T {
     return JSON.parse(JSON.stringify(value)) as T;
+}
+
+function toProfileVolunteer(volunteer: Volunteer): VolunteerData {
+    const availability: VolunteerData['availability'] = {
+        mon: [],
+        tue: [],
+        wed: [],
+        thu: [],
+        fri: [],
+    };
+
+    volunteer.availability.forEach(({ day, timeSlots }) => {
+        const key = DAYS.find((weekday) => weekday.label === day)?.key;
+        if (key) availability[key] = clone(timeSlots);
+    });
+
+    return {
+        active: volunteer.isActive,
+        rating: volunteer.rating,
+        availability,
+        supportModes: volunteer.preferredMode === 'Both'
+            ? ['online', 'physical']
+            : volunteer.preferredMode === 'Virtual' ? ['online'] : ['physical'],
+        skills: [...volunteer.skills],
+    };
+}
+
+function toPreferredMode(modes: SupportMode[], current: Volunteer['preferredMode']): Volunteer['preferredMode'] {
+    if (modes.length === 2) return 'Both';
+    if (modes[0] === 'online') return 'Virtual';
+    if (modes[0] === 'physical') return 'Physical';
+    return current;
 }
 
 function toMinutes(time: string): number {
@@ -31,8 +75,9 @@ interface VolunteerDetailsProps {
 }
 
 export default function createVolunteerDetailsPage({ navigate }: VolunteerDetailsProps): HTMLElement {
-    // Work on a copy; it is only written to the store when the user presses Save.
-    const draft: VolunteerData = clone(profileStore.volunteer);
+    let draft: VolunteerData = clone(profileStore.volunteer);
+    let savedVolunteer: Volunteer | null = null;
+    let profileReady = false;
     let copyOpenDay: DayKey | null = null;
     let addingSkill = false;
 
@@ -90,6 +135,7 @@ export default function createVolunteerDetailsPage({ navigate }: VolunteerDetail
             </section>
         </div>
 
+        <p id="saveStatus" class="profile-feedback" role="status" hidden></p>
         <div class="profile-actions">
             <button type="button" id="saveButton" class="profile-save-button">Save</button>
         </div>
@@ -101,6 +147,14 @@ export default function createVolunteerDetailsPage({ navigate }: VolunteerDetail
     const supportModesEl = content.querySelector<HTMLElement>('#supportModes')!;
     const skillsEl = content.querySelector<HTMLElement>('#skills')!;
     const saveButton = content.querySelector<HTMLButtonElement>('#saveButton')!;
+    const saveStatus = content.querySelector<HTMLElement>('#saveStatus')!;
+    saveButton.disabled = true;
+
+    const setSaveStatus = (message: string, isError = false) => {
+        saveStatus.textContent = message;
+        saveStatus.hidden = !message;
+        saveStatus.classList.toggle('profile-feedback--error', isError);
+    };
 
     // ----- Activate toggle -----
     const renderActive = () => {
@@ -249,7 +303,6 @@ export default function createVolunteerDetailsPage({ navigate }: VolunteerDetail
             return;
         }
 
-        // TODO (API): you may want to pick from a predefined skills list instead of free text.
         if (draft.skills.some((skill) => skill.toLowerCase() === name.toLowerCase())) {
             alert('You have already added that skill.');
             return;
@@ -293,7 +346,12 @@ export default function createVolunteerDetailsPage({ navigate }: VolunteerDetail
     });
 
     // ----- Save -----
-    saveButton.addEventListener('click', () => {
+    saveButton.addEventListener('click', async () => {
+        if (!profileReady || !savedVolunteer) {
+            setSaveStatus('Your volunteer profile is not available to save.', true);
+            return;
+        }
+
         if (draft.active && draft.supportModes.length === 0) {
             alert('Please choose at least one support mode (Online or Physical).');
             return;
@@ -314,15 +372,95 @@ export default function createVolunteerDetailsPage({ navigate }: VolunteerDetail
             }
         }
 
-        // TODO (API): send the draft to the backend here.
-        profileStore.volunteer = { ...clone(draft), rating: profileStore.volunteer.rating };
-        alert('Volunteer details saved.');
+        const uid = getCurrentUid();
+        if (!uid) {
+            setSaveStatus('Unable to save your volunteer profile. Please sign in again.', true);
+            return;
+        }
+
+        const availability = [
+            ...savedVolunteer.availability.filter(
+                ({ day }) => !DAYS.some((weekday) => weekday.label === day),
+            ),
+            ...DAYS.flatMap(({ key }) => draft.availability[key].length > 0
+                ? [{
+                    day: WEEKDAY_NAMES[key],
+                    timeSlots: [...draft.availability[key]]
+                        .sort((a, b) => toMinutes(a.start) - toMinutes(b.start)),
+                }]
+                : []),
+        ];
+        const preferredMode = toPreferredMode(draft.supportModes, savedVolunteer.preferredMode);
+        saveButton.disabled = true;
+        setSaveStatus('Saving volunteer profile...');
+
+        try {
+            await updateVolunteer(uid, {
+                isActive: draft.active,
+                preferredMode,
+                skills: [...draft.skills],
+                availability,
+            });
+            savedVolunteer = {
+                ...savedVolunteer,
+                isActive: draft.active,
+                preferredMode,
+                skills: [...draft.skills],
+                availability,
+            };
+            profileStore.volunteer = clone(draft);
+            setSaveStatus('Volunteer details saved.');
+        } catch (error) {
+            console.error('Failed to save volunteer details:', error);
+            setSaveStatus('Unable to save volunteer details. Please try again.', true);
+        } finally {
+            saveButton.disabled = false;
+        }
     });
 
     renderActive();
     renderAvailability();
     renderSupportModes();
     renderSkills();
+
+    const uid = getCurrentUid();
+    if (!uid) {
+        setSaveStatus('Unable to load your volunteer profile. Please sign in again.', true);
+    } else {
+        void getVolunteer(uid)
+            .then((volunteer) => {
+                if (!volunteer) {
+                    setSaveStatus('No volunteer profile was found for this account.', true);
+                    return;
+                }
+
+                savedVolunteer = volunteer;
+                draft = toProfileVolunteer(volunteer);
+                profileStore.volunteer = clone(draft);
+                profileReady = true;
+                renderActive();
+                renderAvailability();
+                renderSupportModes();
+                renderSkills();
+
+                const rating = draft.rating > 0 ? draft.rating.toFixed(1) : '–';
+                const ratingDisplay = content.querySelector<HTMLElement>('.rating-display')!;
+                const stars = [0, 1, 2, 3, 4]
+                    .map((index) => {
+                        const fill = Math.max(0, Math.min(1, draft.rating - index)) * 100;
+                        return `<span class="star">★<span class="star-fill" style="width:${fill}%">★</span></span>`;
+                    })
+                    .join('');
+                ratingDisplay.setAttribute('aria-label', `Rating ${rating} out of 5`);
+                ratingDisplay.innerHTML = `<span class="stars" aria-hidden="true">${stars}</span><span class="rating-value">${rating}</span>`;
+                saveButton.disabled = false;
+                setSaveStatus('');
+            })
+            .catch((error: unknown) => {
+                console.error('Failed to load volunteer details:', error);
+                setSaveStatus('Unable to load volunteer details. Please try again later.', true);
+            });
+    }
 
     return createProfileLayout({ activeTab: 'volunteer', navigate, content });
 }

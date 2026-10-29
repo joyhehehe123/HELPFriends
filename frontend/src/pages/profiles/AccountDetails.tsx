@@ -1,12 +1,11 @@
 import './Profile.css';
 import createProfileLayout from './ProfileLayout';
-import { profileStore, escapeHtml } from './ProfileData';
-import { onAuthStateChange } from '../../services/authService';
-import { getUser } from '../../services/userService';
+import { profileStore } from './ProfileData';
+import { getCurrentUid } from '../../services/authService';
+import { getUser, updateUser } from '../../services/userService';
+import { DEFAULT_AVATAR } from './DefaultAvatar';
 
-const MAX_AVATAR_BYTES = 5 * 1024 * 1024;
 const MAX_ABOUT_LENGTH = 300;
-const ALLOWED_AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 const PENCIL_ICON = `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13 7l4 4"/></svg>`;
 
@@ -15,23 +14,21 @@ interface AccountDetailsProps {
 }
 
 export default function createAccountDetailsPage({ navigate }: AccountDetailsProps): HTMLElement {
-    const { profile, volunteer } = profileStore;
-    const accountType = volunteer.active ? 'Support Seeker + Student Volunteer' : 'Support Seeker';
+    const { profile } = profileStore;
 
     const content = document.createElement('div');
     content.className = 'profile-content';
     content.innerHTML = `
+        <p class="profile-feedback" role="status">Loading profile...</p>
         <section class="profile-card profile-summary">
             <div class="avatar-wrap">
                 <img class="avatar-image" src="${profile.avatarUrl}" alt="Your profile picture" />
-                <button type="button" class="avatar-edit" aria-label="Change profile picture">${PENCIL_ICON}</button>
-                <input id="avatarFile" type="file" accept="image/jpeg,image/png,image/webp" hidden />
             </div>
             <div class="summary-text">
-                <h2 class="summary-name">${escapeHtml(profile.fullName)}</h2>
-                <p class="summary-muted">${escapeHtml(profile.studentId)}</p>
-                <p class="summary-muted">${escapeHtml(profile.universityEmail)}</p>
-                <p class="summary-muted summary-academic">${escapeHtml(profile.faculty)}<br />${escapeHtml(profile.programme)}</p>
+                <h2 class="summary-name"></h2>
+                <p class="summary-muted summary-student-id"></p>
+                <p class="summary-muted summary-email"></p>
+                <p class="summary-muted summary-academic"></p>
             </div>
         </section>
 
@@ -56,9 +53,9 @@ export default function createAccountDetailsPage({ navigate }: AccountDetailsPro
                 <h3 class="profile-section-title">Student Information</h3>
                 <div class="profile-card info-card">
                     <dl>
-                        <dt>Student ID:</dt><dd>${escapeHtml(profile.studentId)}</dd>
-                        <dt>Faculty:</dt><dd class="profile-faculty">${escapeHtml(profile.faculty)}</dd>
-                        <dt>Programme:</dt><dd class="profile-program">${escapeHtml(profile.programme)}</dd>
+                    <dt>Student ID:</dt><dd class="profile-student-id"></dd>
+                    <dt>Faculty:</dt><dd class="profile-faculty"></dd>
+                    <dt>Programme:</dt><dd class="profile-program"></dd>
                     </dl>
                 </div>
             </section>
@@ -67,8 +64,8 @@ export default function createAccountDetailsPage({ navigate }: AccountDetailsPro
                 <h3 class="profile-section-title">Account Information</h3>
                 <div class="profile-card info-card">
                     <dl>
-                        <dt>Account Type:</dt><dd>${accountType}</dd>
-                        <dt>University Email:</dt><dd>${escapeHtml(profile.universityEmail)}</dd>
+                    <dt>Account Type:</dt><dd class="profile-account-type"></dd>
+                    <dt>University Email:</dt><dd class="profile-account-email"></dd>
                     </dl>
                 </div>
             </section>
@@ -76,8 +73,6 @@ export default function createAccountDetailsPage({ navigate }: AccountDetailsPro
     `;
 
     const avatarImage = content.querySelector<HTMLImageElement>('.avatar-image')!;
-    const avatarEditButton = content.querySelector<HTMLButtonElement>('.avatar-edit')!;
-    const avatarFileInput = content.querySelector<HTMLInputElement>('#avatarFile')!;
 
     const aboutText = content.querySelector<HTMLElement>('.about-text')!;
     const aboutEditButton = content.querySelector<HTMLButtonElement>('.about-edit')!;
@@ -86,63 +81,69 @@ export default function createAccountDetailsPage({ navigate }: AccountDetailsPro
     const aboutCount = content.querySelector<HTMLElement>('.about-count')!;
     const aboutCancelButton = content.querySelector<HTMLButtonElement>('.about-cancel')!;
     const summaryAcademic = content.querySelector<HTMLElement>('.summary-academic')!;
+    const summaryName = content.querySelector<HTMLElement>('.summary-name')!;
+    const summaryStudentId = content.querySelector<HTMLElement>('.summary-student-id')!;
+    const summaryEmail = content.querySelector<HTMLElement>('.summary-email')!;
+    const studentIdValue = content.querySelector<HTMLElement>('.profile-student-id')!;
     const facultyValue = content.querySelector<HTMLElement>('.profile-faculty')!;
     const programValue = content.querySelector<HTMLElement>('.profile-program')!;
+    const accountTypeValue = content.querySelector<HTMLElement>('.profile-account-type')!;
+    const accountEmailValue = content.querySelector<HTMLElement>('.profile-account-email')!;
+    const feedback = content.querySelector<HTMLElement>('.profile-feedback')!;
 
-    const stopAuthListener = onAuthStateChange((authUser) => {
-        stopAuthListener();
-        if (!authUser) return;
+    const setFeedback = (message: string, isError = false) => {
+        feedback.textContent = message;
+        feedback.hidden = !message;
+        feedback.classList.toggle('profile-feedback--error', isError);
+    };
 
-        void getUser(authUser.uid)
+    const renderUser = (user: NonNullable<Awaited<ReturnType<typeof getUser>>>) => {
+        profile.fullName = user.fullName;
+        profile.studentId = user.studentId;
+        profile.universityEmail = user.email;
+        profile.faculty = user.faculty ?? '';
+        profile.programme = user.program ?? '';
+        profile.aboutMe = user.bio ?? '';
+        profile.avatarUrl = user.profilePic ?? DEFAULT_AVATAR;
+
+        summaryName.textContent = profile.fullName;
+        summaryStudentId.textContent = profile.studentId;
+        summaryEmail.textContent = profile.universityEmail;
+        summaryAcademic.replaceChildren();
+        summaryAcademic.append(document.createTextNode(profile.faculty));
+        if (profile.faculty && profile.programme) {
+            summaryAcademic.appendChild(document.createElement('br'));
+        }
+        summaryAcademic.append(document.createTextNode(profile.programme));
+        studentIdValue.textContent = profile.studentId;
+        facultyValue.textContent = profile.faculty;
+        programValue.textContent = profile.programme;
+        accountTypeValue.textContent = user.isVolunteer
+            ? 'Support Seeker + Student Volunteer'
+            : 'Support Seeker';
+        accountEmailValue.textContent = profile.universityEmail;
+        avatarImage.src = profile.avatarUrl;
+        renderAbout();
+    };
+
+    const uid = getCurrentUid();
+    if (!uid) {
+        setFeedback('Unable to load your profile. Please sign in again.', true);
+    } else {
+        void getUser(uid)
             .then((user) => {
-                if (!user) return;
-                profile.faculty = user.faculty ?? '';
-                profile.programme = user.program ?? '';
-                summaryAcademic.replaceChildren();
-                summaryAcademic.append(document.createTextNode(profile.faculty));
-                if (profile.faculty && profile.programme) {
-                    summaryAcademic.appendChild(document.createElement('br'));
+                if (!user) {
+                    setFeedback('Your account profile could not be found.', true);
+                    return;
                 }
-                summaryAcademic.append(document.createTextNode(profile.programme));
-                facultyValue.textContent = profile.faculty;
-                programValue.textContent = profile.programme;
+                renderUser(user);
+                setFeedback('');
             })
             .catch((error: unknown) => {
-                console.error('Failed to load registered faculty and program for the profile:', error);
+                console.error('Failed to load the account profile:', error);
+                setFeedback('Unable to load your profile. Please try again later.', true);
             });
-    });
-
-    // ----- Profile picture -----
-    avatarEditButton.addEventListener('click', () => avatarFileInput.click());
-
-    avatarFileInput.addEventListener('change', () => {
-        const file = avatarFileInput.files?.[0];
-        if (!file) return;
-
-        if (!ALLOWED_AVATAR_TYPES.includes(file.type)) {
-            avatarFileInput.value = '';
-            alert('Profile picture must be a JPG, PNG or WebP image.');
-            return;
-        }
-
-        if (file.size > MAX_AVATAR_BYTES) {
-            avatarFileInput.value = '';
-            alert('Profile picture must be 5 MB or smaller.');
-            return;
-        }
-
-        // TODO (API): upload the file here and use the URL the server returns.
-        if (profile.avatarUrl.startsWith('blob:')) {
-            URL.revokeObjectURL(profile.avatarUrl);
-        }
-        profile.avatarUrl = URL.createObjectURL(file);
-        avatarImage.src = profile.avatarUrl;
-        // Keep the navbar avatar in sync.
-        document.querySelectorAll<HTMLImageElement>('.navbar__avatar-img').forEach((image) => {
-            image.src = profile.avatarUrl;
-        });
-        avatarFileInput.value = '';
-    });
+    }
 
     // ----- About me -----
     const renderAbout = () => {
@@ -171,12 +172,30 @@ export default function createAccountDetailsPage({ navigate }: AccountDetailsPro
     aboutCancelButton.addEventListener('click', () => setEditingAbout(false));
     aboutTextarea.addEventListener('input', updateAboutCount);
 
-    aboutForm.addEventListener('submit', (event) => {
+    aboutForm.addEventListener('submit', async (event) => {
         event.preventDefault();
-        // TODO (API): save the new "About me" text here.
-        profile.aboutMe = aboutTextarea.value.trim();
-        renderAbout();
-        setEditingAbout(false);
+        const currentUid = getCurrentUid();
+        if (!currentUid) {
+            setFeedback('Unable to save your profile. Please sign in again.', true);
+            return;
+        }
+
+        const saveButton = aboutForm.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+        saveButton.disabled = true;
+        setFeedback('Saving profile...');
+        const aboutMe = aboutTextarea.value.trim();
+        try {
+            await updateUser(currentUid, { bio: aboutMe || null });
+            profile.aboutMe = aboutMe;
+            renderAbout();
+            setEditingAbout(false);
+            setFeedback('Profile updated.');
+        } catch (error) {
+            console.error('Failed to save the profile description:', error);
+            setFeedback('Unable to save your profile. Please try again.', true);
+        } finally {
+            saveButton.disabled = false;
+        }
     });
 
     return createProfileLayout({ activeTab: 'account', navigate, content });

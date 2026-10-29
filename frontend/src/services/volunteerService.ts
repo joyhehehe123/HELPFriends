@@ -95,7 +95,7 @@ export const getAvailableVolunteersBetweenDateRange = async (startDate: Date, en
 // ─── Update ────────────────────────────────────────────────────────────────────
 
 // Update volunteer data
-export const updateVolunteer = async (uid: string, newData: Partial<Omit<Volunteer, 'uid' | 'rating' | 'isActive' | 'availability'>>): Promise<void> => {
+export const updateVolunteer = async (uid: string, newData: Partial<Omit<Volunteer, 'uid' | 'rating'>>): Promise<void> => {
     try {
         await updateDoc(doc(db, 'volunteers', uid), newData);
     } catch (error) {

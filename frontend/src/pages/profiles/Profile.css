@@ -104,6 +104,16 @@
     text-align: center;
 }
 
+.profile-feedback {
+    margin: 0;
+    color: var(--color-text-primary);
+    font-size: var(--text-sm);
+}
+
+.profile-feedback--error {
+    color: #b42318;
+}
+
 /* ---------- Cards and section titles ---------- */
 
 .profile-card {
@@ -197,7 +207,6 @@
     background: var(--color-bg-container-secondary);
 }
 
-.avatar-edit,
 .about-edit {
     display: inline-flex;
     align-items: center;
@@ -206,17 +215,6 @@
     background: none;
     color: var(--color-text-primary);
     cursor: pointer;
-}
-
-.avatar-edit {
-    position: absolute;
-    right: 0;
-    bottom: 0.5rem;
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 50%;
-    background: #fff;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 
 .summary-name {
