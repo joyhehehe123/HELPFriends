@@ -1,3 +1,5 @@
+// session-details-page.tsx
+
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Navigate } from "react-router-dom";
 import type { Role } from "../../../types/constants";
@@ -6,9 +8,9 @@ import { getSupportSession } from "../../../services/supportSessionService";
 import { getCurrentUid } from "../../../services/authService";
 import SessionDetailsCard from "./session-details-card";
 import BackLink from "../../../components/BackLink";
-import "./session-details.css";
+import "./session-details-page.css";
 
-function SessionDetails() {
+export default function SessionDetailsPage() {
     const [refreshKey, setRefreshKey] = useState(0);
     const refresh = () => setRefreshKey((k) => k + 1);
 
@@ -37,11 +39,14 @@ function SessionDetails() {
     return (
         <section id="session-content">
             <div className="back-container">
-                <BackLink className="back-button" onClick={() => { navigate(-1) }} />
+                <BackLink 
+                    className="back-button" 
+                    onClick={() => { 
+                        navigate(`/support-sessions/${session.status.toLowerCase()}`) 
+                    }} 
+                />
             </div>
-            <SessionDetailsCard key={session.uid} session={session} role={role} status={session.status} onUpdated={refresh} />
+            <SessionDetailsCard key={session.uid} session={session} role={role} onUpdated={refresh} />
         </section>
     )
-}
-
-export default SessionDetails;
+};
