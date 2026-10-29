@@ -4,6 +4,7 @@ import { profileStore } from './ProfileData';
 import { getCurrentUid } from '../../services/authService';
 import { getUser, updateUser } from '../../services/userService';
 import { DEFAULT_AVATAR } from './DefaultAvatar';
+import { showDomToast } from '../../components/toast/domToast';
 
 const MAX_ABOUT_LENGTH = 300;
 
@@ -19,7 +20,6 @@ export default function createAccountDetailsPage({ navigate }: AccountDetailsPro
     const content = document.createElement('div');
     content.className = 'profile-content';
     content.innerHTML = `
-        <p class="profile-feedback" role="status">Loading profile...</p>
         <section class="profile-card profile-summary">
             <div class="avatar-wrap">
                 <img class="avatar-image" src="${profile.avatarUrl}" alt="Your profile picture" />
@@ -89,12 +89,10 @@ export default function createAccountDetailsPage({ navigate }: AccountDetailsPro
     const programValue = content.querySelector<HTMLElement>('.profile-program')!;
     const accountTypeValue = content.querySelector<HTMLElement>('.profile-account-type')!;
     const accountEmailValue = content.querySelector<HTMLElement>('.profile-account-email')!;
-    const feedback = content.querySelector<HTMLElement>('.profile-feedback')!;
 
     const setFeedback = (message: string, isError = false) => {
-        feedback.textContent = message;
-        feedback.hidden = !message;
-        feedback.classList.toggle('profile-feedback--error', isError);
+        if (!message) return;
+        showDomToast(message, isError ? 'error' : 'success');
     };
 
     const renderUser = (user: NonNullable<Awaited<ReturnType<typeof getUser>>>) => {

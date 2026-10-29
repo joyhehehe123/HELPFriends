@@ -6,6 +6,7 @@ import { getCurrentUid } from '../../services/authService';
 import { getVolunteer, updateVolunteer } from '../../services/volunteerService';
 import type { Day } from '../../types/constants';
 import type { Volunteer } from '../../types/volunteer';
+import { showDomToast } from '../../components/toast/domToast';
 
 const ICON_PLUS = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>`;
 const ICON_X = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>`;
@@ -146,8 +147,6 @@ export default function createVolunteerDetailsPage({ navigate }: VolunteerDetail
             <button type="button" id="saveButton" class="profile-save-button">Save</button>
         </div>
         </div>
-
-        <p id="saveStatus" class="profile-feedback" role="status">Loading volunteer details...</p>
     `;
 
     const activeToggle = content.querySelector<HTMLInputElement>('#activeToggle')!;
@@ -156,16 +155,26 @@ export default function createVolunteerDetailsPage({ navigate }: VolunteerDetail
     const supportModesEl = content.querySelector<HTMLElement>('#supportModes')!;
     const skillsEl = content.querySelector<HTMLElement>('#skills')!;
     const saveButton = content.querySelector<HTMLButtonElement>('#saveButton')!;
-    const saveStatus = content.querySelector<HTMLElement>('#saveStatus')!;
     const volunteerDetails = content.querySelector<HTMLElement>('#volunteerDetails')!;
     const registerPrompt = content.querySelector<HTMLElement>('#registerPrompt')!;
     const registerButton = content.querySelector<HTMLButtonElement>('#registerButton')!;
     saveButton.disabled = true;
+    saveButton.hidden = true;
 
     const setSaveStatus = (message: string, isError = false) => {
-        saveStatus.textContent = message;
-        saveStatus.hidden = !message;
-        saveStatus.classList.toggle('profile-feedback--error', isError);
+        if (!message) return;
+        showDomToast(message, isError ? 'error' : 'success');
+    };
+
+    const hasChanges = () => {
+        if (!savedVolunteer) return false;
+        return JSON.stringify(draft) !== JSON.stringify(toProfileVolunteer(savedVolunteer));
+    };
+
+    const updateSaveButtonVisibility = () => {
+        const changed = hasChanges();
+        saveButton.hidden = !changed;
+        saveButton.disabled = !changed;
     };
 
     registerButton.addEventListener('click', () => navigate('/profile/volunteer-registration'));
@@ -179,6 +188,7 @@ export default function createVolunteerDetailsPage({ navigate }: VolunteerDetail
     activeToggle.addEventListener('change', () => {
         draft.active = activeToggle.checked;
         renderActive();
+        updateSaveButtonVisibility();
     });
 
     // ----- Availability -----
@@ -256,6 +266,7 @@ export default function createVolunteerDetailsPage({ navigate }: VolunteerDetail
         }
 
         renderAvailability();
+        updateSaveButtonVisibility();
     });
 
     availabilityEl.addEventListener('change', (event) => {
@@ -266,6 +277,8 @@ export default function createVolunteerDetailsPage({ navigate }: VolunteerDetail
         if (slot) {
             slot[input.dataset.field as 'start' | 'end'] = input.value;
         }
+
+        updateSaveButtonVisibility();
     });
 
     // ----- Support mode -----
@@ -285,6 +298,7 @@ export default function createVolunteerDetailsPage({ navigate }: VolunteerDetail
             ? draft.supportModes.filter((existing) => existing !== mode)
             : [...draft.supportModes, mode];
         renderSupportModes();
+        updateSaveButtonVisibility();
     });
 
     // ----- Skills -----
@@ -318,13 +332,14 @@ export default function createVolunteerDetailsPage({ navigate }: VolunteerDetail
         }
 
         if (draft.skills.some((skill) => skill.toLowerCase() === name.toLowerCase())) {
-            alert('You have already added that skill.');
+            showDomToast('You have already added that skill.', 'error');
             return;
         }
 
         draft.skills.push(name);
         addingSkill = false;
         renderSkills();
+        updateSaveButtonVisibility();
     };
 
     skillsEl.addEventListener('click', (event) => {
@@ -334,6 +349,7 @@ export default function createVolunteerDetailsPage({ navigate }: VolunteerDetail
         if (removeButton) {
             draft.skills.splice(Number(removeButton.dataset.skillRemove), 1);
             renderSkills();
+            updateSaveButtonVisibility();
             return;
         }
 
@@ -356,6 +372,7 @@ export default function createVolunteerDetailsPage({ navigate }: VolunteerDetail
         } else if (event.key === 'Escape') {
             addingSkill = false;
             renderSkills();
+            updateSaveButtonVisibility();
         }
     });
 
@@ -367,7 +384,7 @@ export default function createVolunteerDetailsPage({ navigate }: VolunteerDetail
         }
 
         if (draft.active && draft.supportModes.length === 0) {
-            alert('Please choose at least one support mode (Online or Physical).');
+            showDomToast('Please choose at least one support mode (Online or Physical).', 'error');
             return;
         }
 
@@ -376,11 +393,11 @@ export default function createVolunteerDetailsPage({ navigate }: VolunteerDetail
 
             for (let i = 0; i < slots.length; i += 1) {
                 if (!slots[i].start || !slots[i].end || toMinutes(slots[i].start) >= toMinutes(slots[i].end)) {
-                    alert(`${day.label}: each time slot needs an end time after its start time.`);
+                    showDomToast(`${day.label}: each time slot needs an end time after its start time.`, 'error');
                     return;
                 }
                 if (i > 0 && toMinutes(slots[i].start) < toMinutes(slots[i - 1].end)) {
-                    alert(`${day.label}: time slots can't overlap.`);
+                    showDomToast(`${day.label}: time slots can't overlap.`, 'error');
                     return;
                 }
             }
@@ -423,12 +440,14 @@ export default function createVolunteerDetailsPage({ navigate }: VolunteerDetail
                 availability,
             };
             profileStore.volunteer = clone(draft);
+            updateSaveButtonVisibility();
             setSaveStatus('Volunteer details saved.');
         } catch (error) {
             console.error('Failed to save volunteer details:', error);
             setSaveStatus('Unable to save volunteer details. Please try again.', true);
         } finally {
             saveButton.disabled = false;
+            updateSaveButtonVisibility();
         }
     });
 
@@ -460,6 +479,7 @@ export default function createVolunteerDetailsPage({ navigate }: VolunteerDetail
                 renderAvailability();
                 renderSupportModes();
                 renderSkills();
+                updateSaveButtonVisibility();
 
                 const rating = draft.rating > 0 ? draft.rating.toFixed(1) : '–';
                 const ratingDisplay = content.querySelector<HTMLElement>('.rating-display')!;

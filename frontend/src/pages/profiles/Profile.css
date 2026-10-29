@@ -114,6 +114,21 @@
     color: #b42318;
 }
 
+/* ---------- Toast (vanilla-DOM profile pages) ---------- */
+.toast--error {
+    background-color: #b42318;
+}
+
+/* ---------- Cards: subtle polish (keeps the existing vibe) ---------- */
+.profile-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(55, 204, 150, 0.35);
+}
+
+.profile-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
 /* ---------- Cards and section titles ---------- */
 
 .profile-card {
@@ -134,6 +149,7 @@
     margin: 0 0 var(--space-2) 2rem;
     font-size: var(--text-lg);
     font-weight: var(--weight-bold);
+    text-align: center;
 }
 
 /* ---------- Buttons ---------- */
@@ -157,6 +173,7 @@
 }
 
 .profile-save-button {
+    margin-top: var(--space-4);
     width: 13.3rem;
     height: 4.5rem;
     border: none;
@@ -205,7 +222,7 @@
 .profile-summary {
     display: flex;
     align-items: center;
-    gap: 4rem;
+    gap: 3.5rem;
     padding: 3rem 4rem;
 }
 
@@ -236,16 +253,19 @@
 }
 
 .summary-name {
-    margin: 0;
-    font-size: var(--text-lg);
+    margin: 0 0 var(--space-1) 0;
+    font-size: var(--text-xl);
     font-weight: var(--weight-bold);
+    letter-spacing: -0.01em;
+    text-align: left;
 }
 
 .summary-muted {
-    margin: 0;
+    margin: 0 0 var(--space-1) 0;
     font-size: var(--text-lg);
-    line-height: 1.4;
+    line-height: 1.5;
     color: var(--color-text-muted-default);
+    text-align: left;
 }
 
 .summary-academic {
@@ -261,6 +281,7 @@
 .about-text {
     margin: 0;
     font-size: var(--text-lg);
+    text-align: left;
     line-height: 1.8;
     color: var(--color-text-muted-default);
 }
@@ -323,7 +344,7 @@
 .info-card {
     min-height: 15rem;
     height: calc(100% - 2.2rem);
-    padding: 1.5rem 2rem;
+    padding: 1.75rem 2rem;
     box-sizing: border-box;
 }
 
@@ -334,12 +355,13 @@
 .info-card dt {
     font-size: var(--text-lg);
     font-weight: var(--weight-medium);
-    color: var(--color-text-muted-default);
+    text-align: left;
 }
 
 .info-card dd {
     margin: 0 0 var(--space-3);
     font-size: var(--text-sm);
+    text-align: left;
     color: var(--color-text-muted-default);
 }
 
@@ -353,6 +375,7 @@
     padding: 0.8rem 2.25rem;
     font-size: var(--text-lg);
     font-weight: var(--weight-bold);
+    margin-bottom: var(--space-3);
 }
 
 .toggle-row label {
@@ -458,8 +481,8 @@
 .availability-card {
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
-    padding: 1.5rem 2.25rem;
+    gap: 1rem;
+    padding: 2rem 2.5rem;
 }
 
 .day-row {
@@ -577,8 +600,8 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 1.75rem;
-    padding: 2rem 2.2rem;
+    gap: 2rem;
+    padding: 2.25rem 2.5rem;
 }
 
 .mode-option {
@@ -703,7 +726,7 @@
     .profile-summary {
         flex-direction: column;
         padding: var(--space-4);
-        text-align: center;
+        text-align: left;
     }
 
     .info-grid,
