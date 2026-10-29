@@ -1,8 +1,6 @@
 import { Routes, Route, Outlet, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { onAuthStateChange } from "./services/authService.ts";
-import { getUser } from "./services/userService.ts";
-import type { User } from "./types/user.ts";
 import { ProtectedRoute } from "./ProtectedRoute.tsx";
 import { ToastProvider } from "./components/toast/Toast.tsx";
 import { ConfirmProvider } from "./components/confirm/confirm-context.tsx";
@@ -16,6 +14,7 @@ import Login from './pages/auth/Login/LoginFlow.tsx';
 import ResetPassword from './pages/auth/Login-ForgotPassword/ResetPasswordFlow';
 import Profile from './pages/profiles/AccountDetails';
 import VolunteerProfile from './pages/profiles/VolunteerDetails.tsx';
+import VolunteerRegistration from './pages/auth/VolunteerSignup/VolunteerFlow.tsx';
 import Signup from './pages/auth/Signup/SignupFlow.tsx';
 import Dashboard from './pages/dashboard/Dashboard.tsx';
 
@@ -70,6 +69,11 @@ function ProfilePage() {
 function VolunteerProfilePage() {
   const navigate = useNavigate();
   return <LegacyDomRenderer render={() => VolunteerProfile({ navigate })} />;
+}
+
+function VolunteerRegistrationPage() {
+  const navigate = useNavigate();
+  return <LegacyDomRenderer render={() => VolunteerRegistration({ navigate })} />;
 }
 
 function LoginShell() {
@@ -132,6 +136,7 @@ function App() {
                 <Route path='/dashboard' element={<Dashboard />} />
                 <Route path='/profile' element={<ProfilePage />} />
                 <Route path='/profile/volunteer-profile' element={<VolunteerProfilePage />} />
+                <Route path='/profile/volunteer-registration' element={<VolunteerRegistrationPage />} />
 
                 <Route path='/support-request-form' element={<RequestSupportRoute/>} />
                 <Route path='/support-requests' element={<SupportRequestsRoute />} />

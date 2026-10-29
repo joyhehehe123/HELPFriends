@@ -92,6 +92,13 @@ export default function createVolunteerDetailsPage({ navigate }: VolunteerDetail
     const content = document.createElement('div');
     content.className = 'profile-content';
     content.innerHTML = `
+        <section id="registerPrompt" class="profile-card volunteer-register-prompt" hidden>
+            <h2>Become a Volunteer</h2>
+            <p>Register to support other students and share your skills.</p>
+            <button type="button" id="registerButton" class="profile-save-button">Register as a Volunteer</button>
+        </section>
+
+        <div id="volunteerDetails" hidden>
         <div class="profile-card profile-card--pill toggle-row">
             <label for="activeToggle">Activate Volunteer Account</label>
             <span class="switch"><input id="activeToggle" type="checkbox" role="switch" /></span>
@@ -135,10 +142,12 @@ export default function createVolunteerDetailsPage({ navigate }: VolunteerDetail
             </section>
         </div>
 
-        <p id="saveStatus" class="profile-feedback" role="status" hidden></p>
         <div class="profile-actions">
             <button type="button" id="saveButton" class="profile-save-button">Save</button>
         </div>
+        </div>
+
+        <p id="saveStatus" class="profile-feedback" role="status">Loading volunteer details...</p>
     `;
 
     const activeToggle = content.querySelector<HTMLInputElement>('#activeToggle')!;
@@ -148,6 +157,9 @@ export default function createVolunteerDetailsPage({ navigate }: VolunteerDetail
     const skillsEl = content.querySelector<HTMLElement>('#skills')!;
     const saveButton = content.querySelector<HTMLButtonElement>('#saveButton')!;
     const saveStatus = content.querySelector<HTMLElement>('#saveStatus')!;
+    const volunteerDetails = content.querySelector<HTMLElement>('#volunteerDetails')!;
+    const registerPrompt = content.querySelector<HTMLElement>('#registerPrompt')!;
+    const registerButton = content.querySelector<HTMLButtonElement>('#registerButton')!;
     saveButton.disabled = true;
 
     const setSaveStatus = (message: string, isError = false) => {
@@ -155,6 +167,8 @@ export default function createVolunteerDetailsPage({ navigate }: VolunteerDetail
         saveStatus.hidden = !message;
         saveStatus.classList.toggle('profile-feedback--error', isError);
     };
+
+    registerButton.addEventListener('click', () => navigate('/profile/volunteer-registration'));
 
     // ----- Activate toggle -----
     const renderActive = () => {
@@ -430,7 +444,9 @@ export default function createVolunteerDetailsPage({ navigate }: VolunteerDetail
         void getVolunteer(uid)
             .then((volunteer) => {
                 if (!volunteer) {
-                    setSaveStatus('No volunteer profile was found for this account.', true);
+                    volunteerDetails.hidden = true;
+                    registerPrompt.hidden = false;
+                    setSaveStatus('');
                     return;
                 }
 
@@ -438,6 +454,8 @@ export default function createVolunteerDetailsPage({ navigate }: VolunteerDetail
                 draft = toProfileVolunteer(volunteer);
                 profileStore.volunteer = clone(draft);
                 profileReady = true;
+                registerPrompt.hidden = true;
+                volunteerDetails.hidden = false;
                 renderActive();
                 renderAvailability();
                 renderSupportModes();
@@ -458,6 +476,8 @@ export default function createVolunteerDetailsPage({ navigate }: VolunteerDetail
             })
             .catch((error: unknown) => {
                 console.error('Failed to load volunteer details:', error);
+                volunteerDetails.hidden = true;
+                registerPrompt.hidden = true;
                 setSaveStatus('Unable to load volunteer details. Please try again later.', true);
             });
     }
