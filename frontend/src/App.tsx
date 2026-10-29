@@ -19,7 +19,8 @@ import Dashboard from './pages/dashboard/Dashboard.tsx';
 
 import SupportSessionsMenu from "./pages/support-sessions/support-sessions-menu/support-sessions-menu.tsx";
 import SupportSessions from "./pages/support-sessions/sessions-display/support-sessions.tsx";
-import SessionDetails from "./pages/support-sessions/session-details/session-details.tsx";
+import SessionDetailsPage from "./pages/support-sessions/session-details/session-details-page.tsx";
+import FeedbackPage from "./pages/support-sessions/feedback/feedback-page.tsx";
 
 import { NotificationsRoute, RequestSupportRoute, SupportRequestsRoute } from './pages/support-requests/SupportRoutes';
 
@@ -139,9 +140,10 @@ function App() {
                 <Route path="/support-sessions/active" element={<SupportSessions status="Active" />} /> 
                 <Route path="/support-sessions/completed" element={<SupportSessions status="Completed" />} /> 
                 <Route path="/support-sessions/cancelled" element={<SupportSessions status="Cancelled" />} />
-                <Route path="/support-sessions/active/:sessionId" element={<SessionDetails />} />
-                <Route path="/support-sessions/completed/:sessionId" element={<SessionDetails />} /> 
-                <Route path="/support-sessions/cancelled/:sessionId" element={<SessionDetails />} />
+                <Route path="/support-sessions/active/:sessionId" element={<SessionDetailsPage />} />
+                <Route path="/support-sessions/completed/:sessionId" element={<SessionDetailsPage />} /> 
+                <Route path="/support-sessions/cancelled/:sessionId" element={<SessionDetailsPage />} />
+                <Route path="/support-sessions/completed/:sessionId/feedback" element={<FeedbackPage />} />
               </Route>
             </Route>
           </Routes>

@@ -1,0 +1,65 @@
+.feedback-form-wrapper {
+    background: var(--color-gradient-vertical);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 700px;
+    padding: 5px;
+}
+
+.feedback-card {
+    background-color: #ffffff;
+    border-radius: calc(var(--radius-lg) - 5px);
+    width: 100%;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.feedback-rating {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+}
+
+.feedback-item-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 20px;
+    border-radius: var(--radius-md);
+    background-color: var(--color-quaternary);
+    width: 100%;
+}
+
+.error-msg {
+    font-family: var(--font-heading);
+    font-size: var(--text-md);
+    color: red;
+    padding-left: 10px;
+}
+
+.comment {
+    min-height: 100px;
+    max-width: 100%;
+    width: 100%;
+    border-radius: var(--radius-sm);
+    border: 0px;
+    font-size: var(--text-md);
+    padding: 5px;
+    border: 2px solid transparent;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.comment::placeholder {
+    color: var(--color-text-muted-light);
+}
+
+.comment:focus {
+    border-color: var(--color-secondary);
+}

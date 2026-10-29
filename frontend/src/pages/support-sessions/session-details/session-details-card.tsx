@@ -1,7 +1,8 @@
 // session-details-card.tsx
 
 import { useState, useEffect } from "react";
-import type { Role, SessionStatus } from "../../../types/constants";
+import { useNavigate } from "react-router-dom";
+import type { Role } from "../../../types/constants";
 import type { SupportSession } from "../../../types/supportSession";
 import type { Feedback } from "../../../types/feedback";
 import { getFeedbackBySession } from "../../../services/feedbackService";
@@ -15,16 +16,18 @@ import defaultProfilePic from "../../../assets/hamster.jpg";
 import "./session-details-card.css"
 import Button from "../../../components/Button";
 
-type Props = { session: SupportSession, role: Role, status: SessionStatus, onUpdated?: () => void };
+type Props = { session: SupportSession, role: Role, onUpdated?: () => void };
 
-function SessionDetailsCard({ session, role, status, onUpdated }: Props) {
+function SessionDetailsCard({ session, role, onUpdated }: Props) {
     const { showToast } = useToast();
     const confirm = useConfirm();
+    const navigate = useNavigate();
 
     const [feedback, setFeedback] = useState<Feedback | null>(null);
     const [otherName, setOtherName] = useState<string>();
     const [otherProfilePic, setOtherProfilePic] = useState<string>(defaultProfilePic);
 
+    const status = session.status;
     const otherRole = role === "Support Seeker" ? "Volunteer" : "Support Seeker";
     const myId = role === "Support Seeker" ? session.seekerId : session.volunteerId;
     const cancelledBy = session.cancelledBy === myId ? "You" : `${otherName} (${otherRole})`;
@@ -162,14 +165,14 @@ function SessionDetailsCard({ session, role, status, onUpdated }: Props) {
                                     </div>
                                     <div className="stars rating">
                                         {Array.from({ length: feedback.rating}, (_, i) => (
-                                            <Star key={i} fill="yellow" strokeWidth={0} size={40} />
+                                            <Star key={i} fill="gold" strokeWidth={0} size={40} />
                                         ))}
                                     </div>
                                 </div>
                             </div>
                             <hr/>
                             <div className="comments">
-                                <p className="element">{role === "Support Seeker" ? "YOUR COMMENTS" : "COMMENTS"}</p>
+                                <p className="element">{role === "Support Seeker" ? "YOUR COMMENT" : "COMMENT"}</p>
                                 {feedback.comments
                                     ? <p className="has-comments">{feedback.comments}</p>
                                     : <p className="no-comment">
@@ -209,10 +212,13 @@ function SessionDetailsCard({ session, role, status, onUpdated }: Props) {
                         ? <Button size="sm" className="card-button action-button" onClick={handleComplete}>Mark As Completed</Button>
                         : <Button size="sm" className="card-button action-button" disabled>Mark As Completed</Button>
                     )}
-                    {(status === "Completed" && role === "Support Seeker") && (feedback
-                        ? <Button size="sm" className="card-button action-button">Edit Feedback</Button>
-                        : <Button size="sm" className="card-button action-button">Rate</Button>
-                    )}
+                    {(status === "Completed" && role === "Support Seeker") && 
+                        <Button size="sm" className="card-button action-button"
+                            onClick={() => {navigate(`/support-sessions/completed/${session.uid}/feedback`)}}
+                        >
+                            {feedback ? "Edit Feedback" : "Rate"}
+                        </Button>
+                    }
                 </div>
             </div>
         </div>
