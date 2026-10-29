@@ -1,7 +1,7 @@
 .request-card {
-    padding: 24px 40px 23px;
-    border: 4px solid transparent;
-    border-radius: 32px;
+    padding: 30px;
+    border: 5px solid transparent;
+    border-radius: var(--radius-lg);
     background:
         linear-gradient(var(--color-bg-card), var(--color-bg-card)) padding-box,
         linear-gradient(to right, var(--color-primary), var(--color-secondary)) border-box;
@@ -12,13 +12,12 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 12px 24px;
+    gap: 10px 20px;
 }
 
 .request-card .category-chip,
 .request-card .date-chip {
-    padding: 0 17px;
-    border-radius: 12px;
+    border-radius: var(--radius-sm);
 }
 
 .request-card__status {
@@ -29,7 +28,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 24px;
+    gap: 20px;
 }
 
 .request-card__info {
@@ -37,9 +36,9 @@
 }
 
 .request-card__title {
-    margin: 26px 0 0;
+    margin: 20px 0 0;
     font-family: var(--font-heading);
-    font-size: 24px;
+    font-size: var(--text-md);
     font-weight: var(--weight-medium);
     line-height: 1.4;
     letter-spacing: normal;
@@ -53,16 +52,15 @@
 
 .request-card__button {
     flex-shrink: 0;
-    width: 253px;
-    height: 61px;
-    margin-top: 26px;
+    min-width: 230px;
+    margin-top: 20px;
 }
 
 @media (max-width: 900px) {
     .request-card {
-        padding: 16px;
+        padding: 20px;
         border-width: 3px;
-        border-radius: 20px;
+        border-radius: var(--radius-md);
     }
 
     .request-card__top {
@@ -71,7 +69,6 @@
 
     .request-card__title {
         margin-top: 14px;
-        font-size: 18px;
     }
 
     .request-card__meta {
@@ -85,8 +82,7 @@
     }
 
     .request-card__button {
-        width: auto;
-        height: 48px;
+        min-width: 0;
         margin-top: 0;
     }
 }

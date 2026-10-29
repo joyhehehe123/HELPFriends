@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { Calendar, ChevronDown } from 'lucide-react';
 import sadCat from '../../assets/sadcat.png';
 import BackLink from '../../components/BackLink';
 import Button from '../../components/Button';
 import VolunteerCard from '../../components/VolunteerCard';
 import VolunteerDetailsModal from '../../components/VolunteerDetailsModal';
 import { type VolunteerProfile } from '../../types/volunteerProfile';
+import { combineDateAndTime, formatSlot } from '../../utils/dateTime';
 import { filterVolunteers } from './filterVolunteers';
 import { fetchVolunteerProfiles, submitSupportRequest } from './supportRequestApi';
 import { type SupportRequestRecord, type ValidSupportRequestDraft, type VolunteerFilters } from './types';
@@ -27,6 +29,7 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
     const [detailsVolunteer, setDetailsVolunteer] = useState<VolunteerProfile | null>(null);
     const [sendingTo, setSendingTo] = useState<string | null>(null); // Volunteer id while sending
     const [sendError, setSendError] = useState('');
+    const timesRef = useRef<HTMLDetailsElement>(null);
 
     // Load volunteers (again on "Try again")
     useEffect(() => {
@@ -46,7 +49,22 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
         };
     }, [request.category, reloadCount]);
 
+    // Close the time list when clicking somewhere else
+    useEffect(() => {
+        const closeTimes = (event: MouseEvent) => {
+            if (timesRef.current && !timesRef.current.contains(event.target as Node)) timesRef.current.open = false;
+        };
+        document.addEventListener('click', closeTimes);
+        return () => document.removeEventListener('click', closeTimes);
+    }, []);
+
     const matches = filterVolunteers(volunteers, request, filters, currentUserId);
+
+    // Dates and times from the form
+    const slotDates = request.proposedTimeSlots
+        .map((slot) => combineDateAndTime(slot.date, slot.time))
+        .filter((date): date is Date => date !== null);
+    const firstSlot = slotDates[0];
 
     const retryLoading = () => {
         setStatus('loading');
@@ -75,19 +93,54 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
             <div className="request-support__body matching-body">
                 <h1 className="visually-hidden">Volunteer Matching</h1>
 
-                <section className="matching-filters" aria-labelledby="filter-heading">
-                    <h2 id="filter-heading" className="matching-heading">Filter Skills</h2>
+                <section className="matching-filters">
+                    <div>
+                        <h2 className="matching-heading">Filter Skills</h2>
 
-                    <label className="visually-hidden" htmlFor="skill-filter">Skill</label>
-                    <input
-                        id="skill-filter"
-                        className="matching-filters__skill"
-                        type="search"
-                        placeholder="Skill"
-                        autoComplete="off"
-                        value={filters.skill}
-                        onChange={(event) => setFilters({ skill: event.target.value })}
-                    />
+                        <label className="visually-hidden" htmlFor="skill-filter">Skill</label>
+                        <input
+                            id="skill-filter"
+                            className="matching-filters__skill"
+                            type="search"
+                            placeholder="Skill"
+                            autoComplete="off"
+                            value={filters.skill}
+                            onChange={(event) => setFilters({ skill: event.target.value })}
+                        />
+                    </div>
+
+                    {/* Chosen in the form, so they can't be changed here (use Back) */}
+                    <div>
+                        <h2 className="matching-heading">Preferred Dates &amp; Times</h2>
+                        {slotDates.length > 1 ? (
+                            <details ref={timesRef} className="request-times">
+                                <summary className="request-box">
+                                    <Calendar aria-hidden="true" />
+                                    {formatSlot(firstSlot)}
+                                    <span className="request-times__more">+{slotDates.length - 1}</span>
+                                    <ChevronDown className="request-times__arrow" aria-hidden="true" />
+                                </summary>
+                                <ul className="request-times__list">
+                                    {slotDates.map((date) => (
+                                        <li key={date.getTime()}>
+                                            <Calendar aria-hidden="true" />
+                                            {formatSlot(date)}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </details>
+                        ) : (
+                            <p className="request-box">
+                                <Calendar aria-hidden="true" />
+                                {firstSlot && formatSlot(firstSlot)}
+                            </p>
+                        )}
+                    </div>
+
+                    <div>
+                        <h2 className="matching-heading">Support Mode</h2>
+                        <p className="request-box request-mode">{request.supportMode}</p>
+                    </div>
                 </section>
 
                 <section className="matching-results" aria-labelledby="results-heading" aria-busy={status === 'loading'}>

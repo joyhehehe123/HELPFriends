@@ -22,6 +22,14 @@
     color: var(--color-text-primary);
 }
 
+/* Skill filter, then the times and mode from the form */
+.matching-filters {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 340px) minmax(0, 200px);
+    gap: var(--space-3) 20px;
+    align-items: start;
+}
+
 .matching-filters .matching-heading {
     margin-bottom: var(--space-3);
 }
@@ -47,6 +55,91 @@
 .matching-filters__skill:focus {
     outline: none;
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+}
+
+.request-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-sizing: border-box;
+    height: 46px;
+    margin: 0;
+    padding: 0 var(--space-3);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-secondary);
+    white-space: nowrap;
+}
+
+.request-box svg,
+.request-times__list svg {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    color: var(--color-tertiary);
+}
+
+.request-times {
+    position: relative;
+}
+
+.request-times summary {
+    list-style: none;
+    cursor: pointer;
+}
+
+.request-times summary::-webkit-details-marker {
+    display: none;
+}
+
+.request-times summary:focus-visible {
+    outline: 3px solid rgba(37, 99, 235, 0.35);
+    outline-offset: 2px;
+}
+
+.request-times__more {
+    font-weight: var(--weight-medium);
+    color: var(--color-tertiary);
+}
+
+.request-times__arrow {
+    margin-left: auto;
+    transition: transform 0.2s ease;
+}
+
+.request-times[open] .request-times__arrow {
+    transform: rotate(180deg);
+}
+
+/* Full list under the box */
+.request-times__list {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    left: 0;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 12px var(--space-3);
+    list-style: none;
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-secondary);
+    box-shadow: var(--shadow-card);
+}
+
+.request-times__list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Only the mode chosen in the form, not a button */
+.request-mode {
+    justify-content: center;
+    background: var(--color-tertiary);
+    font-family: var(--font-heading);
+    color: var(--color-text-secondary);
 }
 
 .matching-heading--results {
@@ -123,8 +216,16 @@
         width: 100%;
     }
 
+    .matching-filters {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
     .matching-filters__skill {
         max-width: none;
+        height: 42px;
+    }
+
+    .request-box {
         height: 42px;
     }
 
