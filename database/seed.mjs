@@ -492,6 +492,7 @@ const feedbacks = [
         uid: "F1001",
         rating: 5,
         comments: "The session was super helpfulll",
+        createdAt: ts("2026-10-09T12:30:00+08:00"),
         sessionId: "S1002"
     }
 ];
@@ -621,6 +622,7 @@ async function seed() {
                 uid: f.uid,
                 rating: f.rating,
                 comments: f.comments,
+                createdAt: f.createdAt,
                 sessionId: f.sessionId
             })
         }

@@ -11,6 +11,7 @@ import { useToast } from "../../../components/toast/Toast";
 import { useConfirm } from "../../../components/confirm/confirm-context";
 import getStatusMessage from "../functions/status-msg";
 import "./session-preview-card.css";
+import type { Feedback } from "../../../types/feedback";
 
 type Props = { session: SupportSession, role: Role, status: SessionStatus, onUpdated?: () => void };
 
@@ -20,7 +21,7 @@ function SessionCards({ session, role, status, onUpdated }: Props) {
     const { showToast } = useToast();
 
     const [otherName, setOtherName] = useState<string>();
-    const [hasFeedback, setHasFeedback] = useState<boolean>(false);
+    const [feedback, setFeedback] = useState<Feedback | null>(null);
 
     const sessionDate = session.dateTime.toDate();
     const timeDiff = Math.round((+sessionDate - Date.now()) / (1000 * 60));
@@ -35,6 +36,11 @@ function SessionCards({ session, role, status, onUpdated }: Props) {
     const otherRole = role === "Support Seeker" ? "Volunteer" : "Seeker";
     const myId = role === "Support Seeker" ? session.seekerId : session.volunteerId;
     const cancelledBy = session.cancelledBy === myId ? "you" : `${otherName} (${otherRole})`;
+
+    const hoursPassed = feedback?.createdAt
+        ? (Date.now() - feedback.createdAt.toDate().getTime()) / (1000 * 60 * 60)
+        : null;
+    const feedbackisExpired = hoursPassed !== null && hoursPassed >= 48;
 
     const handleCancel = async () => {
         const { confirmed, reason } = await confirm({
@@ -72,7 +78,7 @@ function SessionCards({ session, role, status, onUpdated }: Props) {
 
         if (status === "Completed") {
             getFeedbackBySession(session.uid)
-                .then((fb) => setHasFeedback(fb !== null))
+                .then(setFeedback)
                 .catch(console.error);
         }
     }, [session, role, status])
@@ -86,7 +92,7 @@ function SessionCards({ session, role, status, onUpdated }: Props) {
                         {status === "Active" 
                             && <div className="status-msg"> <Clock /><p>{getStatusMessage(timeDiff)}</p></div>
                         }
-                        {status === "Completed" && (hasFeedback
+                        {status === "Completed" && (feedback
                             ? <div className="status-msg"><CircleCheckBig /><p>Feedback provided</p></div>
                             : <div className="status-msg"><Clock /><p>Waiting for feedback</p></div>
                         )}
@@ -125,11 +131,11 @@ function SessionCards({ session, role, status, onUpdated }: Props) {
                         ? <Button size="sm" className="card-button" onClick={handleComplete}>Mark As Completed</Button>
                         : <Button size="sm" className="card-button" disabled>Mark As Completed</Button>
                     )}
-                    {(status === "Completed" && role === "Support Seeker") && 
+                    {(status === "Completed" && role === "Support Seeker" && !feedbackisExpired) && 
                         <Button size="sm" className="card-button"
                             onClick={() => {navigate(`/support-sessions/completed/${session.uid}/feedback`)}}
                         >
-                            {hasFeedback ? "Edit Feedback" : "Rate"}
+                            {feedback ? "Edit Feedback" : "Rate"}
                         </Button>
                     }
                 </div>

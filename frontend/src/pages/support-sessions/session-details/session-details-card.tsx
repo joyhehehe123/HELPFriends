@@ -41,6 +41,11 @@ function SessionDetailsCard({ session, role, onUpdated }: Props) {
 
     const cancelledAt = session.cancelledAt?.toDate();
     const cancelledDate = cancelledAt?.toLocaleDateString("en-GB", {day: "2-digit", month: "2-digit", year: "numeric" });
+
+    const hoursPassed = feedback?.createdAt
+        ? (Date.now() - feedback.createdAt.toDate().getTime()) / (1000 * 60 * 60)
+        : null;
+    const feedbackisExpired = hoursPassed !== null && hoursPassed >= 48;
     
     const handleCancel = async () => {
         const { confirmed, reason } = await confirm({
@@ -149,7 +154,7 @@ function SessionDetailsCard({ session, role, onUpdated }: Props) {
 
                     {/* No feedback */}
                     {(status === "Completed" && role === "Volunteer" && !feedback) && (
-                        <p id="no-feedback-msg">No feedback has been provided yet.</p>
+                        <p className="card-msg">No feedback has been provided yet.</p>
                     )}
 
                     {/* Feedback rating and optional comments */}
@@ -212,13 +217,14 @@ function SessionDetailsCard({ session, role, onUpdated }: Props) {
                         ? <Button size="sm" className="card-button action-button" onClick={handleComplete}>Mark As Completed</Button>
                         : <Button size="sm" className="card-button action-button" disabled>Mark As Completed</Button>
                     )}
-                    {(status === "Completed" && role === "Support Seeker") && 
+                    {(status === "Completed" && role === "Support Seeker" && !feedbackisExpired) && 
                         <Button size="sm" className="card-button action-button"
                             onClick={() => {navigate(`/support-sessions/completed/${session.uid}/feedback`)}}
                         >
                             {feedback ? "Edit Feedback" : "Rate"}
                         </Button>
                     }
+                    {(role === "Support Seeker" && feedbackisExpired) && <p className="card-msg">You can no longer edit feedback.</p>}
                 </div>
             </div>
         </div>
