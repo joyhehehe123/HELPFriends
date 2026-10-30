@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { Calendar, ChevronDown } from 'lucide-react';
 import sadCat from '../../assets/sadcat.png';
 import BackLink from '../../components/BackLink';
 import Button from '../../components/Button';
 import VolunteerCard from '../../components/VolunteerCard';
 import VolunteerDetailsModal from '../../components/VolunteerDetailsModal';
 import { type VolunteerProfile } from '../../types/volunteerProfile';
-import { SUPPORT_MODES } from './constants';
-import DateRangeSelect from './DateRangeSelect';
+import { combineDateAndTime, formatSlot } from '../../utils/dateTime';
 import { filterVolunteers } from './filterVolunteers';
 import { fetchVolunteerProfiles, submitSupportRequest } from './supportRequestApi';
 import { type SupportRequestRecord, type ValidSupportRequestDraft, type VolunteerFilters } from './types';
@@ -22,15 +22,14 @@ interface VolunteerMatchingProps {
 type LoadStatus = 'loading' | 'error' | 'ready';
 
 export default function VolunteerMatching({ request, currentUserId, onBack, onRequestSent }: VolunteerMatchingProps) {
-    const defaultFilters: VolunteerFilters = { skill: '', from: '', to: '', mode: request.supportMode };
-
-    const [filters, setFilters] = useState<VolunteerFilters>(defaultFilters);
+    const [filters, setFilters] = useState<VolunteerFilters>({ skill: '' });
     const [volunteers, setVolunteers] = useState<VolunteerProfile[]>([]);
     const [status, setStatus] = useState<LoadStatus>('loading');
     const [reloadCount, setReloadCount] = useState(0);
     const [detailsVolunteer, setDetailsVolunteer] = useState<VolunteerProfile | null>(null);
     const [sendingTo, setSendingTo] = useState<string | null>(null); // Volunteer id while sending
     const [sendError, setSendError] = useState('');
+    const timesRef = useRef<HTMLDetailsElement>(null);
 
     // Load volunteers (again on "Try again")
     useEffect(() => {
@@ -50,9 +49,22 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
         };
     }, [request.category, reloadCount]);
 
-    const matches = filterVolunteers(volunteers, request.category, filters, currentUserId);
+    // Close the time list when clicking somewhere else
+    useEffect(() => {
+        const closeTimes = (event: MouseEvent) => {
+            if (timesRef.current && !timesRef.current.contains(event.target as Node)) timesRef.current.open = false;
+        };
+        document.addEventListener('click', closeTimes);
+        return () => document.removeEventListener('click', closeTimes);
+    }, []);
 
-    const updateFilters = (changes: Partial<VolunteerFilters>) => setFilters((current) => ({ ...current, ...changes }));
+    const matches = filterVolunteers(volunteers, request, filters, currentUserId);
+
+    // Dates and times from the form
+    const slotDates = request.proposedTimeSlots
+        .map((slot) => combineDateAndTime(slot.date, slot.time))
+        .filter((date): date is Date => date !== null);
+    const firstSlot = slotDates[0];
 
     const retryLoading = () => {
         setStatus('loading');
@@ -72,7 +84,7 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
     };
 
     return (
-        <main>
+        <main className="matching-page">
             <div className="page-top">
                 <BackLink onClick={onBack} label="Back to the support request form" />
                 <span className="category-chip matching-chip">{request.category} Support</span>
@@ -81,10 +93,10 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
             <div className="request-support__body matching-body">
                 <h1 className="visually-hidden">Volunteer Matching</h1>
 
-                <section className="matching-filters" aria-labelledby="filter-heading">
-                    <h2 id="filter-heading" className="matching-heading">Filter Volunteers</h2>
+                <section className="matching-filters">
+                    <div>
+                        <h2 className="matching-heading">Filter Skills</h2>
 
-                    <div className="matching-filters__controls">
                         <label className="visually-hidden" htmlFor="skill-filter">Skill</label>
                         <input
                             id="skill-filter"
@@ -93,33 +105,45 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
                             placeholder="Skill"
                             autoComplete="off"
                             value={filters.skill}
-                            onChange={(event) => updateFilters({ skill: event.target.value })}
+                            onChange={(event) => setFilters({ skill: event.target.value })}
                         />
+                    </div>
 
-                        <DateRangeSelect from={filters.from} to={filters.to} onChange={updateFilters} />
+                    {/* Chosen in the form, so they can't be changed here (use Back) */}
+                    <div>
+                        <h2 className="matching-heading">Preferred Dates &amp; Times</h2>
+                        {slotDates.length > 1 ? (
+                            <details ref={timesRef} className="request-times">
+                                <summary className="request-box">
+                                    <Calendar aria-hidden="true" />
+                                    {formatSlot(firstSlot)}
+                                    <span className="request-times__more">+{slotDates.length - 1}</span>
+                                    <ChevronDown className="request-times__arrow" aria-hidden="true" />
+                                </summary>
+                                <ul className="request-times__list">
+                                    {slotDates.map((date) => (
+                                        <li key={date.getTime()}>
+                                            <Calendar aria-hidden="true" />
+                                            {formatSlot(date)}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </details>
+                        ) : (
+                            <p className="request-box">
+                                <Calendar aria-hidden="true" />
+                                {firstSlot && formatSlot(firstSlot)}
+                            </p>
+                        )}
+                    </div>
 
-                        <span className="matching-filters__divider" aria-hidden="true" />
-
-                        <fieldset className="mode-toggle">
-                            <legend className="visually-hidden">Support mode</legend>
-                            {SUPPORT_MODES.map((mode) => (
-                                <label key={mode} className="mode-toggle__option">
-                                    <input
-                                        className="mode-toggle__input"
-                                        type="radio"
-                                        name="mode-filter"
-                                        value={mode}
-                                        checked={filters.mode === mode}
-                                        onChange={() => updateFilters({ mode })}
-                                    />
-                                    <span className="mode-toggle__label">{mode}</span>
-                                </label>
-                            ))}
-                        </fieldset>
+                    <div>
+                        <h2 className="matching-heading">Support Mode</h2>
+                        <p className="request-box request-mode">{request.supportMode}</p>
                     </div>
                 </section>
 
-                <section aria-labelledby="results-heading" aria-busy={status === 'loading'}>
+                <section className="matching-results" aria-labelledby="results-heading" aria-busy={status === 'loading'}>
                     {(status !== 'ready' || matches.length > 0) && (
                         <h2 id="results-heading" className="matching-heading matching-heading--results">
                             Matching Volunteers
@@ -146,7 +170,7 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
                             <img className="no-matches__image" src={sadCat} alt="" />
                             <p className="no-matches__title">No volunteers match your filters</p>
                             <p className="no-matches__text">Please try again.</p>
-                            <Button shape="pill" className="no-matches__button" onClick={() => setFilters(defaultFilters)}>
+                            <Button shape="pill" className="no-matches__button" onClick={onBack}>
                                 Reset filters
                             </Button>
                         </div>

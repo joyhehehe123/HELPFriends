@@ -3,27 +3,35 @@ import createCategoryStep from './VolunteerSteps/volunteer-category';
 import createSkillsStep from './VolunteerSteps/volunteer-skills';
 import createAvailabilityStep from './VolunteerSteps/volunteer-availability';
 import createSupportModeStep from './VolunteerSteps/volunteer-mode';
-//import { submitVolunteerRegistration } from '../../../services/api';
 import { getAvailableSkills } from './Voluteer';
-import type { VolunteerRegistrationData } from './Voluteer';
+import type { DayKey as RegistrationDayKey, SupportCategory as RegistrationCategory, SupportMode as RegistrationMode, VolunteerRegistrationData } from './Voluteer';
+import { getCurrentUid } from '../../../services/authService';
+import { registerVolunteer } from '../../../services/volunteerService';
+import type { Day, SupportCategory } from '../../../types/constants';
 
-// Adjust these routes to match your router.
-const REGISTRATION_ROUTE = '/registration';
-const SUCCESS_ROUTE = '/volunteer-registration/success';
+const DAY_NAMES: Record<RegistrationDayKey, Day> = {
+    mon: 'Monday',
+    tue: 'Tuesday',
+    wed: 'Wednesday',
+    thu: 'Thursday',
+    fri: 'Friday',
+};
+
+const CATEGORY_NAMES: Record<RegistrationCategory, SupportCategory> = {
+    academic: 'Academic',
+    technology: 'Technology',
+    newStudent: 'New Student',
+    general: 'General Student',
+};
 
 interface MultiStepFormProps {
     initialData?: Partial<VolunteerRegistrationData>;
+    navigate: (path: string) => void;
 }
 
-export default function createVolunteerMultiStepForm({ initialData }: MultiStepFormProps = {}): HTMLElement {
+export default function createVolunteerMultiStepForm({ initialData, navigate }: MultiStepFormProps): HTMLElement {
     const container = document.createElement('div');
     container.className = 'vol-page';
-
-    const navigate = (path: string): void => {
-        window.history.pushState({}, '', path);
-        window.dispatchEvent(new PopStateEvent('popstate'));
-    };
-
 
     const body = document.createElement('main');
     body.className = 'vol-page-body';
@@ -117,7 +125,7 @@ export default function createVolunteerMultiStepForm({ initialData }: MultiStepF
                             selectedSkills: state.skillsInfo.selectedSkills.filter((skill) => available.includes(skill)),
                         };
                     },
-                    onReturn: () => navigate(REGISTRATION_ROUTE),
+                    onReturn: () => navigate('/profile/volunteer-profile'),
                     onNext: () => goTo(2),
                 }));
                 break;
@@ -151,9 +159,34 @@ export default function createVolunteerMultiStepForm({ initialData }: MultiStepF
                     onBack: () => goTo(3),
                     onNext: async (): Promise<boolean> => {
                         try {
-                            // await submitVolunteerRegistration(buildPayload());
-                            currentStep = 1;
-                            navigate(SUCCESS_ROUTE);
+                            const uid = getCurrentUid();
+                            if (!uid) {
+                                throw new Error('Your session has expired. Please sign in again.');
+                            }
+
+                            const modes: RegistrationMode[] = state.supportModeInfo.modes;
+                            const preferredMode = modes.length === 2
+                                ? 'Both'
+                                : modes[0] === 'virtual' ? 'Virtual' : 'Physical';
+                            const availability = (Object.entries(state.availabilityInfo.schedule) as [
+                                RegistrationDayKey,
+                                VolunteerRegistrationData['availabilityInfo']['schedule'][RegistrationDayKey],
+                            ][]).flatMap(([day, timeSlots]) => timeSlots.length > 0
+                                ? [{ day: DAY_NAMES[day], timeSlots }]
+                                : []);
+
+                            await registerVolunteer(uid, {
+                                preferredMode,
+                                supportCategories: state.categoryInfo.categories.map(
+                                    (category) => CATEGORY_NAMES[category],
+                                ),
+                                skills: [...new Set([
+                                    ...state.skillsInfo.selectedSkills,
+                                    ...state.skillsInfo.customSkills,
+                                ])],
+                                availability,
+                            });
+                            navigate('/profile/volunteer-profile');
                             return true;
                         } catch (error) {
                             console.error('Volunteer registration failed', error);

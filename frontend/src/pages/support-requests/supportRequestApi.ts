@@ -1,5 +1,7 @@
+import { getSupportRequestsByStudent } from '../../services/supportRequestService';
 import { getUser } from '../../services/userService';
 import { getAllVolunteers } from '../../services/volunteerService';
+import { type SupportRequest } from '../../types/supportRequest';
 import { type User } from '../../types/user';
 import { type Volunteer } from '../../types/volunteer';
 import { type DayAvailability, type VolunteerProfile } from '../../types/volunteerProfile';
@@ -8,13 +10,14 @@ import { addNotification } from '../notifications/notificationApi';
 import { DEFAULT_DURATION_MINUTES } from './constants';
 import { createMockRequests, MOCK_CURRENT_USER } from './mockRequests';
 import {
+    type PersonSummary,
     type RequestStatus,
     type SupportCategory,
     type SupportRequestRecord,
     type ValidSupportRequestDraft,
 } from './types';
 
-// Support requests use mock data until Firestore is connected
+// Sending a request and changing its status still use mock data until Firestore is connected
 
 const simulateNetworkDelay = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
@@ -66,14 +69,48 @@ export const fetchVolunteerProfiles = async (category: SupportCategory): Promise
 
 // ─── Support Requests ──────────────────────────────────────────────────────────
 
-// TODO: getSupportRequestsByStudent()
+// Name and picture to show (placeholder if the user was deleted)
+const toPerson = (userId: string, user: User | null): PersonSummary => ({
+    userId,
+    fullName: user?.fullName ?? 'Unknown student',
+    profilePic: user?.profilePic ?? null,
+});
+
+// Firestore request in the shape the pages use
+const toRequestRecord = (request: SupportRequest, people: Record<string, PersonSummary>): SupportRequestRecord => ({
+    requestId: request.uid,
+    category: request.category,
+    supportTitle: request.title,
+    description: request.description,
+    supportMode: request.supportMode,
+    proposedTimeSlots: request.proposedTimeSlots.map((slot) => slot.toDate()),
+    duration: DEFAULT_DURATION_MINUTES,
+    status: request.status,
+    createdAt: request.createdAt.toDate(),
+    respondedAt: request.respondedAt?.toDate(),
+    cancelledAt: request.cancelledAt?.toDate(),
+    scheduledAt: request.scheduledAt?.toDate(),
+    seeker: people[request.seekerId],
+    volunteer: people[request.volunteerId],
+});
+
+// Get the requests the student sent and received, newest first
 export const fetchSupportRequests = async (
     userId: string,
 ): Promise<{ sent: SupportRequestRecord[]; received: SupportRequestRecord[] }> => {
-    await simulateNetworkDelay(400);
+    const [sent, received] = await Promise.all([
+        getSupportRequestsByStudent(userId, false),
+        getSupportRequestsByStudent(userId, true),
+    ]);
+
+    // Names and pictures of everyone in these requests
+    const userIds = [...new Set([...sent, ...received].flatMap((request) => [request.seekerId, request.volunteerId]))];
+    const users = await Promise.all(userIds.map((id) => getUser(id)));
+    const people = Object.fromEntries(userIds.map((id, index) => [id, toPerson(id, users[index])]));
+
     return {
-        sent: mockRequests.filter((request) => request.seeker.userId === userId).sort(newestFirst),
-        received: mockRequests.filter((request) => request.volunteer.userId === userId).sort(newestFirst),
+        sent: sent.map((request) => toRequestRecord(request, people)).sort(newestFirst),
+        received: received.map((request) => toRequestRecord(request, people)).sort(newestFirst),
     };
 };
 

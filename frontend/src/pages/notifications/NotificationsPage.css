@@ -1,16 +1,16 @@
 .notifications-page {
-    padding: 41px 16px 0;
+    padding: 40px 16px 0;
 }
 
 .notifications {
     display: flex;
     flex-direction: column;
-    width: min(100%, 1046px);
-    height: 686px;
+    width: min(100%, 1000px);
+    height: 560px;
     margin: 0 auto;
     overflow: hidden;
     border: 3px solid transparent;
-    border-radius: 40px;
+    border-radius: var(--radius-md);
     background:
         linear-gradient(var(--color-bg-card), var(--color-bg-card)) padding-box,
         linear-gradient(to right, var(--color-primary), var(--color-secondary)) border-box;
@@ -19,10 +19,10 @@
 .notifications__header {
     flex-shrink: 0;
     margin: 0;
-    padding: 9px 16px 10px;
+    padding: 8px 16px;
     background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
     font-family: var(--font-heading);
-    font-size: 24px;
+    font-size: var(--text-lg);
     font-weight: var(--weight-bold);
     line-height: 1.5;
     letter-spacing: normal;
@@ -34,7 +34,7 @@
 .notifications__content {
     display: grid;
     flex: 1;
-    grid-template-columns: 400px minmax(0, 1fr);
+    grid-template-columns: 320px minmax(0, 1fr);
     min-height: 0;
 }
 
@@ -55,13 +55,13 @@
     flex-direction: column;
     justify-content: center;
     width: 100%;
-    height: 128px;
-    padding: 0 40px;
+    height: 100px;
+    padding: 0 30px;
     border: none;
     background: var(--color-bg-container-secondary);
     font-family: var(--font-heading);
-    font-size: 16px;
-    line-height: 1.85;
+    font-size: var(--text-sm);
+    line-height: 1.7;
     text-align: left;
     color: var(--color-text-primary);
     cursor: pointer;
@@ -102,17 +102,17 @@
 .notification-item--unread::after {
     content: '';
     position: absolute;
-    top: 30px;
-    right: 40px;
-    width: 16px;
-    height: 16px;
+    top: 22px;
+    right: 30px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     background: var(--color-tertiary);
 }
 
 .notifications__status {
     margin: 0;
-    padding: 24px 40px;
+    padding: 20px 30px;
     color: var(--color-text-muted-default);
 }
 
@@ -124,7 +124,7 @@
     display: flex;
     flex-direction: column;
     min-width: 0;
-    padding: 35px 40px 40px;
+    padding: 30px;
     overflow-y: auto;
 }
 
@@ -136,9 +136,9 @@
 }
 
 .notifications__title {
-    margin: 28px 0 0;
+    margin: 20px 0 0;
     font-family: var(--font-heading);
-    font-size: 24px;
+    font-size: var(--text-lg);
     font-weight: var(--weight-medium);
     line-height: 1.4;
     letter-spacing: normal;
@@ -146,13 +146,13 @@
 }
 
 .notifications__message {
-    margin: 27px 0 0;
-    line-height: 1.52;
+    margin: 20px 0 0;
+    line-height: 1.5;
 }
 
 .notifications__button {
     align-self: flex-end;
-    min-width: 302px;
+    min-width: 230px;
     margin-top: auto;
 }
 
@@ -162,17 +162,17 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 42px;
+    gap: 30px;
 }
 
 .notifications__empty-image {
-    width: 235px;
-    height: auto;
+    width: auto;
+    height: 180px;
 }
 
 .notifications__empty-text {
     margin: 0;
-    font-size: 24px;
+    font-size: var(--text-lg);
     font-weight: var(--weight-medium);
     text-transform: uppercase;
 }
@@ -188,7 +188,7 @@
     }
 
     .notifications__header {
-        font-size: 18px;
+        font-size: var(--text-md);
     }
 
     .notifications__content {
@@ -202,15 +202,12 @@
     .notification-item {
         height: auto;
         padding: 14px 44px 14px 16px;
-        font-size: 14px;
         line-height: 1.6;
     }
 
     .notification-item--unread::after {
         top: 18px;
         right: 16px;
-        width: 12px;
-        height: 12px;
     }
 
     .notifications__detail {
@@ -220,7 +217,7 @@
 
     .notifications__title {
         margin-top: 12px;
-        font-size: 18px;
+        font-size: var(--text-md);
     }
 
     .notifications__message {
@@ -233,10 +230,10 @@
     }
 
     .notifications__empty-image {
-        width: 160px;
+        height: 140px;
     }
 
     .notifications__empty-text {
-        font-size: 16px;
+        font-size: var(--text-md);
     }
 }

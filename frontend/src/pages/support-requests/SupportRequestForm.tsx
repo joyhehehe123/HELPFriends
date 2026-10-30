@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import Button from '../../components/Button';
 import PickerInput from '../../components/PickerInput';
+import TimePicker from '../../components/TimePicker';
 import { toDateInputValue } from '../../utils/dateTime';
 import { MAX_TIME_SLOTS, SUPPORT_CATEGORIES, SUPPORT_MODES } from './constants';
 import { type ProposedSlotInput, type SupportRequestDraft, type ValidSupportRequestDraft } from './types';
@@ -181,9 +182,8 @@ export default function SupportRequestForm({ initialDraft, onSubmit }: SupportRe
                                         <label className="visually-hidden" htmlFor={`slot-time-${slot.id}`}>
                                             Preferred time {index + 1}
                                         </label>
-                                        <PickerInput
+                                        <TimePicker
                                             id={`slot-time-${slot.id}`}
-                                            type="time"
                                             placeholder="Select Time"
                                             value={slot.time}
                                             onChange={(value) => updateSlot(slot.id, 'time', value)}

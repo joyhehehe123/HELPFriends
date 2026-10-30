@@ -13,6 +13,7 @@ interface VolunteerDetailsModalProps {
 
 export default function VolunteerDetailsModal({ volunteer, onClose }: VolunteerDetailsModalProps) {
     const titleId = `volunteer-details-${volunteer.volunteerId}`;
+    const supportModes = volunteer.preferredMode === 'Both' ? ['Virtual', 'Physical'] : [volunteer.preferredMode];
 
     return (
         <Modal labelledBy={titleId} onClose={onClose} className="volunteer-details">
@@ -42,6 +43,15 @@ export default function VolunteerDetailsModal({ volunteer, onClose }: VolunteerD
                 <ul className="volunteer-details__chips">
                     {volunteer.supportCategories.map((category) => (
                         <li key={category} className="volunteer-details__chip">{category}</li>
+                    ))}
+                </ul>
+            </section>
+
+            <section className="volunteer-details__section">
+                <h3 className="volunteer-details__section-title">Support Mode:</h3>
+                <ul className="volunteer-details__chips">
+                    {supportModes.map((mode) => (
+                        <li key={mode} className="volunteer-details__chip">{mode}</li>
                     ))}
                 </ul>
             </section>
