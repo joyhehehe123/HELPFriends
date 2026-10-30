@@ -1,5 +1,5 @@
 import { db } from '../firebase';
-import { collection, setDoc, getDoc, getDocs, updateDoc, deleteDoc, doc, query, where, Timestamp } from "firebase/firestore";
+import { collection, setDoc, getDoc, getDocs, updateDoc, deleteDoc, doc, query, where, serverTimestamp } from "firebase/firestore";
 import { type Notification } from '../types/notification';
 import { generateNextId } from './counterService';
 
@@ -8,7 +8,7 @@ import { generateNextId } from './counterService';
 export const createNotification = async (data: Omit<Notification, 'uid' | 'isRead' | 'createdAt'>): Promise<void> => {
     try {
         const nextId = 'N' + String(await generateNextId('notification'));
-        await setDoc(doc(db, 'notifications', nextId), { ...data, uid: nextId, isRead: false, createdAt: Timestamp.now() });
+        await setDoc(doc(db, 'notifications', nextId), { ...data, uid: nextId, isRead: false, createdAt: serverTimestamp() });
     } catch (error) {
         console.error('Error creating notification: ', error);
         throw new Error('Failed to create notification: ' + error);

@@ -1,15 +1,15 @@
 import { db } from "../firebase";
-import { collection, setDoc, getDoc, getDocs, updateDoc, deleteDoc, doc, query, where } from "firebase/firestore";
+import { collection, setDoc, getDoc, getDocs, updateDoc, deleteDoc, doc, query, where, serverTimestamp } from "firebase/firestore";
 import { type SupportRequest } from "../types/supportRequest";
 import { generateNextId } from "../services/counterService";
 import type { RequestStatus } from "../types/constants";
 
 // ─── Create ────────────────────────────────────────────────────────────────────
 
-export const createSupportRequest = async (data: Omit<SupportRequest, 'uid' | 'status'>): Promise<void> => {
+export const createSupportRequest = async (data: Omit<SupportRequest, 'uid' | 'status' | 'createdAt'>): Promise<void> => {
     try {
         const nextId = 'R' + String(await generateNextId('request'));
-        await setDoc(doc(db, 'supportRequests', nextId), { ...data, uid: nextId, status: 'Pending'});
+        await setDoc(doc(db, 'supportRequests', nextId), { ...data, uid: nextId, status: 'Pending', createdAt: serverTimestamp});
     } catch (error) {
         console.error('Error creating support request: ', error);
         throw new Error('Failed to create support request: ' + error);
