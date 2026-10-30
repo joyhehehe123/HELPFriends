@@ -109,7 +109,7 @@ function SessionCards({ session, role, status, onUpdated }: Props) {
                         )}
                         {status === "Cancelled" && <p>Cancelled by {cancelledBy}</p>}
                         {status === "Cancelled"
-                            ? <p>Reason: {session.cancelledReason}</p>
+                            ? <p>Reason: {session.cancelledReason ? session.cancelledReason : <em>No reason provided.</em>}</p>
                             : <p>Mode: {session.supportMode}</p>
                         }
                     </div>

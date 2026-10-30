@@ -182,8 +182,8 @@ function SessionDetailsCard({ session, role, onUpdated }: Props) {
                                     ? <p className="has-comments">{feedback.comments}</p>
                                     : <p className="no-comment">
                                         {role === "Support Seeker" 
-                                            ? "You did not provide any comment." 
-                                            : "The student did not provide any comment."
+                                            ? <em>You did not provide any comment.</em>
+                                            : <em>The student did not provide any comment.</em>
                                         }
                                     </p>
                                 }
@@ -202,7 +202,7 @@ function SessionDetailsCard({ session, role, onUpdated }: Props) {
                                 <p className="element">REASON:</p>
                                 {session.cancelledReason 
                                     ? <p className="has-reason">{session.cancelledReason}</p>
-                                    : <p className="no-reason">No cancel reason provided.</p>
+                                    : <p className="no-reason"><em>No reason provided.</em></p>
                                 }
                             </div>
                         </div>
