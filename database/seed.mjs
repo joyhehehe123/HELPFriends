@@ -491,7 +491,7 @@ const feedbacks = [
     {
         uid: "F1001",
         rating: 5,
-        comments: "The session was supoer helpfulll",
+        comments: "The session was super helpfulll",
         sessionId: "S1002"
     }
 ];
