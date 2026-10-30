@@ -125,10 +125,13 @@ function SessionCards({ session, role, status, onUpdated }: Props) {
                         ? <Button size="sm" className="card-button" onClick={handleComplete}>Mark As Completed</Button>
                         : <Button size="sm" className="card-button" disabled>Mark As Completed</Button>
                     )}
-                    {(status === "Completed" && role === "Support Seeker") && (hasFeedback
-                        ? <Button size="sm" className="card-button">Edit Feedback</Button>
-                        : <Button size="sm" className="card-button">Rate</Button>
-                    )}
+                    {(status === "Completed" && role === "Support Seeker") && 
+                        <Button size="sm" className="card-button"
+                            onClick={() => {navigate(`/support-sessions/completed/${session.uid}/feedback`)}}
+                        >
+                            {hasFeedback ? "Edit Feedback" : "Rate"}
+                        </Button>
+                    }
                 </div>
             </div>
         </div>

@@ -1,20 +1,20 @@
+// feedback-page.tsx
+
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Navigate } from "react-router-dom";
-import type { Role } from "../../../types/constants";
 import type { SupportSession } from "../../../types/supportSession";
+import type { Feedback } from "../../../types/feedback";
 import { getSupportSession } from "../../../services/supportSessionService";
-import { getCurrentUid } from "../../../services/authService";
-import SessionDetailsCard from "./session-details-card";
+import { getFeedbackBySession } from "../../../services/feedbackService";
+import FeedbackForm from "./feedback-form";
 import BackLink from "../../../components/BackLink";
-import "./session-details.css";
 
-function SessionDetails() {
-    const [refreshKey, setRefreshKey] = useState(0);
-    const refresh = () => setRefreshKey((k) => k + 1);
+export default function FeedbackPage() {
 
     const navigate = useNavigate();
     const { sessionId } = useParams();
     const [session, setSession] = useState<SupportSession | null>(null);
+    const [feedback, setFeedback] = useState<Feedback | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -23,27 +23,31 @@ function SessionDetails() {
             return;
         }
         setLoading(true);
+        
         getSupportSession(sessionId)
             .then(setSession)
             .catch(console.error)
             .finally(() => setLoading(false));
-    }, [sessionId, refreshKey]);
+
+        getFeedbackBySession(sessionId)
+            .then(setFeedback)
+            .catch(console.error);
+    }, [sessionId]);
 
     if (loading) return <p>Loading...</p>;
     if (!session) return <Navigate to="/support-sessions" replace />;   // bad or missing ID
 
-    const role: Role = getCurrentUid() === session.seekerId ? "Support Seeker" : "Volunteer";
-
     return (
         <section id="session-content">
             <div className="back-container">
-                <BackLink className="back-button" onClick={() => { navigate(-1) }} />
+                <BackLink 
+                    className="back-button" 
+                    onClick={() => { 
+                        navigate(-1) 
+                    }} 
+                />
             </div>
-            <div className="card-wrapper">
-                <SessionDetailsCard key={session.uid} session={session} role={role} status={session.status} onUpdated={refresh} />
-            </div>
+            <FeedbackForm key={session.uid} session={session} feedback={feedback} />
         </section>
     )
-}
-
-export default SessionDetails;
+};

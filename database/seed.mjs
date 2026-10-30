@@ -491,25 +491,34 @@ const feedbacks = [
     {
         uid: "F1001",
         rating: 5,
-        comments: "The session was supoer helpfulll",
+        comments: "The session was super helpfulll",
         sessionId: "S1002"
     }
 ];
 
-const COLLECTIONS = ["volunteers", "supportRequests", "supportSessions", "feedbacks"];
+const COLLECTIONS = ["users", "volunteers", "supportRequests", "supportSessions", "feedbacks"];
 
 async function clearData() {
-    for (const C of COLLECTIONS) {
-        await db.recursiveDelete(db.collection(C))
-    }
+    const batch = db.batch();
 
+    // Delete data in firestore
+    for (const r of requests) batch.delete(db.doc(`supportRequests/${r.uid}`));
+    for (const s of sessions) batch.delete(db.doc(`supportSessions/${s.uid}`));
+    for (const f of feedbacks) batch.delete(db.doc(`feedbacks/${f.uid}`));
+
+    // Delete users in firebase auth and users + volunteers in firestore
     for (const u of users) {
         try {
+            const { uid } = await auth.getUserByEmail(u.email);
+            batch.delete(db.doc(`users/${uid}`));
+            batch.delete(db.doc(`volunteers/${uid}`));
             await auth.deleteUser((await auth.getUserByEmail(u.email)).uid);
         } catch {
             // Account does not exist, delete nothing
         }
     }
+
+    await batch.commit();
 }
 
 async function getOrCreateAuthUser(email) {

@@ -1,7 +1,17 @@
+.card-wrapper {
+    margin: 0 auto 50px;
+    width: 100%;
+    max-width: 1000px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .details-card-wrapper {
     background: var(--color-gradient-vertical);
     border-radius: var(--radius-lg);
     padding: 5px;
+    width: 100%;
 }
 
 .details-card {
@@ -115,6 +125,10 @@
     width: 40px;
     height: fit-content;
     border-radius: var(--radius-lg);
+}
+
+.details-card-support-title {
+    font-size: var(--text-lg);
 }
 
 .support-description, .cancel-info {
