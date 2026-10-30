@@ -125,7 +125,7 @@ export default function RequestDetails({
     return (
         <main>
             <div className="page-top">
-                <BackLink variant={request.status === 'Pending' ? 'plain' : 'pill'} onClick={onBack} label={backLabel} />
+                <BackLink onClick={onBack} label={backLabel} />
             </div>
 
             <div className="request-support__body">
