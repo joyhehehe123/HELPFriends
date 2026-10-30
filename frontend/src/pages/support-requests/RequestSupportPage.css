@@ -1,10 +1,9 @@
 .request-support {
     flex: 1;
-    padding-bottom: 48px;
+    padding-bottom: var(--space-5);
     background: var(--color-bg-primary);
     color: var(--color-text-primary);
-    font-family: var(--font-heading);
-    font-size: 20px;
+    font-size: var(--text-md);
     line-height: 1.5;
     letter-spacing: normal;
     text-align: left;
@@ -26,7 +25,7 @@
 }
 
 .request-support__body {
-    width: min(78%, 1200px);
+    width: min(100% - 2 * var(--space-5), 1000px);
     margin: 0 auto;
     padding-top: 40px;
 }
@@ -35,8 +34,8 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 12px 52px;
-    padding: 17px 64px 0;
+    gap: var(--space-3) var(--space-4);
+    padding: 20px 50px 0;
 }
 
 .page-top + .request-support__body {
@@ -47,10 +46,10 @@
 .role-chip {
     display: inline-flex;
     align-items: center;
-    height: 46px;
-    padding: 0 18px;
+    padding: 8px 20px;
     border-radius: 999px;
-    font-size: 20px;
+    font-family: var(--font-heading);
+    font-size: var(--text-md);
     font-weight: var(--weight-medium);
     text-transform: uppercase;
     color: var(--color-text-secondary);
@@ -59,6 +58,10 @@
 
 .category-chip {
     background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
+}
+
+.request-support--flow .category-chip {
+    font-weight: var(--weight-regular);
 }
 
 .role-chip--volunteer {
@@ -73,13 +76,18 @@
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    height: 46px;
-    padding: 0 18px;
+    padding: 8px 20px;
     border-radius: 999px;
     background: var(--color-bg-container-primary);
-    font-size: 20px;
+    font-family: var(--font-heading);
+    font-size: var(--text-md);
     color: var(--color-text-primary);
     white-space: nowrap;
+}
+
+.date-chip svg {
+    width: 20px;
+    height: 20px;
 }
 
 .date-chip--negative {
@@ -89,10 +97,10 @@
 .status-pill {
     display: inline-flex;
     align-items: center;
-    height: 46px;
-    padding: 0 25px;
+    padding: 8px 20px;
     border-radius: 999px;
-    font-size: 20px;
+    font-family: var(--font-heading);
+    font-size: var(--text-md);
     font-weight: var(--weight-medium);
     white-space: nowrap;
 }
@@ -126,74 +134,23 @@
     border: 0;
 }
 
-@media (max-width: 900px) {
-    .request-support {
-        font-size: 16px;
-    }
-
-    .request-support__body {
-        width: auto;
-        padding: 24px 16px 0;
-    }
-
-    .page-top {
-        gap: 12px 24px;
-        padding: 16px 16px 0;
-    }
-
-    .category-chip,
-    .role-chip,
-    .date-chip,
-    .status-pill {
-        height: 36px;
-        padding: 0 14px;
-        font-size: 14px;
-    }
-
-    .date-chip svg {
-        width: 20px;
-        height: 20px;
-    }
-}
-/* global.css style */
-.request-support--flow {
-    padding-bottom: var(--space-5);
-    font-family: inherit;
-    font-size: var(--text-md);
-}
-
-.request-support--flow .request-support__body {
-    width: min(100% - 2 * var(--space-5), 1000px);
-}
-
-.request-support--flow .page-top {
-    gap: var(--space-3) var(--space-4);
-    padding: 20px 50px 0;
-}
-
-.request-support--flow .category-chip {
-    height: auto;
-    padding: 8px 20px;
-    font-family: var(--font-heading);
-    font-size: var(--text-md);
-    font-weight: var(--weight-regular);
-}
-
-.request-support--flow .hf-button {
+/* Team sizes for shared components on these pages */
+.request-support .hf-button {
     border-radius: var(--radius-sm);
     font-size: var(--text-md);
     font-weight: var(--weight-regular);
 }
 
-.request-support--flow .hf-button--md {
+.request-support .hf-button--md {
     height: 46px;
     padding: 0 var(--space-5);
 }
 
-.request-support--flow .hf-button--pill {
+.request-support .hf-button--pill {
     border-radius: 999px;
 }
 
+/* Back link on the form and matching pages */
 .request-support--flow .hf-back-link {
     gap: var(--space-2);
     height: auto;
@@ -208,49 +165,53 @@
     text-decoration: none;
 }
 
-.request-support--flow .user-avatar--lg {
+.request-support .user-avatar--lg {
     width: 56px;
     height: 56px;
     font-size: var(--text-lg);
 }
 
-.request-support--flow .user-avatar--xl {
+.request-support .user-avatar--xl {
     width: 72px;
     height: 72px;
     font-size: var(--text-xl);
 }
 
 @media (max-width: 900px) {
-    .request-support--flow .request-support__body {
+    .request-support__body {
         width: auto;
+        padding: 24px 16px 0;
     }
 
-    .request-support--flow .page-top {
+    .page-top {
         gap: var(--space-2) var(--space-3);
         padding: var(--space-3) var(--space-3) 0;
     }
 
-    .request-support--flow .category-chip {
+    .category-chip,
+    .role-chip,
+    .date-chip,
+    .status-pill {
         padding: 6px 14px;
         font-size: var(--text-sm);
     }
 
-    .request-support--flow .hf-button {
+    .request-support .hf-button {
         font-size: var(--text-sm);
     }
 
-    .request-support--flow .hf-button--md {
+    .request-support .hf-button--md {
         height: 40px;
         padding: 0 var(--space-4);
     }
 
-    .request-support--flow .user-avatar--lg {
+    .request-support .user-avatar--lg {
         width: 48px;
         height: 48px;
         font-size: var(--text-md);
     }
 
-    .request-support--flow .user-avatar--xl {
+    .request-support .user-avatar--xl {
         width: 56px;
         height: 56px;
         font-size: var(--text-lg);

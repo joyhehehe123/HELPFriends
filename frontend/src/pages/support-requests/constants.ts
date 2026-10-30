@@ -11,6 +11,11 @@ export const MAX_TIME_SLOTS = 5;
 // The form has no duration field, so the shortest session is used
 export const DEFAULT_DURATION_MINUTES = 30;
 
+// Page addresses
+export const REQUEST_FORM_PATH = '/support-request-form';
+export const VOLUNTEER_MATCHING_PATH = `${REQUEST_FORM_PATH}/volunteer-matching`;
+export const SUPPORT_REQUESTS_PATH = '/support-requests';
+
 // Empty form with one date/time row
 export const createEmptyDraft = (): SupportRequestDraft => ({
     category: '',

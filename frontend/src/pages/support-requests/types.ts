@@ -30,9 +30,6 @@ export interface ValidSupportRequestDraft extends SupportRequestDraft {
 
 export interface VolunteerFilters {
     skill: string; // '' = any skill
-    from: string; // Format: "YYYY-MM-DD", '' = any date
-    to: string; // Format: "YYYY-MM-DD", '' = same as from
-    mode: SupportMode;
 }
 
 // ─── Requests ──────────────────────────────────────────────────────────────────
