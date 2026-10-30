@@ -213,7 +213,7 @@ function SessionDetailsCard({ session, role, onUpdated }: Props) {
                         ? <Button size="sm" className="card-button action-button" onClick={handleCancel}>Cancel</Button>
                         : <Button size="sm" className="card-button action-button" disabled>Cancel</Button>
                     )}
-                    {(status === "Active" && timeDiff < 0) && (Math.abs(timeDiff) > session.duration
+                    {(status === "Active" && timeDiff < 0 && role === "Volunteer") && (Math.abs(timeDiff) > session.duration
                         ? <Button size="sm" className="card-button action-button" onClick={handleComplete}>Mark As Completed</Button>
                         : <Button size="sm" className="card-button action-button" disabled>Mark As Completed</Button>
                     )}
