@@ -35,31 +35,29 @@ export const DAYS: { key: DayKey; letter: string; label: string }[] = [
     { key: 'fri', letter: 'F', label: 'Friday' },
 ];
 
-// TODO (API): replace this sample data with the logged-in user's data from the backend.
-// Both profile pages read from and write to this object, so changes survive switching tabs
-// (but not a page refresh until you save to an API).
+// Cache the latest profile data while navigating between the profile tabs.
 export const profileStore: { profile: ProfileData; volunteer: VolunteerData } = {
     profile: {
-        fullName: 'Mr. Balls',
-        studentId: 'B23xxxxx',
-        universityEmail: 'B23xxxxx@helplive.edu.my',
-        faculty: 'Faculty of Computing & Digital Technology',
-        programme: 'Bachelor of IT in Data Analytics (Honours)',
-        aboutMe: "I'm a student interested in technology, data and helping other students through the HELPFriends community.",
+        fullName: '',
+        studentId: '',
+        universityEmail: '',
+        faculty: '',
+        programme: '',
+        aboutMe: '',
         avatarUrl: DEFAULT_AVATAR,
     },
     volunteer: {
-        active: true,
-        rating: 4.5,
+        active: false,
+        rating: 0,
         availability: {
             mon: [],
-            tue: [{ start: '09:00', end: '11:00' }, { start: '14:00', end: '16:00' }],
+            tue: [],
             wed: [],
             thu: [],
-            fri: [{ start: '14:00', end: '15:00' }],
+            fri: [],
         },
-        supportModes: ['online'],
-        skills: ['Mathematics'],
+        supportModes: [],
+        skills: [],
     },
 };
 

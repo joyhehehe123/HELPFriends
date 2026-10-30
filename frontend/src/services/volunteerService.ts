@@ -1,5 +1,5 @@
 import { db } from "../firebase";
-import { collection, setDoc, getDoc, getDocs, updateDoc, deleteDoc, doc, query, where } from "firebase/firestore";
+import { collection, setDoc, getDoc, getDocs, updateDoc, deleteDoc, doc, query, where, runTransaction } from "firebase/firestore";
 import { getSupportSessionsByStudentAndStatus } from './supportSessionService';
 import { getFeedback } from "./feedbackService";
 import { type PreferredMode, DAYS } from "../types/constants";
@@ -13,6 +13,33 @@ export const createVolunteer = async (uid: string, data: Omit<Volunteer, 'uid' |
     } catch (error) {
         console.error('Error creating volunteer: ', error);
         throw new Error('Failed to create volunteer: ' + error);
+    }
+}
+
+export const registerVolunteer = async (
+    uid: string,
+    data: Omit<Volunteer, 'uid' | 'rating' | 'isActive'>,
+): Promise<void> => {
+    try {
+        const volunteerRef = doc(db, 'volunteers', uid);
+        const userRef = doc(db, 'users', uid);
+        await runTransaction(db, async (transaction) => {
+            const existingVolunteer = await transaction.get(volunteerRef);
+            if (existingVolunteer.exists()) {
+                throw new Error('A volunteer profile already exists for this account.');
+            }
+
+            transaction.set(volunteerRef, {
+                ...data,
+                uid,
+                rating: 0,
+                isActive: true,
+            } satisfies Volunteer);
+            transaction.update(userRef, { isVolunteer: true });
+        });
+    } catch (error) {
+        console.error('Error registering volunteer: ', error);
+        throw new Error('Failed to register as a volunteer: ' + error, { cause: error });
     }
 }
 
@@ -95,7 +122,7 @@ export const getAvailableVolunteersBetweenDateRange = async (startDate: Date, en
 // ─── Update ────────────────────────────────────────────────────────────────────
 
 // Update volunteer data
-export const updateVolunteer = async (uid: string, newData: Partial<Omit<Volunteer, 'uid' | 'rating' | 'isActive' | 'availability'>>): Promise<void> => {
+export const updateVolunteer = async (uid: string, newData: Partial<Omit<Volunteer, 'uid' | 'rating'>>): Promise<void> => {
     try {
         await updateDoc(doc(db, 'volunteers', uid), newData);
     } catch (error) {
