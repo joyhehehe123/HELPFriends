@@ -3,7 +3,6 @@ import { Navigate, useMatch, useNavigate } from 'react-router-dom';
 import sadCat from '../../assets/sadcat.png';
 import Button from '../../components/Button';
 import { SUPPORT_REQUESTS_PATH } from './constants';
-import { MOCK_CURRENT_USER } from './mockRequests';
 import RequestCard from './RequestCard';
 import RequestDetails from './RequestDetails';
 import { fetchSupportRequests } from './supportRequestApi';
@@ -40,7 +39,7 @@ export default function SupportRequestsPage({
 }: SupportRequestsPageProps) {
     const navigate = useNavigate();
     const openRequestId = useMatch(`${SUPPORT_REQUESTS_PATH}/:requestId`)?.params.requestId ?? null;
-    const currentUserId = useCurrentUserId() ?? MOCK_CURRENT_USER.userId;
+    const currentUserId = useCurrentUserId();
     const [tab, setTab] = useState<Tab>('sent');
     const [lists, setLists] = useState<RequestLists>({ sent: [], received: [] });
     const [status, setStatus] = useState<LoadStatus>('loading');
@@ -48,6 +47,7 @@ export default function SupportRequestsPage({
     const [cameFromList, setCameFromList] = useState(false);
 
     useEffect(() => {
+        if (!currentUserId) return; // Wait until we know who is logged in
         let isLatestLoad = true; // Ignore old responses
         fetchSupportRequests(currentUserId)
             .then((result) => {
