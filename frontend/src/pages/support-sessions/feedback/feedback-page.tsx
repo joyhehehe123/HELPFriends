@@ -8,7 +8,6 @@ import { getSupportSession } from "../../../services/supportSessionService";
 import { getFeedbackBySession } from "../../../services/feedbackService";
 import FeedbackForm from "./feedback-form";
 import BackLink from "../../../components/BackLink";
-import "./feedback-page.css";
 
 export default function FeedbackPage() {
 
