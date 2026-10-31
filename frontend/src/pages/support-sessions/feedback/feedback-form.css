@@ -17,6 +17,11 @@
     align-items: flex-start;
 }
 
+.card-msg-left {
+    display: flex;
+    align-items: flex-start;
+}
+
 .feedback-rating {
     width: 100%;
     display: flex;
