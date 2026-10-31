@@ -132,7 +132,6 @@
     background-color: rgba(255, 255, 255, 75%);
 }
 
-/* Current page or pressed: gradient */
 .icon-link.active-icon-link svg {
     stroke: url(#icon-link-gradient);
 }

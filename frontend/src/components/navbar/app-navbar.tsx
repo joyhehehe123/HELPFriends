@@ -3,7 +3,7 @@ import { useLocation, Link } from "react-router-dom";
 import type { User } from "../../types/user";
 import { getCurrentUid } from "../../services/authService";
 import { getUser } from "../../services/userService";
-import { Bell, CircleUserRound } from "lucide-react";
+import { Bell, UserRound } from "lucide-react";
 import "./app-navbar.css";
 
 function AppNavbar() {
@@ -47,8 +47,7 @@ function AppNavbar() {
                 ><Bell /></Link>
                 <Link to="/profile" id="profile" 
                     className={`link icon-link ${pathname.startsWith("/profile") ? "active-icon-link" : ""}`}
-                ><CircleUserRound />
-                </Link>
+                ><UserRound /></Link>
             </div>
             <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
                 <defs>
