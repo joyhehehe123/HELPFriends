@@ -85,11 +85,11 @@
 
 #bell-and-profile {
     display: flex;
-    gap: 50px;
+    gap: 20px;
     align-items: stretch;
 }
 
-#bell {
+.icon-link {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -100,59 +100,39 @@
     transition: transform 0.2s ease;
 }
 
-#bell:hover {
+.icon-link:hover {
     background-color: rgba(255, 255, 255, 50%);
     transform: translateY(-1px);
 }
 
-#bell:active {
+.icon-link:active {
     background-color: rgba(255, 255, 255, 50%);
     color: var(--color-tertiary);
     transform: scale(0.95);
 }
 
-.active-bell {
+.active-icon-link {
     display: flex;
     align-items: center;
 }
 
-#bell {
+.icon-link {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 /* Normal state: white */
-#bell svg {
+.icon-link svg {
     display: block;
     stroke: #ffffff;
 }
 
-#bell.active-bell {
+.icon-link.active-icon-link {
     background-color: rgba(255, 255, 255, 75%);
 }
 
 /* Current page or pressed: gradient */
-#bell.active-bell svg {
-    stroke: url(#bell-gradient);
-}
-
-#profile img {
-    display: block;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    object-fit: cover;
-    padding: 0;
-    margin: 0;
-}
-
-#profile img:hover {
-    transform: translateY(-1px);
-    box-shadow: 5px 5px 10px rgba(255, 255, 255, 0.5);
-}
-
-#profile img:active {
-    opacity: 100%;
-    transform: scale(0.95);
+.icon-link.active-icon-link svg {
+    stroke: url(#icon-link-gradient);
 }
