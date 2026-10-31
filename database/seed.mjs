@@ -551,8 +551,7 @@ async function seed() {
                 isVolunteer: u.isVolunteer,
                 faculty: u.faculty,
                 program: u.program,
-                bio: u.bio,
-                profilePic: u.profilePic
+                bio: u.bio
             })
 
             if (u.isVolunteer) {
