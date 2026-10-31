@@ -87,7 +87,7 @@ function SupportSessions({ status }: Props) {
                             if (!chevronRightDisabled && chevronRightNavigateTo) navigate(chevronRightNavigateTo)
                         }} />
                 </div>
-                <div className="tabs">
+                {(isVolunteer || volunteerSessionsCount!== 0) && (<div className="tabs">
                     <Button 
                         size="sm" 
                         upperCase={false} 
@@ -100,15 +100,12 @@ function SupportSessions({ status }: Props) {
                         size="sm" 
                         upperCase={false}
                         disabled={!isVolunteer && volunteerSessionsCount === 0}
-                        className={`tab ${(!isVolunteer && volunteerSessionsCount === 0) 
-                            ? "disabled-tab"
-                            : (activeTab === "Volunteer" ? "active-tab" : "")
-                        }`}
+                        className={`tab ${(activeTab === "Volunteer" ? "active-tab" : "")}`}
                         onClick={() => setActiveTab("Volunteer")}
                     >
                         As a Volunteer ({volunteerSessionsCount})
                     </Button>
-                </div>
+                </div>)}
             </div>
 
             <SessionList role={activeTab} status={status} refreshKey={refreshKey} onUpdated={refresh}/>
