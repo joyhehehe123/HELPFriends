@@ -11,6 +11,7 @@
  */
 
 const TOAST_DURATION_MS = 3000;
+import './Toast.css';
 
 let toastEl: HTMLElement | null = null;
 let hideTimer: number | undefined;
