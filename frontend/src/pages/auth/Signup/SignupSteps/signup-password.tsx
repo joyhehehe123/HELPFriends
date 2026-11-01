@@ -63,15 +63,28 @@ export default function createSetPasswordStep({
     const touchedFields = new Set<HTMLInputElement>();
     let hasSubmitted = false;
 
+
     const validatePassword = () => {
-        const message = !passwordInput.value
-            ? 'Enter a password.'
-            : passwordInput.value.length < MIN_PASSWORD_LENGTH
-                ? `Use at least ${MIN_PASSWORD_LENGTH} characters.`
-                : '';
-        setAuthFieldError(passwordInput, message);
-        return !message;
+        const value = passwordInput.value;
+
+        const message = !value
+           ? 'Enter a password.'
+            : value.length < 8
+               ? 'Password must be at least 8 characters.'
+               : !/[A-Z]/.test(value)
+                   ? 'Password must contain at least one uppercase letter.'
+                   : !/[a-z]/.test(value)
+                       ? 'Password must contain at least one lowercase letter.'
+                       : !/[0-9]/.test(value)
+                           ? 'Password must contain at least one number.'
+                           : !/[^A-Za-z0-9]/.test(value)
+                               ? 'Password must contain at least one special character.'
+                               : '';
+
+      setAuthFieldError(passwordInput, message);
+     return !message;
     };
+
 
     const validateConfirmation = () => {
         const message = !confirmPasswordInput.value
