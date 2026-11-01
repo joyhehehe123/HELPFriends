@@ -3,7 +3,6 @@ import createProfileLayout from './ProfileLayout';
 import { profileStore } from './ProfileData';
 import { getCurrentUid } from '../../services/authService';
 import { getUser, updateUser } from '../../services/userService';
-import { DEFAULT_AVATAR } from './DefaultAvatar';
 import { showDomToast } from '../../components/toast/domToast';
 
 const MAX_ABOUT_LENGTH = 300;
@@ -21,8 +20,9 @@ export default function createAccountDetailsPage({ navigate }: AccountDetailsPro
     content.className = 'profile-content';
     content.innerHTML = `
         <section class="profile-card profile-summary">
-            <div class="avatar-wrap">
-                <img class="avatar-image" src="${profile.avatarUrl}" alt="Your profile picture" />
+            <div class="avatar-wrap" role="img">
+                <img class="avatar-image" alt="" hidden />
+                <span class="avatar-initials" aria-hidden="true"></span>
             </div>
             <div class="summary-text">
                 <h2 class="summary-name"></h2>
@@ -73,6 +73,7 @@ export default function createAccountDetailsPage({ navigate }: AccountDetailsPro
     `;
 
     const avatarImage = content.querySelector<HTMLImageElement>('.avatar-image')!;
+    const avatarInitials = content.querySelector<HTMLElement>('.avatar-initials')!;
 
     const aboutText = content.querySelector<HTMLElement>('.about-text')!;
     const aboutEditButton = content.querySelector<HTMLButtonElement>('.about-edit')!;
@@ -95,6 +96,24 @@ export default function createAccountDetailsPage({ navigate }: AccountDetailsPro
         showDomToast(message, isError ? 'error' : 'success');
     };
 
+    const renderAvatar = (name: string, photoUrl: string) => {
+        const initials = name
+            .split(' ')
+            .filter(Boolean)
+            .slice(0, 2)
+            .map((part) => part[0].toUpperCase())
+            .join('');
+        avatarInitials.textContent = initials;
+        avatarImage.hidden = !photoUrl;
+        if (photoUrl) avatarImage.src = photoUrl;
+        else avatarImage.removeAttribute('src');
+        avatarInitials.hidden = Boolean(photoUrl);
+        content.querySelector('.avatar-wrap')?.setAttribute(
+            'aria-label',
+            name ? `Profile picture for ${name}` : 'Profile picture',
+        );
+    };
+
     const renderUser = (user: NonNullable<Awaited<ReturnType<typeof getUser>>>) => {
         profile.fullName = user.fullName;
         profile.studentId = user.studentId;
@@ -102,7 +121,8 @@ export default function createAccountDetailsPage({ navigate }: AccountDetailsPro
         profile.faculty = user.faculty ?? '';
         profile.programme = user.program ?? '';
         profile.aboutMe = user.bio ?? '';
-        profile.avatarUrl = user.profilePic ?? DEFAULT_AVATAR;
+        profile.avatarUrl = user.profilePic || '';
+        renderAvatar(profile.fullName, profile.avatarUrl);
 
         summaryName.textContent = profile.fullName;
         summaryStudentId.textContent = profile.studentId;
@@ -120,9 +140,10 @@ export default function createAccountDetailsPage({ navigate }: AccountDetailsPro
             ? 'Support Seeker + Student Volunteer'
             : 'Support Seeker';
         accountEmailValue.textContent = profile.universityEmail;
-        avatarImage.src = profile.avatarUrl;
         renderAbout();
     };
+
+    renderAvatar(profile.fullName, profile.avatarUrl);
 
     const uid = getCurrentUid();
     if (!uid) {
