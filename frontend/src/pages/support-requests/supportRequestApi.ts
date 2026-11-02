@@ -114,7 +114,10 @@ export const fetchSupportRequests = async (
     };
 };
 
-// TODO: save with createSupportRequest() and createNotification()
+// Whether the student signed up as a volunteer
+export const fetchIsVolunteer = async (userId: string): Promise<boolean> =>
+    (await getUser(userId))?.isVolunteer ?? false;
+
 export const submitSupportRequest = async (
     request: ValidSupportRequestDraft,
     volunteer: VolunteerProfile,
@@ -174,7 +177,6 @@ const notifySeeker = (request: SupportRequestRecord) => {
     });
 };
 
-// TODO: save with updateSupportRequest() and createNotification()
 export const updateRequestStatus = async (requestId: string, action: RequestAction): Promise<SupportRequestRecord> => {
     await simulateNetworkDelay(500);
     const request = findRequest(requestId);

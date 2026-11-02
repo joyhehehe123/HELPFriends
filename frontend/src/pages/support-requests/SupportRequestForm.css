@@ -79,7 +79,6 @@
     cursor: pointer;
 }
 
-/* Hidden but still works with the keyboard */
 .choice__input {
     position: absolute;
     width: 1px;
