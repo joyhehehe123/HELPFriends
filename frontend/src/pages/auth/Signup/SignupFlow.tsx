@@ -17,11 +17,16 @@ import type { DayKey, SupportCategory, VolunteerRegistrationData } from '../Volu
 import createTwoFactorStep from './SignupSteps/signup-2fa.tsx';
 import createSetPasswordStep from './SignupSteps/signup-password.tsx';
 import createConfirmationStep from './SignupSteps/signup-confirmation.tsx';
+import {
+    sendRegistrationOtp,
+    verifyRegistrationOtp,
+    clearRegistrationOtp
+} from '../../../services/otpService';
 
 interface SignupFlowProps {
     initialData?: Partial<SignupInfoData>;
 }
- 
+
 type StepId =
     | 'signup'
     | 'category'
@@ -31,19 +36,19 @@ type StepId =
     | '2fa'
     | 'password'
     | 'confirmation';
- 
+
 // These four only appear when "Become A Volunteer" is ticked on the sign up step.
 const VOLUNTEER_STEPS: StepId[] = ['category', 'skills', 'availability', 'mode'];
- 
+
 export default function createSignupFlow({ initialData }: SignupFlowProps = {}): HTMLElement {
     const container = document.createElement('div');
     container.className = 'signup-page';
- 
+
     const navigate = (path: string) => {
         window.history.pushState({}, '', path);
         window.dispatchEvent(new PopStateEvent('popstate'));
     };
- 
+
     const state: {
         signupInfo: SignupInfoData;
         volunteer: VolunteerRegistrationData;
@@ -71,7 +76,7 @@ export default function createSignupFlow({ initialData }: SignupFlowProps = {}):
             supportModeInfo: { modes: [] },
         },
     };
- 
+
     // The order of steps depends on whether the user wants to become a volunteer.
     const getSequence = (): StepId[] => [
         'signup',
@@ -80,31 +85,48 @@ export default function createSignupFlow({ initialData }: SignupFlowProps = {}):
         'password',
         'confirmation',
     ];
- 
+
     let currentStep: StepId = 'signup';
- 
+
     const content = document.createElement('main');
     content.className = 'signup-content';
- 
+
     const goTo = (step: StepId) => {
         currentStep = step;
         renderStep();
     };
- 
-    const goNext = () => {
+
+    const goNext = async (): Promise<boolean> => {
         const sequence = getSequence();
         const next = sequence[sequence.indexOf(currentStep) + 1];
-        if (!next) return;
- 
+
+        if (!next) return false;
+
+        // Send registration OTP before displaying the OTP screen
+        if (next === '2fa') {
+            const sent = await sendRegistrationOtp(
+                state.signupInfo.studentEmail,
+                state.signupInfo.fullName
+            );
+
+            if (!sent) {
+                window.alert(
+                    'Unable to send the verification code. Please try again.'
+                );
+                return false;
+            }
+        }
+
         goTo(next);
+        return true;
     };
- 
+
     const goBack = () => {
         const sequence = getSequence();
         const previous = sequence[sequence.indexOf(currentStep) - 1];
         if (previous) goTo(previous);
     };
- 
+
     const renderStep = () => {
         content.replaceChildren();
         const isVolunteerStep = VOLUNTEER_STEPS.includes(currentStep);
@@ -212,13 +234,27 @@ export default function createSignupFlow({ initialData }: SignupFlowProps = {}):
                 break;
             case '2fa':
                 stepContent.appendChild(createTwoFactorStep({
-                    onBack: goBack,
-                    onResend: async () => {
-                        // The OTP screen is a placeholder until email delivery is configured.
-                        return false;
+                    onBack: () => {
+                        clearRegistrationOtp();
+                        goBack();
                     },
-                    onNext: () => {
-                        goNext();
+
+                    onResend: async () => {
+                        return await sendRegistrationOtp(
+                            state.signupInfo.studentEmail,
+                            state.signupInfo.fullName
+                        );
+                    },
+
+                    onNext: async (otp: string) => {
+                        const verified = verifyRegistrationOtp(otp);
+
+                        if (!verified) {
+                            return false;
+                        }
+
+                        await goNext();
+                        return true;
                     },
                 }));
                 break;
@@ -326,9 +362,9 @@ export default function createSignupFlow({ initialData }: SignupFlowProps = {}):
                 break;
         }
     };
- 
+
     renderStep();
- 
+
     container.append(content);
     return container;
 }

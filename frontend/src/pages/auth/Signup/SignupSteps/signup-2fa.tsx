@@ -18,7 +18,7 @@ export default function createTwoFactorStep({
     container.innerHTML = `
         <div class="signup-header">
             <h2>Two-Factor Authentication</h2>
-            <p>Enter a 6-digit code to continue. Email delivery and code verification are not connected yet; any 6 digits will work.</p>
+            <p>Enter the 6-digit verification code sent to your email to continue.</p>
         </div>
 
         <form class="signup-form signup-form--otp">
@@ -62,11 +62,33 @@ export default function createTwoFactorStep({
     });
 
     resendButton.addEventListener('click', async () => {
+        if (resendButton.disabled) return;
+
         resendButton.disabled = true;
-        const sent = await onResend();
-        if (!sent) {
-            showFeedback('Email code delivery is not connected yet.', 'info');
+        resendButton.textContent = 'Sending...';
+
+        try {
+            const sent = await onResend();
+
+            if (sent) {
+                showFeedback(
+                    'A new verification code has been sent.',
+                    'info'
+                );
+                resendButton.textContent = 'Send again';
+            } else {
+                showFeedback('Unable to send the code. Please try again.');
+                resendButton.disabled = false;
+                resendButton.textContent = 'Send again';
+            }
+        } catch (error) {
+            showFeedback(
+                error instanceof Error
+                    ? error.message
+                    : 'Unable to send the code. Please try again.'
+            );
             resendButton.disabled = false;
+            resendButton.textContent = 'Send again';
         }
     });
 

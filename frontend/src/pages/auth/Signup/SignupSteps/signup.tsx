@@ -138,7 +138,7 @@ export default function createSignupStep({
     const fields = [studentIdInput, fullNameInput, studentEmailInput, facultySelect, programSelect];
     const touchedFields = new Set<HTMLInputElement | HTMLSelectElement>();
     let hasSubmitted = false;
-    
+
     const checkStudentIdExists = async (studentId: string): Promise<boolean> => {
         const users = await getDocs(
             query(collection(db, 'users'), where('studentId', '==', studentId)),
@@ -148,47 +148,48 @@ export default function createSignupStep({
 
 
     const validateStudentId = () => {
-    let message = '';
-    const studentId = studentIdInput.value.trim();
+        let message = '';
+        const studentId = studentIdInput.value.trim();
 
-    if (studentId === '') {
-        message = 'Enter your student ID.';
-    } else if (!/^B\d{7}$/.test(studentId)) {
-        message = 'Student ID must start with B followed by 7 digits.';
-    } else {
-        message = '';
-    }
+        if (studentId === '') {
+            message = 'Enter your student ID.';
+        } else if (!/^B\d{7}$/i.test(studentId)) {
+            message = 'Student ID must start with B followed by 7 digits.';
+        } else {
+            message = '';
+        }
 
-    setAuthFieldError(studentIdInput, message);
+        setAuthFieldError(studentIdInput, message);
 
-    if (message === '') {
-        return true;
-    } else {
-        return false;
-    }
-};
+        if (message === '') {
+            return true;
+        } else {
+            return false;
+        }
+    };
+
     const validateFullName = () => {
         const message = fullNameInput.value.trim() ? '' : 'Enter your full name.';
         setAuthFieldError(fullNameInput, message);
         return !message;
     };
 
-    
-const validateEmail = () => {
-    const value = studentEmailInput.value.trim();
-    const studentId = studentIdInput.value.trim().toUpperCase();
 
-    const message = !value
-        ? 'Enter your student email.'
-        : !/^[^\s@]+@helplive\.edu\.my$/.test(value)
-            ? 'Enter a valid HELP student email address.'
-            : value.split('@')[0].toUpperCase() !== studentId
-                ? 'Student ID must match the ID in your student email.'
-                : '';
+    const validateEmail = () => {
+        const value = studentEmailInput.value.trim();
+        const studentId = studentIdInput.value.trim().toUpperCase();
 
-    setAuthFieldError(studentEmailInput, message);
-    return !message;
-};
+        const message = !value
+            ? 'Enter your student email.'
+            : !/^[^\s@]+@helplive\.edu\.my$/.test(value)
+                ? 'Enter a valid HELP student email address.'
+                : value.split('@')[0].toUpperCase() !== studentId
+                    ? 'Student ID must match the ID in your student email.'
+                    : '';
+
+        setAuthFieldError(studentEmailInput, message);
+        return !message;
+    };
 
 
 
