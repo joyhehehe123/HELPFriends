@@ -16,6 +16,18 @@ export const createSupportRequest = async (data: Omit<SupportRequest, 'uid' | 's
     }
 }
 
+// Create support request and return its id
+export const createSupportRequestWithId = async (data: Omit<SupportRequest, 'uid' | 'status'>): Promise<string> => {
+    try {
+        const nextId = 'R' + String(await generateNextId('request'));
+        await setDoc(doc(db, 'supportRequests', nextId), { ...data, uid: nextId, status: 'Pending'});
+        return nextId;
+    } catch (error) {
+        console.error('Error creating support request: ', error);
+        throw new Error('Failed to create support request: ' + error);
+    }
+}
+
 // ─── Read ──────────────────────────────────────────────────────────────────────
 
 // Get support request by uid
@@ -67,6 +79,16 @@ export const updateSupportRequest = async (uid: string, newData: Partial<Omit<Su
     } catch (error) {
         console.error('Error updating support request: ', error);
         throw new Error('Failed to update support request: ' + error);
+    }
+}
+
+// Update request status (Accepted, Rejected, Cancelled or Scheduled) and its time
+export const updateSupportRequestStatus = async (uid: string, status: RequestStatus, newData: Partial<Omit<SupportRequest, 'uid' | 'status'>> = {}): Promise<void> => {
+    try {
+        await updateDoc(doc(db, 'supportRequests', uid), { ...newData, status });
+    } catch (error) {
+        console.error('Error updating support request status: ', error);
+        throw new Error('Failed to update support request status: ' + error);
     }
 }
 

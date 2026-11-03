@@ -1,14 +1,22 @@
-import { getSupportRequestsByStudent } from '../../services/supportRequestService';
+import { Timestamp } from 'firebase/firestore';
+import {
+    createSupportRequestWithId,
+    getSupportRequest,
+    getSupportRequestsByStudent,
+    updateSupportRequestStatus,
+} from '../../services/supportRequestService';
+import { createSupportSession, getSupportSessionsByStudentAndStatus } from '../../services/supportSessionService';
 import { getUser } from '../../services/userService';
-import { getAllVolunteers } from '../../services/volunteerService';
+import { getAllVolunteers, getVolunteer } from '../../services/volunteerService';
 import { type SupportRequest } from '../../types/supportRequest';
+import { type SupportSession } from '../../types/supportSession';
 import { type User } from '../../types/user';
 import { type Volunteer } from '../../types/volunteer';
 import { type DayAvailability, type VolunteerProfile } from '../../types/volunteerProfile';
 import { combineDateAndTime, WEEK_DAYS } from '../../utils/dateTime';
 import { addNotification } from '../notifications/notificationApi';
 import { DEFAULT_DURATION_MINUTES } from './constants';
-import { createMockRequests, MOCK_CURRENT_USER } from './mockRequests';
+import { isFreeAt } from './filterVolunteers';
 import {
     type PersonSummary,
     type RequestStatus,
@@ -17,29 +25,10 @@ import {
     type ValidSupportRequestDraft,
 } from './types';
 
-// Sending a request and changing its status still use mock data until Firestore is connected
-
-const simulateNetworkDelay = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
-
-let mockRequests: SupportRequestRecord[] = createMockRequests();
-let nextRequestNumber = 1014; // Ids like "R1014"
-
-const findRequest = (requestId: string): SupportRequestRecord => {
-    const request = mockRequests.find((item) => item.requestId === requestId);
-    if (!request) throw new Error(`Support request ${requestId} not found`);
-    return request;
-};
-
-const saveRequest = (updated: SupportRequestRecord): SupportRequestRecord => {
-    mockRequests = mockRequests.map((item) => (item.requestId === updated.requestId ? updated : item));
-    return updated;
-};
-
 const newestFirst = (a: SupportRequestRecord, b: SupportRequestRecord) => b.createdAt.getTime() - a.createdAt.getTime();
 
 // ─── Volunteers ────────────────────────────────────────────────────────────────
 
-// Team Volunteer and User in the shape the matching page uses
 const toVolunteerProfile = (volunteer: Volunteer, user: User): VolunteerProfile => ({
     volunteerId: volunteer.uid,
     fullName: user.fullName,
@@ -57,7 +46,6 @@ const toVolunteerProfile = (volunteer: Volunteer, user: User): VolunteerProfile 
         WEEK_DAYS.some((day) => day === entry.day)),
 });
 
-// Get volunteers of a category with their user details
 export const fetchVolunteerProfiles = async (category: SupportCategory): Promise<VolunteerProfile[]> => {
     const volunteers = (await getAllVolunteers()).filter((volunteer) => volunteer.supportCategories.includes(category));
     const users = await Promise.all(volunteers.map((volunteer) => getUser(volunteer.uid)));
@@ -69,14 +57,18 @@ export const fetchVolunteerProfiles = async (category: SupportCategory): Promise
 
 // ─── Support Requests ──────────────────────────────────────────────────────────
 
-// Name and picture to show (placeholder if the user was deleted)
 const toPerson = (userId: string, user: User | null): PersonSummary => ({
     userId,
     fullName: user?.fullName ?? 'Unknown student',
     profilePic: user?.profilePic ?? null,
 });
 
-// Firestore request in the shape the pages use
+const getPeople = async (userIds: string[]): Promise<Record<string, PersonSummary>> => {
+    const uniqueIds = [...new Set(userIds)];
+    const users = await Promise.all(uniqueIds.map((id) => getUser(id)));
+    return Object.fromEntries(uniqueIds.map((id, index) => [id, toPerson(id, users[index])]));
+};
+
 const toRequestRecord = (request: SupportRequest, people: Record<string, PersonSummary>): SupportRequestRecord => ({
     requestId: request.uid,
     category: request.category,
@@ -94,7 +86,6 @@ const toRequestRecord = (request: SupportRequest, people: Record<string, PersonS
     volunteer: people[request.volunteerId],
 });
 
-// Get the requests the student sent and received, newest first
 export const fetchSupportRequests = async (
     userId: string,
 ): Promise<{ sent: SupportRequestRecord[]; received: SupportRequestRecord[] }> => {
@@ -103,10 +94,7 @@ export const fetchSupportRequests = async (
         getSupportRequestsByStudent(userId, true),
     ]);
 
-    // Names and pictures of everyone in these requests
-    const userIds = [...new Set([...sent, ...received].flatMap((request) => [request.seekerId, request.volunteerId]))];
-    const users = await Promise.all(userIds.map((id) => getUser(id)));
-    const people = Object.fromEntries(userIds.map((id, index) => [id, toPerson(id, users[index])]));
+    const people = await getPeople([...sent, ...received].flatMap((request) => [request.seekerId, request.volunteerId]));
 
     return {
         sent: sent.map((request) => toRequestRecord(request, people)).sort(newestFirst),
@@ -114,34 +102,31 @@ export const fetchSupportRequests = async (
     };
 };
 
-// Whether the student signed up as a volunteer
 export const fetchIsVolunteer = async (userId: string): Promise<boolean> =>
     (await getUser(userId))?.isVolunteer ?? false;
 
 export const submitSupportRequest = async (
     request: ValidSupportRequestDraft,
     volunteer: VolunteerProfile,
-    seekerId: string = MOCK_CURRENT_USER.userId,
+    seekerId?: string,
 ): Promise<SupportRequestRecord> => {
-    await simulateNetworkDelay(600);
+    if (!seekerId) throw new Error('No logged-in student to send the request');
 
-    const newRequest: SupportRequestRecord = {
-        requestId: `R${nextRequestNumber}`,
+    const saved: Omit<SupportRequest, 'uid' | 'status'> = {
         category: request.category,
-        supportTitle: request.supportTitle,
+        title: request.supportTitle,
         description: request.description,
         supportMode: request.supportMode,
         proposedTimeSlots: request.proposedTimeSlots
             .map((slot) => combineDateAndTime(slot.date, slot.time))
-            .filter((date): date is Date => date !== null),
-        duration: DEFAULT_DURATION_MINUTES,
-        status: 'Pending',
-        createdAt: new Date(),
-        seeker: { ...MOCK_CURRENT_USER, userId: seekerId },
-        volunteer: { userId: volunteer.volunteerId, fullName: volunteer.fullName, profilePic: volunteer.profilePic },
+            .filter((date): date is Date => date !== null)
+            .map((date) => Timestamp.fromDate(date)),
+        createdAt: Timestamp.now(),
+        seekerId,
+        volunteerId: volunteer.volunteerId,
     };
-    nextRequestNumber += 1;
-    mockRequests = [newRequest, ...mockRequests];
+    const requestId = await createSupportRequestWithId(saved);
+    const newRequest = toRequestRecord({ ...saved, uid: requestId, status: 'Pending' }, await getPeople([seekerId, volunteer.volunteerId]));
 
     addNotification({
         userId: seekerId,
@@ -162,7 +147,12 @@ const ALLOWED_FROM: Record<RequestAction, RequestStatus[]> = {
     cancel: ['Pending', 'Accepted'],
 };
 
-// Tell the seeker when the volunteer answers
+const NEW_STATUS: Record<RequestAction, RequestStatus> = {
+    accept: 'Accepted',
+    reject: 'Rejected',
+    cancel: 'Cancelled',
+};
+
 const notifySeeker = (request: SupportRequestRecord) => {
     const nextStep = request.status === 'Accepted'
         ? 'You can now schedule the session.'
@@ -178,16 +168,62 @@ const notifySeeker = (request: SupportRequestRecord) => {
 };
 
 export const updateRequestStatus = async (requestId: string, action: RequestAction): Promise<SupportRequestRecord> => {
-    await simulateNetworkDelay(500);
-    const request = findRequest(requestId);
+    const request = await getSupportRequest(requestId);
+    if (!request) throw new Error(`Support request ${requestId} not found`);
     if (!ALLOWED_FROM[action].includes(request.status)) {
         throw new Error(`Can't ${action} a request that is ${request.status}`);
     }
 
-    const now = new Date();
-    if (action === 'cancel') return saveRequest({ ...request, status: 'Cancelled', cancelledAt: now });
+    const now = Timestamp.now();
+    const changes = action === 'cancel' ? { cancelledAt: now } : { respondedAt: now };
+    await updateSupportRequestStatus(requestId, NEW_STATUS[action], changes);
 
-    const answered = saveRequest({ ...request, status: action === 'accept' ? 'Accepted' : 'Rejected', respondedAt: now });
-    notifySeeker(answered);
-    return answered;
+    const updated = toRequestRecord(
+        { ...request, ...changes, status: NEW_STATUS[action] },
+        await getPeople([request.seekerId, request.volunteerId]),
+    );
+    if (action !== 'cancel') notifySeeker(updated);
+    return updated;
+};
+
+// ─── Scheduling ────────────────────────────────────────────────────────────────
+
+const overlaps = (start: Date, session: SupportSession): boolean => {
+    const end = start.getTime() + DEFAULT_DURATION_MINUTES * 60_000;
+    const sessionStart = session.dateTime.toMillis();
+    const sessionEnd = sessionStart + session.duration * 60_000;
+    return start.getTime() < sessionEnd && sessionStart < end;
+};
+
+export const fetchFreeTimeSlots = async (request: SupportRequestRecord): Promise<Date[]> => {
+    const studentIds = [request.seeker.userId, request.volunteer.userId];
+    const [volunteer, sessionLists] = await Promise.all([
+        getVolunteer(request.volunteer.userId),
+        Promise.all(studentIds.flatMap((id) => [
+            getSupportSessionsByStudentAndStatus(id, false, 'Active'),
+            getSupportSessionsByStudentAndStatus(id, true, 'Active'),
+        ])),
+    ]);
+    const sessions = sessionLists.flat();
+    const now = Date.now();
+
+    return request.proposedTimeSlots.filter((slot) =>
+        slot.getTime() > now &&
+        volunteer !== null && isFreeAt(volunteer.availability, slot) &&
+        !sessions.some((session) => overlaps(slot, session)));
+};
+
+export const scheduleSession = async (requestId: string, dateTime: Date): Promise<SupportRequestRecord> => {
+    const request = await getSupportRequest(requestId);
+    if (!request) throw new Error(`Support request ${requestId} not found`);
+    if (request.status !== 'Accepted') throw new Error(`Can't schedule a request that is ${request.status}`);
+
+    await createSupportSession(request, { dateTime: Timestamp.fromDate(dateTime), duration: DEFAULT_DURATION_MINUTES });
+    const scheduledAt = Timestamp.now();
+    await updateSupportRequestStatus(requestId, 'Scheduled', { scheduledAt });
+
+    return toRequestRecord(
+        { ...request, scheduledAt, status: 'Scheduled' },
+        await getPeople([request.seekerId, request.volunteerId]),
+    );
 };
