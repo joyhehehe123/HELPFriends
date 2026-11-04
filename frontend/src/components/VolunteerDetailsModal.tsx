@@ -18,7 +18,7 @@ export default function VolunteerDetailsModal({ volunteer, onClose }: VolunteerD
     return (
         <Modal labelledBy={titleId} onClose={onClose} className="volunteer-details">
             <div className="volunteer-details__header">
-                <UserAvatar name={volunteer.fullName} photoUrl={volunteer.profilePic} size="xl" />
+                <UserAvatar name={volunteer.fullName} size="xl" />
                 <div>
                     <div className="volunteer-details__title-row">
                         <h2 id={titleId} className="volunteer-details__name">

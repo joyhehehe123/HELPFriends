@@ -36,7 +36,6 @@ const toVolunteerProfile = (volunteer: Volunteer, user: User): VolunteerProfile 
     faculty: user.faculty,
     program: user.program,
     bio: user.bio,
-    profilePic: user.profilePic,
     preferredMode: volunteer.preferredMode,
     rating: volunteer.rating,
     isActive: volunteer.isActive,
@@ -60,7 +59,6 @@ export const fetchVolunteerProfiles = async (category: SupportCategory): Promise
 const toPerson = (userId: string, user: User | null): PersonSummary => ({
     userId,
     fullName: user?.fullName ?? 'Unknown student',
-    profilePic: user?.profilePic ?? null,
 });
 
 const getPeople = async (userIds: string[]): Promise<Record<string, PersonSummary>> => {

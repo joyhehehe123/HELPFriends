@@ -39,7 +39,7 @@ function Fact({ label, children }: { label: string; children: ReactNode }) {
 function Person({ person }: { person: PersonSummary }) {
     return (
         <span className="request-details__person">
-            <UserAvatar name={person.fullName} photoUrl={person.profilePic} size="sm" />
+            <UserAvatar name={person.fullName} size="sm" />
             {person.fullName}
         </span>
     );

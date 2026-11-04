@@ -25,7 +25,7 @@ export default function VolunteerCard({
 
     return (
         <article className="match-card" aria-labelledby={nameId}>
-            <UserAvatar name={volunteer.fullName} photoUrl={volunteer.profilePic} size="lg" />
+            <UserAvatar name={volunteer.fullName} size="lg" />
 
             <div className="match-card__info">
                 <div className="match-card__title-row">
