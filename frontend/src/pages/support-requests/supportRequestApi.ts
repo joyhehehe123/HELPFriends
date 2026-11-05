@@ -126,13 +126,21 @@ export const submitSupportRequest = async (
     const requestId = await createSupportRequestWithId(saved);
     const newRequest = toRequestRecord({ ...saved, uid: requestId, status: 'Pending' }, await getPeople([seekerId, volunteer.volunteerId]));
 
-    addNotification({
+    await addNotification({
         userId: seekerId,
         title: 'Support Request Submitted',
         message: `Your support request “${newRequest.supportTitle}” was sent to ${volunteer.fullName}. `
             + `We will let you know when ${volunteer.fullName} replies.`,
         category: 'Support Request',
-        referenceId: newRequest.requestId,
+        referenceId: requestId,
+    });
+    await addNotification({
+        userId: volunteer.volunteerId,
+        title: 'New Support Request',
+        message: `${newRequest.seeker.fullName} sent you a support request “${newRequest.supportTitle}”. `
+            + 'You can accept or reject it from your support requests.',
+        category: 'Support Request',
+        referenceId: requestId,
     });
     return newRequest;
 };
@@ -151,11 +159,11 @@ const NEW_STATUS: Record<RequestAction, RequestStatus> = {
     cancel: 'Cancelled',
 };
 
-const notifySeeker = (request: SupportRequestRecord) => {
+const notifySeeker = (request: SupportRequestRecord): Promise<void> => {
     const nextStep = request.status === 'Accepted'
         ? 'You can now schedule the session.'
         : 'You can find another volunteer from your support requests.';
-    addNotification({
+    return addNotification({
         userId: request.seeker.userId,
         title: `Support Request ${request.status}`,
         message: `Your support request “${request.supportTitle}” was ${request.status.toLowerCase()} `
@@ -180,7 +188,7 @@ export const updateRequestStatus = async (requestId: string, action: RequestActi
         { ...request, ...changes, status: NEW_STATUS[action] },
         await getPeople([request.seekerId, request.volunteerId]),
     );
-    if (action !== 'cancel') notifySeeker(updated);
+    if (action !== 'cancel') await notifySeeker(updated);
     return updated;
 };
 
