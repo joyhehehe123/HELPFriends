@@ -24,7 +24,7 @@ const users = [
         isVolunteer: true,
         faculty: "Faculty of Computing and Digital Technology",
         program: "Bachelor of Computer Science (Honours)",
-        bio: "I love hamster",
+        bio: "I love hamster"
     },
     {
         email: "B2400423@helplive.edu.my",
@@ -33,7 +33,7 @@ const users = [
         isVolunteer: false,
         faculty: "Faculty of Computing and Digital Technology",
         program: "Bachelor of Information Technology (Honours)",
-        bio: null,
+        bio: null
     },
     {
         email: "B2300490@helplive.edu.my",
@@ -42,7 +42,7 @@ const users = [
         isVolunteer: true,
         faculty: "Faculty of Computing and Digital Technology",
         program: "Bachelor of Information Technology (Honours)",
-        bio: "I love donuts",
+        bio: "I love donuts"
     },
     {
         email: "B2401344@helplive.edu.my",
@@ -51,7 +51,7 @@ const users = [
         isVolunteer: false,
         faculty: "Faculty of Computing and Digital Technology",
         program: "Bachelor of Computer Science (Honours)",
-        bio: "I love sushi",
+        bio: "I love sushi"
     },
     {
         email: "B2401411@helplive.edu.my",
@@ -60,7 +60,52 @@ const users = [
         isVolunteer: true,
         faculty: "Faculty of Computing and Digital Technology",
         program: "Bachelor of Information Technology in Data Analytics (Honours)",
-        bio: "I love winston",
+        bio: "I love winston"
+    },
+    {
+        email: "B2600001@helplive.edu.my",
+        fullName: "Iden Geffephuc",
+        studentId: "B2600001",
+        isVolunteer: true,
+        faculty: "Faculty of Behavioral Sciences",
+        program: "Bachelor of Psychology (Honours)",
+        bio: "Psychology is my passion, will help you with your mental health and well-being."
+    },
+    {
+        email: "B2600002@helplive.edu.my",
+        fullName: "Iem Ghuey",
+        studentId: "B2600002",
+        isVolunteer: true,
+        faculty: "Faculty of Behavioral Sciences",
+        program: "Bachelor of Psychology (Honours)",
+        bio: "Psychology student~ Feel free to look for me if you need psychological help~"
+    },
+    {
+        email: "B2600003@helplive.edu.my",
+        fullName: "Shettel Pheccup",
+        studentId: "B2600003",
+        isVolunteer: true,
+        faculty: "Faculty of Business, Economics, and Accounting",
+        program: "Bachelor in Accounting (Honours)",
+        bio: "Account student. Find me if you want to balance your books and accounts (or your life hehehe)."
+    },
+    {
+        email: "B2600004@helplive.edu.my",
+        fullName: "Anita Napp",
+        studentId: "B2600004",
+        isVolunteer: true,
+        faculty: "Faculty of Business, Economics, and Accounting",
+        program: "Bachelor of Business (Finance) (Honours)",
+        bio: "Finance student. I can help you with your financial planning, especially for independent students like me."
+    },
+    {
+        email: "B2600005@helplive.edu.my",
+        fullName: "Hugh R. Dumm",
+        studentId: "B2600005",
+        isVolunteer: true,
+        faculty: "Faculty of Business, Economics, and Accounting",
+        program: "Bachelor of Economics (Honours)",
+        bio: "Economics pro with CGPA 4.0. Look for me if you need to know anything about economics."
     }
 ]
 
@@ -83,9 +128,7 @@ const volunteers = [
             {
                 day: "Friday",
                 timeSlots: [
-                    {
-                        start: "09:00", end: "18:00"
-                    }
+                    {start: "09:00", end: "18:00"}
                 ]
             }
         ]
@@ -101,9 +144,7 @@ const volunteers = [
             {
                 day: "Friday",
                 timeSlots: [
-                    {
-                        start: "14:00", end: "17:00"
-                    }
+                    {start: "14:00", end: "17:00"}
                 ]
             }
         ]
@@ -128,6 +169,108 @@ const volunteers = [
                 day: "Friday",
                 timeSlots: [
                     {start: "13:00", end: "16:00"}
+                ]
+            }
+        ]
+    },
+    {
+        fullName: "Iden Geffephuc",
+        preferredMode: "Virtual",
+        rating: 4.7,
+        isActive: true,
+        supportCategories: ["New Student", "General Student"],
+        skills: ["Problem-Solving", "Stress Management", "Communication"],
+        availability: [
+            {
+                day: "Monday",
+                timeSlots: [
+                    {start: "08:00", end: "10:00"},
+                    {start: "16:30", end: "18:00"}
+                ]
+            },
+            {
+                day: "Wednesday",
+                timeSlots: [
+                    {start: "09:00", end: "11:00"},
+                    {start: "15:00", end: "18:00"}
+                ]
+            }
+        ]
+    },
+    {
+        fullName: "Iem Ghuey",
+        preferredMode: "Both",
+        rating: 4.6,
+        isActive: true,
+        supportCategories: ["Academic", "New Student", "General Student"],
+        skills: ["Stress Management", "Communication", "Psychological Support", "Social Psychology"],
+        availability: [
+            {
+                day: "Tuesday",
+                timeSlots: [
+                    {start: "16:00", end: "20:00"}
+                ]
+            },
+            {
+                day: "Wednesday",
+                timeSlots: [
+                    {start: "10:00", end: "12:00"}
+                ]
+            }
+        ]
+    },
+    {
+        fullName: "Shuttel Pheccup",
+        preferredMode: "Virtual",
+        rating: 4.6,
+        isActive: true,
+        supportCategories: ["Academic", "General Student"],
+        skills: ["Accounting", "Finance", "Statistics"],
+        availability: [
+            {
+                day: "Saturday",
+                timeSlots: [
+                    {start: "16:00", end: "18:00"}
+                ]
+            },
+            {
+                day: "Sunday",
+                timeSlots: [
+                    {start: "19:00", end: "21:00"}
+                ]
+            }
+        ]
+    },
+    {
+        fullName: "Anita Napp",
+        preferredMode: "Both",
+        rating: 4.6,
+        isActive: true,
+        supportCategories: ["Academic", "General Student", "New Student"],
+        skills: ["Finance", "Statistics", "Mathematics", "Business Concepts"],
+        availability: [
+            {
+                day: "Friday",
+                timeSlots: [
+                    {start: "09:00", end: "12:00"},
+                    {start: "16:00", end: "19:00"}
+                ]
+            }
+        ]
+    },
+    {
+        fullName: "Hugh R. Dumm",
+        preferredMode: "Both",
+        rating: 4.6,
+        isActive: true,
+        supportCategories: ["Academic", "General Student"],
+        skills: ["Economics Concepts", "Statistics", "Mathematics", "Time Management"],
+        availability: [
+            {
+                day: "Thursday",
+                timeSlots: [
+                    {start: "09:00", end: "11:00"},
+                    {start: "20:00", end: "23:00"}
                 ]
             }
         ]
