@@ -20,6 +20,7 @@
 
 .logo:hover {
     transform: translateY(-1px);
+    text-shadow: 0px 8px 8px rgba(255, 255, 255, 0.75);
 }
 
 .logo:active {
@@ -72,7 +73,7 @@
 }
 
 .active-nav-link {
-    background-color: rgba(255, 255, 255, 75%);
+    background-color: rgba(255, 255, 255, 0.75);
 }
 
 .active-nav-link > P {
@@ -86,7 +87,21 @@
 #bell-and-profile {
     display: flex;
     gap: 20px;
-    align-items: stretch;
+    align-items: center;
+}
+
+.profile {
+    transition: transform 0.2s ease;
+    border-radius: var(--radius-lg);
+}
+
+.profile:hover {
+    transform: translateY(-1px);
+    box-shadow: 0px 8px 8px 0px rgba(255, 255, 255, 0.5);
+}
+
+.profile:active {
+    transform: scale(0.95);
 }
 
 .icon-link {

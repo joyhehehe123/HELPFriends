@@ -59,11 +59,19 @@ function AppNavbar() {
                 <Link 
                     to="/notifications" id="bell" 
                     className={`link icon-link ${pathname.startsWith("/notifications") ? "active-icon-link" : ""}`}
-                ><Bell /></Link>
-                {/* <Link to="/profile" id="profile" 
-                    className={`link icon-link ${pathname.startsWith("/profile") ? "active-icon-link" : ""}`}
-                ><UserRound /></Link> */}
-            {/* </div> */}
+                >
+                    <Bell />
+                </Link>
+                <Link 
+                    to="/profile" 
+                    className="profile link"
+                    aria-label={`View profile for ${userName}`}
+                >
+                    <span className="app-navbar__user" role="img" aria-label={`Signed in as ${userName}`}>
+                        <UserAvatar name={userName} size="sm" />
+                    </span>
+                </Link>
+            </div>
             <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
                 <defs>
                     <linearGradient id="icon-link-gradient" x1="0" y1="0" x2="1" y2="0">
@@ -72,21 +80,6 @@ function AppNavbar() {
                     </linearGradient>
                 </defs>
             </svg>
-            {/* <div id="bell-and-profile">
-                <Link 
-                    to="/notifications" id="bell" 
-                    className={`bell link ${pathname.startsWith("/notifications") ? "active-bell" : ""}`}
-                ><Bell /></Link> */}
-                <Link 
-                    to="/profile" 
-                    className="profile link"
-                    aria-label={`View profile for ${userName}`}
-                >
-                    <span className="app-navbar__user" role="img" aria-label={`Signed in as ${userName}`}>
-                        <UserAvatar name={userName} size="md" />
-                    </span>
-                </Link>
-            </div>
         </nav>
     )
 }
