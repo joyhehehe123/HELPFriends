@@ -8,7 +8,7 @@ import { type SupportRequestRecord } from './types';
 
 interface PageState {
     startFrom?: SupportRequestRecord;
-    visitKey?: string; // Set when moving inside the same page
+    visitKey?: string;
 }
 
 function usePageVisit() {
@@ -48,7 +48,7 @@ export function SupportRequestsRoute() {
             visitKey={key}
             onNewRequest={() => navigate(REQUEST_FORM_PATH)}
             onFindAnotherVolunteer={(request) => navigate(VOLUNTEER_MATCHING_PATH, { state: { startFrom: request } })}
-            onSchedule={() => navigate('/support-sessions')}
+            onSchedule={() => navigate('/support-sessions/active')}
         />
     );
 }

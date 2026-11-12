@@ -4,6 +4,7 @@ import Button from '../../components/Button';
 import UserAvatar from '../../components/UserAvatar';
 import { formatClockTime, formatDateWithDay, formatDuration, formatSlot } from '../../utils/dateTime';
 import { RoleChip, StatusDate, StatusPill } from './RequestBadges';
+import ScheduleSessionModal from './ScheduleSessionModal';
 import { updateRequestStatus, type RequestAction } from './supportRequestApi';
 import { type PersonSummary, type RequestRole, type SupportRequestRecord } from './types';
 import './RequestDetails.css';
@@ -38,7 +39,7 @@ function Fact({ label, children }: { label: string; children: ReactNode }) {
 function Person({ person }: { person: PersonSummary }) {
     return (
         <span className="request-details__person">
-            <UserAvatar name={person.fullName} photoUrl={person.profilePic} size="sm" />
+            <UserAvatar name={person.fullName} size="sm" />
             {person.fullName}
         </span>
     );
@@ -57,6 +58,7 @@ export default function RequestDetails({
 }: RequestDetailsProps) {
     const [busyAction, setBusyAction] = useState<RequestAction | null>(null);
     const [errorMessage, setErrorMessage] = useState('');
+    const [isScheduling, setIsScheduling] = useState(false);
 
     const titleId = `request-${request.requestId}-title`;
     const otherPerson = role === 'Volunteer' ? request.seeker : request.volunteer;
@@ -88,7 +90,7 @@ export default function RequestDetails({
     );
 
     const cancelButton = actionButton('cancel', 'Cancel', 'Cancelling...', true);
-    const scheduleButton = <Button shape="pill" onClick={() => onSchedule(request)}>Schedule</Button>;
+    const scheduleButton = <Button shape="pill" onClick={() => setIsScheduling(true)}>Schedule</Button>;
     const viewMyRequestsButton = (
         <Button variant="outline" shape="pill" onClick={onViewMyRequests}>View my support requests</Button>
     );
@@ -184,6 +186,19 @@ export default function RequestDetails({
                     {actions && <div className="request-details__actions">{actions}</div>}
                 </article>
             </div>
+
+            {isScheduling && (
+                <ScheduleSessionModal
+                    request={request}
+                    otherName={otherPerson.fullName}
+                    onClose={() => setIsScheduling(false)}
+                    onScheduled={(scheduled) => {
+                        setIsScheduling(false);
+                        onChange(scheduled);
+                        onSchedule(scheduled);
+                    }}
+                />
+            )}
         </main>
     );
 }
