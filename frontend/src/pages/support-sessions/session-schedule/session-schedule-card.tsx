@@ -12,7 +12,7 @@ import { createSupportSession, getSupportSessionByRequestId } from "../../../ser
 import Button from "../../../components/Button";
 import { ChevronDown } from "lucide-react";
 import "./session-schedule-card.css";
-import { setRequestAsScheduled, updateSupportRequest } from "../../../services/supportRequestService";
+import { setRequestAsScheduled } from "../../../services/supportRequestService";
 
 type Props = { request: SupportRequest };
 

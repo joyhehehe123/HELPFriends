@@ -216,7 +216,15 @@ function SessionDetailsCard({ session, role, onUpdated }: Props) {
                             {feedback ? "Edit Feedback" : "Rate"}
                         </Button>
                     }
-                    {(role === "Support Seeker" && feedbackisExpired) && <p className="card-msg">You can no longer edit feedback.</p>}
+                    {(status === "Active" && role === "Support Seeker" && timeDiff <= 0) && (
+                        <Button size="sm" className="card-button action-button" disabled
+                            onClick={() => {navigate(`/support-sessions/completed/${session.uid}/feedback`)}}
+                        >
+                            {feedback ? "Edit Feedback" : "Rate"}
+                        </Button>
+                    )}
+                    {(role === "Support Seeker" && feedbackisExpired) && <p className="card-msg"><em>You can no longer edit feedback</em>.</p>}
+                    {(role === "Support Seeker" && status === "Active" && timeDiff <= 0) && <p className="card-msg"><em>You are not allowed to provide feedback before the session is marked as completed.</em></p>}
                 </div>
             </div>
         </div>
