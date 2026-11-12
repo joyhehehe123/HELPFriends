@@ -113,7 +113,7 @@ export default function SupportRequestsPage({
                     onNewRequest={onNewRequest}
                     onViewMyRequests={closeDetails}
                     onFindAnotherVolunteer={onFindAnotherVolunteer}
-                    onSchedule={onSchedule}
+                    onSchedule={(req) => navigate(`/support-requests/${req.requestId}/schedule`)}
                 />
             </div>
         );

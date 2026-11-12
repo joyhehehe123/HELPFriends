@@ -17,6 +17,11 @@
     align-items: flex-start;
 }
 
+.card-msg-left {
+    display: flex;
+    align-items: flex-start;
+}
+
 .feedback-rating {
     width: 100%;
     display: flex;
@@ -38,7 +43,7 @@
 
 .error-msg {
     font-family: var(--font-heading);
-    font-size: var(--text-md);
+    font-size: var(--text-sm);
     color: red;
     padding-left: 10px;
 }

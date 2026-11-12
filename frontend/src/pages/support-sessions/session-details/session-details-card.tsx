@@ -12,7 +12,6 @@ import { useToast } from "../../../components/toast/Toast";
 import { Clock, CircleX, CircleCheckBig, Star } from "lucide-react";
 import { useConfirm } from "../../../components/confirm/confirm-context";
 import getStatusMessage from "../functions/status-msg";
-import defaultProfilePic from "../../../assets/hamster.jpg";
 import "./session-details-card.css"
 import Button from "../../../components/Button";
 
@@ -25,7 +24,6 @@ function SessionDetailsCard({ session, role, onUpdated }: Props) {
 
     const [feedback, setFeedback] = useState<Feedback | null>(null);
     const [otherName, setOtherName] = useState<string>();
-    const [otherProfilePic, setOtherProfilePic] = useState<string>(defaultProfilePic);
 
     const status = session.status;
     const otherRole = role === "Support Seeker" ? "Volunteer" : "Support Seeker";
@@ -41,6 +39,11 @@ function SessionDetailsCard({ session, role, onUpdated }: Props) {
 
     const cancelledAt = session.cancelledAt?.toDate();
     const cancelledDate = cancelledAt?.toLocaleDateString("en-GB", {day: "2-digit", month: "2-digit", year: "numeric" });
+
+    const hoursPassed = feedback?.createdAt
+        ? (Date.now() - feedback.createdAt.toDate().getTime()) / (1000 * 60 * 60)
+        : null;
+    const feedbackisExpired = hoursPassed !== null && hoursPassed >= 48;
     
     const handleCancel = async () => {
         const { confirmed, reason } = await confirm({
@@ -78,9 +81,6 @@ function SessionDetailsCard({ session, role, onUpdated }: Props) {
         getUser(otherRole === "Volunteer" ? session.volunteerId : session.seekerId)
             .then((user) => setOtherName(user?.fullName))
             .catch(console.error);
-
-        getUser(otherRole === "Volunteer" ? session.volunteerId : session.seekerId)
-            .then((user) => setOtherProfilePic(user?.profilePic ?? defaultProfilePic));
     }, [session, role, status])
 
     return (
@@ -136,10 +136,7 @@ function SessionDetailsCard({ session, role, onUpdated }: Props) {
                         </div>
                         <div className="session-details" id="other-role">
                             <p className="element">{otherRole}</p>
-                            <div id="other-role-details">
-                                <img src={otherProfilePic} alt="Profile Picture" id="profile-pic"/>
-                                <p>{otherName}</p>
-                            </div>
+                            <p>{otherName}</p>
                         </div>
                     </div>
                     <div className="support-description">
@@ -149,7 +146,7 @@ function SessionDetailsCard({ session, role, onUpdated }: Props) {
 
                     {/* No feedback */}
                     {(status === "Completed" && role === "Volunteer" && !feedback) && (
-                        <p id="no-feedback-msg">No feedback has been provided yet.</p>
+                        <p className="card-msg">No feedback has been provided yet.</p>
                     )}
 
                     {/* Feedback rating and optional comments */}
@@ -177,8 +174,8 @@ function SessionDetailsCard({ session, role, onUpdated }: Props) {
                                     ? <p className="has-comments">{feedback.comments}</p>
                                     : <p className="no-comment">
                                         {role === "Support Seeker" 
-                                            ? "You did not provide any comment." 
-                                            : "The student did not provide any comment."
+                                            ? <em>You did not provide any comment.</em>
+                                            : <em>The student did not provide any comment.</em>
                                         }
                                     </p>
                                 }
@@ -197,7 +194,7 @@ function SessionDetailsCard({ session, role, onUpdated }: Props) {
                                 <p className="element">REASON:</p>
                                 {session.cancelledReason 
                                     ? <p className="has-reason">{session.cancelledReason}</p>
-                                    : <p className="no-reason">No cancel reason provided.</p>
+                                    : <p className="no-reason"><em>No reason provided.</em></p>
                                 }
                             </div>
                         </div>
@@ -208,17 +205,26 @@ function SessionDetailsCard({ session, role, onUpdated }: Props) {
                         ? <Button size="sm" className="card-button action-button" onClick={handleCancel}>Cancel</Button>
                         : <Button size="sm" className="card-button action-button" disabled>Cancel</Button>
                     )}
-                    {(status === "Active" && timeDiff < 0) && (Math.abs(timeDiff) > session.duration
+                    {(status === "Active" && timeDiff < 0 && role === "Volunteer") && (Math.abs(timeDiff) > session.duration
                         ? <Button size="sm" className="card-button action-button" onClick={handleComplete}>Mark As Completed</Button>
                         : <Button size="sm" className="card-button action-button" disabled>Mark As Completed</Button>
                     )}
-                    {(status === "Completed" && role === "Support Seeker") && 
+                    {(status === "Completed" && role === "Support Seeker" && !feedbackisExpired) && 
                         <Button size="sm" className="card-button action-button"
                             onClick={() => {navigate(`/support-sessions/completed/${session.uid}/feedback`)}}
                         >
                             {feedback ? "Edit Feedback" : "Rate"}
                         </Button>
                     }
+                    {(status === "Active" && role === "Support Seeker" && timeDiff <= 0) && (
+                        <Button size="sm" className="card-button action-button" disabled
+                            onClick={() => {navigate(`/support-sessions/completed/${session.uid}/feedback`)}}
+                        >
+                            {feedback ? "Edit Feedback" : "Rate"}
+                        </Button>
+                    )}
+                    {(role === "Support Seeker" && feedbackisExpired) && <p className="card-msg"><em>You can no longer edit feedback</em>.</p>}
+                    {(role === "Support Seeker" && status === "Active" && timeDiff <= 0) && <p className="card-msg"><em>You are not allowed to provide feedback before the session is marked as completed.</em></p>}
                 </div>
             </div>
         </div>

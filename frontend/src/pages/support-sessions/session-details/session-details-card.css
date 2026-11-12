@@ -112,6 +112,7 @@
 
 .element {
     color: #808080;
+    font-family: var(--font-heading);
 }
 
 #other-role-details {
@@ -149,7 +150,7 @@
     gap: 10px;
 }
 
-#no-feedback-msg {
+.card-msg {
     color: #808080;
     width: 100%;
     align-self: center;

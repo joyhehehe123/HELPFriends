@@ -55,9 +55,18 @@ function AppNavbar() {
                     className={`nav-link link ${pathname.startsWith("/support-sessions") ? "active-nav-link" : ""}`}
                 ><p>My Support Sessions</p></Link>
             </div>
+            <div id="bell-and-profile">
+                <Link 
+                    to="/notifications" id="bell" 
+                    className={`link icon-link ${pathname.startsWith("/notifications") ? "active-icon-link" : ""}`}
+                ><Bell /></Link>
+                <Link to="/profile" id="profile" 
+                    className={`link icon-link ${pathname.startsWith("/profile") ? "active-icon-link" : ""}`}
+                ><UserRound /></Link>
+            </div>
             <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
                 <defs>
-                    <linearGradient id="bell-gradient" x1="0" y1="0" x2="1" y2="0">
+                    <linearGradient id="icon-link-gradient" x1="0" y1="0" x2="1" y2="0">
                         <stop offset="0%" stopColor="#52d5ff" />
                         <stop offset="100%" stopColor="#37cc96" />
                     </linearGradient>

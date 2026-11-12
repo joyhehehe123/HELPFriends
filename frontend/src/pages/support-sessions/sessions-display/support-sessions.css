@@ -80,9 +80,3 @@
     background-color: var(--color-tertiary);
     border-color: var(--color-tertiary);
 }
-
-.disabled-tab {
-    background-color: #808080;
-    pointer-events: none;
-    cursor: not-allowed;
-}

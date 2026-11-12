@@ -18,6 +18,7 @@ import VolunteerRegistration from './pages/auth/VolunteerSignup/VolunteerFlow.ts
 import Signup from './pages/auth/Signup/SignupFlow.tsx';
 import Dashboard from './pages/dashboard/Dashboard.tsx';
 
+import SessionSchedulePage from "./pages/support-sessions/session-schedule/session-schedule-page.tsx";
 import SupportSessionsMenu from "./pages/support-sessions/support-sessions-menu/support-sessions-menu.tsx";
 import SupportSessions from "./pages/support-sessions/sessions-display/support-sessions.tsx";
 import SessionDetailsPage from "./pages/support-sessions/session-details/session-details-page.tsx";
@@ -143,6 +144,7 @@ function App() {
                 <Route path='/support-requests/*' element={<SupportRequestsRoute />} />
                 <Route path='/notifications' element={<NotificationsRoute />} />
 
+                <Route path="/support-requests/:requestId/schedule" element={<SessionSchedulePage />} />
                 <Route path="/support-sessions" element={<SupportSessionsMenu />} />
                 <Route path="/support-sessions/active" element={<SupportSessions status="Active" />} /> 
                 <Route path="/support-sessions/completed" element={<SupportSessions status="Completed" />} /> 

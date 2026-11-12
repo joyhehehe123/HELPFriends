@@ -44,6 +44,18 @@ export const getSupportSession = async (uid: string): Promise<SupportSession | n
     }
 }
 
+// Get support session by request id
+export const getSupportSessionByRequestId = async (requestId: string): Promise<SupportSession | null> => {
+    try {
+        const q = query(collection(db, "supportSessions"), where("requestId", "==", requestId));
+        const snap = await getDocs(q);
+        return snap.docs[0].data() as SupportSession;
+    } catch (error) {
+        console.error("Error fetching support session: ", error);
+        throw new Error("Failed to retrieve support session: " + error);
+    }
+}
+
 // Get support sessions of a student
 export const getSupportSessionsByStudent = async (studentId: string, byVolunteer: boolean): Promise<SupportSession[]> => {
     try {
