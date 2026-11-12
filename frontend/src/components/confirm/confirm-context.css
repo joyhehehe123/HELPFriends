@@ -17,7 +17,7 @@
 }
 
 .modal {
-    width: min(480px, calc(100% - 40px));
+    width: min(600px, calc(100% - 40px));
     padding: 40px;
     display: flex;
     flex-direction: column;

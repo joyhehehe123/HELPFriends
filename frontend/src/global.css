@@ -9,7 +9,8 @@
 
   --color-gradient-horizontal: linear-gradient(to right, var(--color-primary) 0%, var(--color-secondary) 100%);
   --color-gradient-vertical: linear-gradient(to bottom, var(--color-primary) 0%, var(--color-secondary) 100%);
-  --color-gradient-light: linear-gradient(to bottom, #d0f3ff 0%, #d4fafb 40%, #d7fff8 100%);
+  --color-gradient-light: linear-gradient(to bottom, #d0f3ff 0%, #d4fafb 40%, #d7fff8 100%);  
+  --color-gradient-light-horizontal: linear-gradient(to right, #d0f3ff 0%, #d4fafb 40%, #d7fff8 100%);
 
   --color-bg-primary: var(--color-gradient-light);
   --color-bg-navbar: var(--color-gradient-horizontal);

@@ -116,9 +116,6 @@ export const getAvailableVolunteersBetweenDateRange = async (startDate: Date, en
     }
 }
 
-// Get volunteers by skills
-
-
 // ─── Update ────────────────────────────────────────────────────────────────────
 
 // Update volunteer data

@@ -112,6 +112,7 @@
 
 .element {
     color: #808080;
+    font-family: var(--font-heading);
 }
 
 #other-role-details {
