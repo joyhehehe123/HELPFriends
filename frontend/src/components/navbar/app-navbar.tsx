@@ -4,21 +4,32 @@ import type { User } from "../../types/user";
 import { getCurrentUid } from "../../services/authService";
 import { getUser } from "../../services/userService";
 import { Bell } from "lucide-react";
-import defaultProfilePic from "../../assets/hamster.jpg";
 import "./app-navbar.css";
+import UserAvatar from "../UserAvatar.tsx";
 
 function AppNavbar() {
     const { pathname } = useLocation();
     const [user, setUser] = useState<User | null>(null);
-    const [profilePic, setProfilePic] = useState(defaultProfilePic);
 
     useEffect(() => {
         const uid = getCurrentUid();
         if (!uid) return;
-        getUser(uid).then(setUser).catch(console.error);
 
-        setProfilePic(user?.profilePic ?? defaultProfilePic);
-    }, [user]);
+        let cancelled = false;
+        getUser(uid)
+            .then((profile) => {
+                if (!cancelled) setUser(profile);
+            })
+            .catch((error: unknown) => {
+                console.error("Failed to load navbar user profile:", error);
+            });
+
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    const userName = user?.fullName ?? "User";
 
     return (
         <nav className="app-navbar-main">
@@ -57,7 +68,15 @@ function AppNavbar() {
                     to="/notifications" id="bell" 
                     className={`bell link ${pathname.startsWith("/notifications") ? "active-bell" : ""}`}
                 ><Bell /></Link>
-                <Link to="/profile" id="profile" className="link"><img src={profilePic} /></Link>
+                <Link 
+                    to="/profile" 
+                    className="profile link"
+                    aria-label={`View profile for ${userName}`}
+                >
+                    <span className="app-navbar__user" role="img" aria-label={`Signed in as ${userName}`}>
+                        <UserAvatar name={userName} photoUrl={user?.profilePic} size="md" />
+                    </span>
+                </Link>
             </div>
         </nav>
     )

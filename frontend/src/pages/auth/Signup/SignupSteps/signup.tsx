@@ -2,6 +2,9 @@ import './signup.css';
 import '../../auth-feedback.css';
 import { createAuthFeedback } from '../../auth-feedback';
 import { scrollToFirstInvalidField, setAuthFieldError } from '../../auth-validation';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '../../../../firebase';
+import { getUserByEmail } from '../../../../services/userService';
 
 export interface SignupInfoData {
     studentId: string;
@@ -136,42 +139,59 @@ export default function createSignupStep({
     const touchedFields = new Set<HTMLInputElement | HTMLSelectElement>();
     let hasSubmitted = false;
 
+    const checkStudentIdExists = async (studentId: string): Promise<boolean> => {
+        const users = await getDocs(
+            query(collection(db, 'users'), where('studentId', '==', studentId)),
+        );
+        return !users.empty;
+    };
+
+
     const validateStudentId = () => {
-    let message = '';
-    const studentId = studentIdInput.value.trim();
+        let message = '';
+        const studentId = studentIdInput.value.trim();
 
-    if (studentId === '') {
-        message = 'Enter your student ID.';
-    } else if (!/^B\d{7}$/.test(studentId)) {
-        message = 'Student ID must start with B followed by 7 digits.';
-    } else {
-        message = '';
-    }
+        if (studentId === '') {
+            message = 'Enter your student ID.';
+        } else if (!/^B\d{7}$/i.test(studentId)) {
+            message = 'Student ID must start with B followed by 7 digits.';
+        } else {
+            message = '';
+        }
 
-    setAuthFieldError(studentIdInput, message);
+        setAuthFieldError(studentIdInput, message);
 
-    if (message === '') {
-        return true;
-    } else {
-        return false;
-    }
-};
+        if (message === '') {
+            return true;
+        } else {
+            return false;
+        }
+    };
+
     const validateFullName = () => {
         const message = fullNameInput.value.trim() ? '' : 'Enter your full name.';
         setAuthFieldError(fullNameInput, message);
         return !message;
     };
 
+
     const validateEmail = () => {
         const value = studentEmailInput.value.trim();
+        const studentId = studentIdInput.value.trim().toUpperCase();
+
         const message = !value
             ? 'Enter your student email.'
-            : /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
-                ? ''
-                : 'Enter a valid email address.';
+            : !/^[^\s@]+@helplive\.edu\.my$/.test(value)
+                ? 'Enter a valid HELP student email address.'
+                : value.split('@')[0].toUpperCase() !== studentId
+                    ? 'Student ID must match the ID in your student email.'
+                    : '';
+
         setAuthFieldError(studentEmailInput, message);
         return !message;
     };
+
+
 
     const validateFaculty = () => {
         const message = facultySelect.value ? '' : 'Select your faculty.';
@@ -293,9 +313,42 @@ export default function createSignupStep({
             return;
         }
 
+        submitButton.disabled = true;
+        submitButton.textContent = 'Checking account...';
+
+        let accountExists: boolean;
+        let studentIdExists: boolean;
+        try {
+            [accountExists, studentIdExists] = await Promise.all([
+                getUserByEmail(currentInfo.studentEmail).then((user) => user !== null),
+                checkStudentIdExists(currentInfo.studentId),
+            ]);
+        } catch (error) {
+            console.error('Failed to check whether the signup account exists:', error);
+            showFeedback('Unable to check whether this account already exists. Please try again.');
+            submitButton.disabled = false;
+            submitButton.textContent = 'Confirm';
+            return;
+        }
+
+        if (accountExists) {
+            const message = 'An account with this email already exists. Try logging in or resetting your password.';
+            setAuthFieldError(studentEmailInput, message);
+            submitButton.disabled = false;
+            submitButton.textContent = 'Confirm';
+            return;
+        }
+
+        if (studentIdExists) {
+            const message = 'An account with this student ID already exists.';
+            setAuthFieldError(studentIdInput, message);
+            submitButton.disabled = false;
+            submitButton.textContent = 'Confirm';
+            return;
+        }
+
         currentSignupInfo = currentInfo;
         setSignupInfo(currentInfo);
-        submitButton.disabled = true;
         submitButton.textContent = 'Sending code...';
         const submitted = await onNext();
         if (submitted === false) {

@@ -149,7 +149,7 @@
     margin: 0 0 var(--space-2) 2rem;
     font-size: var(--text-lg);
     font-weight: var(--weight-bold);
-    text-align: center;
+    text-align: left;
 }
 
 /* ---------- Buttons ---------- */
@@ -240,6 +240,28 @@
     border-radius: 50%;
     object-fit: cover;
     background: var(--color-bg-container-secondary);
+}
+
+.avatar-image[hidden] {
+    display: none;
+}
+
+.avatar-initials {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    color: var(--color-text-secondary);
+    font-family: var(--font-heading);
+    font-size: 4.5rem;
+    font-weight: var(--weight-medium);
+}
+
+.avatar-initials[hidden] {
+    display: none;
 }
 
 .about-edit {
