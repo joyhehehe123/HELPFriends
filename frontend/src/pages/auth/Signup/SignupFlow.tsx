@@ -355,7 +355,7 @@ export default function createSignupFlow({ initialData }: SignupFlowProps = {}):
                 break;
             case 'confirmation':
                 stepContent.appendChild(createConfirmationStep({
-                    onLogin: () => navigate('/login'),
+                    onLogin: () => navigate('/dashboard'),
                 }));
                 break;
             default:
