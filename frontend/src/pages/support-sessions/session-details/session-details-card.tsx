@@ -12,7 +12,6 @@ import { useToast } from "../../../components/toast/Toast";
 import { Clock, CircleX, CircleCheckBig, Star } from "lucide-react";
 import { useConfirm } from "../../../components/confirm/confirm-context";
 import getStatusMessage from "../functions/status-msg";
-import defaultProfilePic from "../../../assets/hamster.jpg";
 import "./session-details-card.css"
 import Button from "../../../components/Button";
 
@@ -25,7 +24,6 @@ function SessionDetailsCard({ session, role, onUpdated }: Props) {
 
     const [feedback, setFeedback] = useState<Feedback | null>(null);
     const [otherName, setOtherName] = useState<string>();
-    const [otherProfilePic, setOtherProfilePic] = useState<string>(defaultProfilePic);
 
     const status = session.status;
     const otherRole = role === "Support Seeker" ? "Volunteer" : "Support Seeker";
@@ -83,9 +81,6 @@ function SessionDetailsCard({ session, role, onUpdated }: Props) {
         getUser(otherRole === "Volunteer" ? session.volunteerId : session.seekerId)
             .then((user) => setOtherName(user?.fullName))
             .catch(console.error);
-
-        getUser(otherRole === "Volunteer" ? session.volunteerId : session.seekerId)
-            .then((user) => setOtherProfilePic(user?.profilePic ?? defaultProfilePic));
     }, [session, role, status])
 
     return (
@@ -141,10 +136,7 @@ function SessionDetailsCard({ session, role, onUpdated }: Props) {
                         </div>
                         <div className="session-details" id="other-role">
                             <p className="element">{otherRole}</p>
-                            <div id="other-role-details">
-                                <img src={otherProfilePic} alt="Profile Picture" id="profile-pic"/>
-                                <p>{otherName}</p>
-                            </div>
+                            <p>{otherName}</p>
                         </div>
                     </div>
                     <div className="support-description">
