@@ -70,7 +70,17 @@ export const updateSupportRequest = async (uid: string, newData: Partial<Omit<Su
     }
 }
 
-// Cancel request
+// Set accepted request as scheduled
+export const setRequestAsScheduled = async (uid: string): Promise<void> => {
+    try {
+        const request = await getSupportRequest(uid);
+        if (request?.status !== "Accepted") throw new Error("Only accepted request can be set as scheduled!");
+        await updateDoc(doc(db, "supportRequests", uid), {status: "Scheduled"});
+    } catch (error) {
+        console.error('Error updating support request: ', error);
+        throw new Error('Failed to update support request: ' + error);
+    }
+}
 
 // ─── Delete ────────────────────────────────────────────────────────────────────
 
