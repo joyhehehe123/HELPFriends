@@ -128,6 +128,7 @@ export default function createSignupFlow({ initialData }: SignupFlowProps = {}):
     };
 
     const renderStep = () => {
+        document.body.classList.remove('on-signup-confirmation');
         content.replaceChildren();
         const isVolunteerStep = VOLUNTEER_STEPS.includes(currentStep);
         const stepContent = document.createElement('div');
@@ -354,6 +355,7 @@ export default function createSignupFlow({ initialData }: SignupFlowProps = {}):
                 }));
                 break;
             case 'confirmation':
+                document.body.classList.add('on-signup-confirmation');
                 stepContent.appendChild(createConfirmationStep({
                     onLogin: () => navigate('/dashboard'),
                 }));
