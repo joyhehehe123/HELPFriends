@@ -12,7 +12,7 @@ import { createSupportSession, getSupportSessionByRequestId } from "../../../ser
 import Button from "../../../components/Button";
 import { ChevronDown } from "lucide-react";
 import "./session-schedule-card.css";
-import { setRequestAsScheduled } from "../../../services/supportRequestService";
+import { updateSupportRequestStatus } from "../../../services/supportRequestService";
 
 type Props = { request: SupportRequest };
 
@@ -101,7 +101,7 @@ export default function SessionScheduleCard({ request }: Props) {
         if (!confirmed) return;
 
         if (await saveSession()) {
-            await setRequestAsScheduled(request.uid);
+            await updateSupportRequestStatus(request.uid, "Scheduled");
             const session = await getSupportSessionByRequestId(request.uid);
             navigate(`/support-sessions/${session?.status.toLowerCase()}/${session?.uid}`);
         }

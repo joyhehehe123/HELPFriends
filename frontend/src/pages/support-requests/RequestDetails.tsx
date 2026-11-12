@@ -90,7 +90,7 @@ export default function RequestDetails({
     );
 
     const cancelButton = actionButton('cancel', 'Cancel', 'Cancelling...', true);
-    const scheduleButton = <Button shape="pill" onClick={() => setIsScheduling(true)}>Schedule</Button>;
+    const scheduleButton = <Button shape="pill" onClick={() => onSchedule(request)}>Schedule</Button>;
     const viewMyRequestsButton = (
         <Button variant="outline" shape="pill" onClick={onViewMyRequests}>View my support requests</Button>
     );
