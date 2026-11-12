@@ -99,6 +99,7 @@ export default function FeedbackForm({ session, feedback, apiRef }: Props) {
                     {feedback && <p className="card-msg card-msg-left">
                         You can still edit your feedback before {feedbackExpireDate} {feedbackExpireTime}
                     </p>}
+                    {showError && <p className="error-msg">Please select a rating.</p>}
                     <div className="feedback-rating">
                         <div className="feedback-item-box">
                             <label className="element">RATING</label>
@@ -127,7 +128,6 @@ export default function FeedbackForm({ session, feedback, apiRef }: Props) {
                                 </div>
                             </div>
                         </div>
-                        {showError && <p className="error-msg">Please select a rating.</p>}
                     </div>
                     <div className="feedback-item-box">
                         <label className="element">COMMENT (OPTIONAL)</label>

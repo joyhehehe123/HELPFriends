@@ -118,7 +118,7 @@ export default function SessionScheduleCard({ request }: Props) {
                                 <p className="schedule-card-subtitle">{request.title}</p>
                             </div>
                             <p className="schedule-card-note"><em>Note: The available dates below are based on the preferred time slots you proposed in your request and the available times are based on the volunteer's availability.</em></p>
-                            {showError && (<p className="error-msg schedule-error-msg">Please select duration, date, and time.</p>)}
+                            {showError && (<p className="error-msg">Please select date, time, and duration.</p>)}
                         </div>
                         <div className="schedule-card-info">
                             <div className="schedule-card-info-row">
