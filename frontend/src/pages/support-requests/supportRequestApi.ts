@@ -173,6 +173,24 @@ const notifySeeker = (request: SupportRequestRecord): Promise<void> => {
     });
 };
 
+// Tell both students that the request was cancelled
+const notifyCancelled = async (request: SupportRequestRecord): Promise<void> => {
+    await addNotification({
+        userId: request.seeker.userId,
+        title: 'Support Request Cancelled',
+        message: `Your support request “${request.supportTitle}” to ${request.volunteer.fullName} was cancelled.`,
+        category: 'Support Request',
+        referenceId: request.requestId,
+    });
+    await addNotification({
+        userId: request.volunteer.userId,
+        title: 'Support Request Cancelled',
+        message: `The support request “${request.supportTitle}” from ${request.seeker.fullName} was cancelled.`,
+        category: 'Support Request',
+        referenceId: request.requestId,
+    });
+};
+
 export const updateRequestStatus = async (requestId: string, action: RequestAction): Promise<SupportRequestRecord> => {
     const request = await getSupportRequest(requestId);
     if (!request) throw new Error(`Support request ${requestId} not found`);
@@ -188,7 +206,8 @@ export const updateRequestStatus = async (requestId: string, action: RequestActi
         { ...request, ...changes, status: NEW_STATUS[action] },
         await getPeople([request.seekerId, request.volunteerId]),
     );
-    if (action !== 'cancel') await notifySeeker(updated);
+    if (action === 'cancel') await notifyCancelled(updated);
+    else await notifySeeker(updated);
     return updated;
 };
 
@@ -219,6 +238,24 @@ export const fetchFreeTimeSlots = async (request: SupportRequestRecord): Promise
         !sessions.some((session) => overlaps(slot, session)));
 };
 
+// Tell both students that the session was booked
+const notifyScheduled = async (request: SupportRequestRecord): Promise<void> => {
+    await addNotification({
+        userId: request.seeker.userId,
+        title: 'Support Session Scheduled',
+        message: `Your support session “${request.supportTitle}” with ${request.volunteer.fullName} has been scheduled. `
+            + 'You can see it in your support sessions.',
+        category: 'Support Session',
+    });
+    await addNotification({
+        userId: request.volunteer.userId,
+        title: 'Support Session Scheduled',
+        message: `Your support session “${request.supportTitle}” with ${request.seeker.fullName} has been scheduled. `
+            + 'You can see it in your support sessions.',
+        category: 'Support Session',
+    });
+};
+
 export const scheduleSession = async (requestId: string, dateTime: Date): Promise<SupportRequestRecord> => {
     const request = await getSupportRequest(requestId);
     if (!request) throw new Error(`Support request ${requestId} not found`);
@@ -228,8 +265,10 @@ export const scheduleSession = async (requestId: string, dateTime: Date): Promis
     const scheduledAt = Timestamp.now();
     await updateSupportRequestStatus(requestId, 'Scheduled', { scheduledAt });
 
-    return toRequestRecord(
+    const scheduled = toRequestRecord(
         { ...request, scheduledAt, status: 'Scheduled' },
         await getPeople([request.seekerId, request.volunteerId]),
     );
+    await notifyScheduled(scheduled);
+    return scheduled;
 };
