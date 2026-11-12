@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import sillyCat from '../../assets/sillycat.png';
 import Button from '../../components/Button';
 import { formatDayDateTime } from '../../utils/dateTime';
-import { MOCK_CURRENT_USER } from '../support-requests/mockRequests';
 import useCurrentUserId from '../support-requests/useCurrentUserId';
 import { fetchNotifications, markNotificationAsRead } from './notificationApi';
 import { type NotificationItem } from './types';
@@ -26,14 +25,15 @@ function ArrowIcon() {
 }
 
 export default function NotificationsPage({ onViewRequest, onViewSessions }: NotificationsPageProps) {
-    const currentUserId = useCurrentUserId() ?? MOCK_CURRENT_USER.userId;
+    const currentUserId = useCurrentUserId();
     const [items, setItems] = useState<NotificationItem[]>([]);
     const [status, setStatus] = useState<LoadStatus>('loading');
     const [reloadCount, setReloadCount] = useState(0);
     const [selectedId, setSelectedId] = useState<string | null>(null);
 
     useEffect(() => {
-        let isLatestLoad = true; // Ignore old responses
+        if (!currentUserId) return;
+        let isLatestLoad = true;
         fetchNotifications(currentUserId)
             .then((result) => {
                 if (!isLatestLoad) return;

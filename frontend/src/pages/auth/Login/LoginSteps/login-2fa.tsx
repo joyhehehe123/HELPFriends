@@ -92,14 +92,36 @@ export default function createLoginTwoFactorStep({
 
     resendButton.addEventListener('click', async () => {
         if (resendButton.disabled) return;
+
         resendButton.disabled = true;
         resendButton.textContent = 'Sending...';
-        const sent = await onResend();
-        if (sent) {
-            showFeedback('A new code has been sent to your email.', 'info');
-            startCooldown();
-        } else {
-            showFeedback('Unable to resend the code. Please try again.');
+
+        try {
+            const sent = await onResend();
+
+            if (sent) {
+                showFeedback(
+                    'A new code has been sent to your email.',
+                    'info'
+                );
+
+                startCooldown();
+            } else {
+                showFeedback(
+                    'Unable to resend the code. Please try again.'
+                );
+
+                resendButton.disabled = false;
+                resendButton.textContent = 'Send again';
+            }
+
+        } catch (error) {
+            showFeedback(
+                error instanceof Error
+                    ? error.message
+                    : 'Unable to resend the code. Please try again.'
+            );
+
             resendButton.disabled = false;
             resendButton.textContent = 'Send again';
         }
@@ -128,6 +150,10 @@ export default function createLoginTwoFactorStep({
                 window.clearInterval(cooldownTimer);
             }
             if (verified === false) {
+                showFeedback(
+                    'Incorrect or expired verification code. Please try again.'
+                );
+
                 submitButton.disabled = false;
                 submitButton.textContent = 'Verify';
             }

@@ -134,7 +134,6 @@
     border: 0;
 }
 
-/* Team sizes for shared components on these pages */
 .request-support .hf-button {
     border-radius: var(--radius-sm);
     font-size: var(--text-md);
@@ -150,7 +149,6 @@
     border-radius: 999px;
 }
 
-/* Back link on the form and matching pages */
 .request-support--flow .hf-back-link {
     gap: var(--space-2);
     height: auto;

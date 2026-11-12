@@ -5,7 +5,7 @@ import Button from '../../components/Button';
 import { SUPPORT_REQUESTS_PATH } from './constants';
 import RequestCard from './RequestCard';
 import RequestDetails from './RequestDetails';
-import { fetchSupportRequests } from './supportRequestApi';
+import { fetchIsVolunteer, fetchSupportRequests } from './supportRequestApi';
 import { type SupportRequestRecord } from './types';
 import useCurrentUserId from './useCurrentUserId';
 import './RequestSupportPage.css';
@@ -42,6 +42,7 @@ export default function SupportRequestsPage({
     const currentUserId = useCurrentUserId();
     const [tab, setTab] = useState<Tab>('sent');
     const [lists, setLists] = useState<RequestLists>({ sent: [], received: [] });
+    const [isVolunteer, setIsVolunteer] = useState(true); // Until we know
     const [status, setStatus] = useState<LoadStatus>('loading');
     const [reloadCount, setReloadCount] = useState(0);
     const [cameFromList, setCameFromList] = useState(false);
@@ -49,10 +50,11 @@ export default function SupportRequestsPage({
     useEffect(() => {
         if (!currentUserId) return; // Wait until we know who is logged in
         let isLatestLoad = true; // Ignore old responses
-        fetchSupportRequests(currentUserId)
-            .then((result) => {
+        Promise.all([fetchSupportRequests(currentUserId), fetchIsVolunteer(currentUserId)])
+            .then(([result, volunteer]) => {
                 if (!isLatestLoad) return;
                 setLists(result);
+                setIsVolunteer(volunteer);
                 setStatus('ready');
             })
             .catch((error) => {
@@ -117,7 +119,16 @@ export default function SupportRequestsPage({
         );
     }
 
-    const shownRequests = lists[tab];
+    // Scheduled requests are shown as sessions in Support Sessions
+    const shownLists: RequestLists = {
+        sent: lists.sent.filter((request) => request.status !== 'Scheduled'),
+        received: lists.received.filter((request) => request.status !== 'Scheduled'),
+    };
+
+    // Received is only for volunteers or students who received requests before
+    const canOpenReceived = isVolunteer || lists.received.length > 0;
+    const shownTab: Tab = canOpenReceived ? tab : 'sent';
+    const shownRequests = shownLists[shownTab];
 
     return (
         <div className="request-support">
@@ -130,11 +141,12 @@ export default function SupportRequestsPage({
                             key={name}
                             type="button"
                             className="requests-tabs__tab"
-                            aria-pressed={tab === name}
+                            aria-pressed={shownTab === name}
+                            disabled={name === 'received' && !canOpenReceived}
                             onClick={() => setTab(name)}
                         >
                             {name === 'sent' ? 'Sent' : 'Received'}
-                            {status === 'ready' && ` (${lists[name].length})`}
+                            {status === 'ready' && ` (${shownLists[name].length})`}
                         </button>
                     ))}
                 </div>
@@ -151,8 +163,8 @@ export default function SupportRequestsPage({
                 {status === 'ready' && shownRequests.length === 0 && (
                     <div className="requests-empty">
                         <img className="requests-empty__image" src={sadCat} alt="" />
-                        <p className="requests-empty__text">{EMPTY_TEXT[tab]}</p>
-                        {tab === 'sent' && <Button shape="pill" onClick={onNewRequest}>Request a support</Button>}
+                        <p className="requests-empty__text">{EMPTY_TEXT[shownTab]}</p>
+                        {shownTab === 'sent' && <Button shape="pill" onClick={onNewRequest}>Request a support</Button>}
                     </div>
                 )}
 
@@ -160,7 +172,7 @@ export default function SupportRequestsPage({
                     <ul className="requests-list">
                         {shownRequests.map((request) => (
                             <li key={request.requestId}>
-                                <RequestCard request={request} view={tab} onViewDetails={openDetails} />
+                                <RequestCard request={request} view={shownTab} onViewDetails={openDetails} />
                             </li>
                         ))}
                     </ul>

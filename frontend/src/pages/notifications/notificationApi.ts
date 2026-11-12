@@ -1,36 +1,31 @@
-import { createMockNotifications } from './mockNotifications';
+import { createNotification, getNotificationByUser } from '../../services/notificationService';
+import { type Notification } from '../../types/notification';
 import { type NotificationItem } from './types';
 
-// Mock data until Firestore is connected
+export { markNotificationAsRead } from '../../services/notificationService';
 
-const simulateNetworkDelay = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+const toNotificationItem = (notification: Notification): NotificationItem => ({
+    notificationId: notification.uid,
+    title: notification.title,
+    message: notification.message,
+    category: notification.category,
+    isRead: notification.isRead,
+    userId: notification.userId,
+    referenceId: notification.referenceId,
+    createdAt: notification.createdAt.toDate(),
+});
 
-let mockNotifications: NotificationItem[] = createMockNotifications();
-let nextNotificationNumber = 1006; // Ids like "N1006"
-
-// TODO: getNotificationByUser()
-export const fetchNotifications = async (userId: string): Promise<NotificationItem[]> => {
-    await simulateNetworkDelay(300);
-    return mockNotifications
-        .filter((item) => item.userId === userId)
+export const fetchNotifications = async (userId: string): Promise<NotificationItem[]> =>
+    (await getNotificationByUser(userId))
+        .map(toNotificationItem)
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-};
 
-// TODO: markNotificationAsRead()
-export const markNotificationAsRead = async (notificationId: string): Promise<void> => {
-    await simulateNetworkDelay(200);
-    mockNotifications = mockNotifications.map((item) =>
-        item.notificationId === notificationId ? { ...item, isRead: true } : item);
-};
-
-// TODO: createNotification()
-export const addNotification = (notification: Omit<NotificationItem, 'notificationId' | 'isRead' | 'createdAt'>) => {
-    const newNotification: NotificationItem = {
-        ...notification,
-        notificationId: `N${nextNotificationNumber}`,
-        isRead: false,
-        createdAt: new Date(),
-    };
-    nextNotificationNumber += 1;
-    mockNotifications = [newNotification, ...mockNotifications];
+export const addNotification = async (
+    notification: Omit<NotificationItem, 'notificationId' | 'isRead' | 'createdAt'>,
+): Promise<void> => {
+    try {
+        await createNotification(notification);
+    } catch (error) {
+        console.error('Error sending notification: ', error);
+    }
 };

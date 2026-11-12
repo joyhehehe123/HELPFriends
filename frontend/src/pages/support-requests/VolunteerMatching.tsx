@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Calendar, ChevronDown } from 'lucide-react';
+import { Calendar, ChevronDown, MapPin, Monitor } from 'lucide-react';
 import sadCat from '../../assets/sadcat.png';
 import BackLink from '../../components/BackLink';
 import Button from '../../components/Button';
@@ -65,6 +65,7 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
         .map((slot) => combineDateAndTime(slot.date, slot.time))
         .filter((date): date is Date => date !== null);
     const firstSlot = slotDates[0];
+    const ModeIcon = request.supportMode === 'Virtual' ? Monitor : MapPin;
 
     const retryLoading = () => {
         setStatus('loading');
@@ -88,59 +89,52 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
             <div className="page-top">
                 <BackLink onClick={onBack} label="Back to the support request form" />
                 <span className="category-chip matching-chip">{request.category} Support</span>
+
+                {slotDates.length > 1 ? (
+                    <details ref={timesRef} className="request-times">
+                        <summary className="date-chip">
+                            <Calendar aria-hidden="true" />
+                            {formatSlot(firstSlot)}
+                            <span className="request-times__more">+{slotDates.length - 1}</span>
+                            <ChevronDown className="request-times__arrow" aria-hidden="true" />
+                        </summary>
+                        <ul className="request-times__list">
+                            {slotDates.map((date) => (
+                                <li key={date.getTime()}>
+                                    <Calendar aria-hidden="true" />
+                                    {formatSlot(date)}
+                                </li>
+                            ))}
+                        </ul>
+                    </details>
+                ) : (
+                    <span className="date-chip">
+                        <Calendar aria-hidden="true" />
+                        {firstSlot && formatSlot(firstSlot)}
+                    </span>
+                )}
+                <span className="date-chip">
+                    <ModeIcon aria-hidden="true" />
+                    {request.supportMode}
+                </span>
             </div>
 
             <div className="request-support__body matching-body">
                 <h1 className="visually-hidden">Volunteer Matching</h1>
 
-                <section className="matching-filters">
-                    <div>
-                        <h2 className="matching-heading">Filter Skills</h2>
+                <section className="matching-filters" aria-labelledby="filter-heading">
+                    <h2 id="filter-heading" className="matching-heading">Filter Skills</h2>
 
-                        <label className="visually-hidden" htmlFor="skill-filter">Skill</label>
-                        <input
-                            id="skill-filter"
-                            className="matching-filters__skill"
-                            type="search"
-                            placeholder="Skill"
-                            autoComplete="off"
-                            value={filters.skill}
-                            onChange={(event) => setFilters({ skill: event.target.value })}
-                        />
-                    </div>
-
-                    {/* Chosen in the form, so they can't be changed here (use Back) */}
-                    <div>
-                        <h2 className="matching-heading">Preferred Dates &amp; Times</h2>
-                        {slotDates.length > 1 ? (
-                            <details ref={timesRef} className="request-times">
-                                <summary className="request-box">
-                                    <Calendar aria-hidden="true" />
-                                    {formatSlot(firstSlot)}
-                                    <span className="request-times__more">+{slotDates.length - 1}</span>
-                                    <ChevronDown className="request-times__arrow" aria-hidden="true" />
-                                </summary>
-                                <ul className="request-times__list">
-                                    {slotDates.map((date) => (
-                                        <li key={date.getTime()}>
-                                            <Calendar aria-hidden="true" />
-                                            {formatSlot(date)}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </details>
-                        ) : (
-                            <p className="request-box">
-                                <Calendar aria-hidden="true" />
-                                {firstSlot && formatSlot(firstSlot)}
-                            </p>
-                        )}
-                    </div>
-
-                    <div>
-                        <h2 className="matching-heading">Support Mode</h2>
-                        <p className="request-box request-mode">{request.supportMode}</p>
-                    </div>
+                    <label className="visually-hidden" htmlFor="skill-filter">Skill</label>
+                    <input
+                        id="skill-filter"
+                        className="matching-filters__skill"
+                        type="search"
+                        placeholder="Skill"
+                        autoComplete="off"
+                        value={filters.skill}
+                        onChange={(event) => setFilters({ skill: event.target.value })}
+                    />
                 </section>
 
                 <section className="matching-results" aria-labelledby="results-heading" aria-busy={status === 'loading'}>

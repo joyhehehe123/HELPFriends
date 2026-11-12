@@ -1,5 +1,3 @@
-import { DEFAULT_AVATAR } from './DefaultAvatar';
-
 export interface ProfileData {
     fullName: string;
     studentId: string;
@@ -44,7 +42,7 @@ export const profileStore: { profile: ProfileData; volunteer: VolunteerData } = 
         faculty: '',
         programme: '',
         aboutMe: '',
-        avatarUrl: DEFAULT_AVATAR,
+        avatarUrl: '',
     },
     volunteer: {
         active: false,

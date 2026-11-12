@@ -1,4 +1,4 @@
-/* Fill the height under the navbar so the sad cat can sit in the middle */
+
 .request-support--flow:has(> .matching-page),
 .matching-page,
 .matching-body,
@@ -20,14 +20,6 @@
     line-height: 1.4;
     letter-spacing: normal;
     color: var(--color-text-primary);
-}
-
-/* Skill filter, then the times and mode from the form */
-.matching-filters {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 340px) minmax(0, 200px);
-    gap: var(--space-3) 20px;
-    align-items: start;
 }
 
 .matching-filters .matching-heading {
@@ -57,24 +49,9 @@
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
 }
 
-.request-box {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    box-sizing: border-box;
-    height: 46px;
-    margin: 0;
-    padding: 0 var(--space-3);
-    border-radius: var(--radius-sm);
-    background: var(--color-bg-secondary);
-    white-space: nowrap;
-}
-
-.request-box svg,
+.matching-page .date-chip svg,
 .request-times__list svg {
     flex-shrink: 0;
-    width: 20px;
-    height: 20px;
     color: var(--color-tertiary);
 }
 
@@ -102,7 +79,6 @@
 }
 
 .request-times__arrow {
-    margin-left: auto;
     transition: transform 0.2s ease;
 }
 
@@ -110,22 +86,22 @@
     transform: rotate(180deg);
 }
 
-/* Full list under the box */
 .request-times__list {
     position: absolute;
     top: calc(100% + 8px);
-    right: 0;
     left: 0;
     z-index: 5;
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
+    min-width: 280px;
     margin: 0;
     padding: 12px var(--space-3);
     list-style: none;
     border-radius: var(--radius-sm);
     background: var(--color-bg-secondary);
     box-shadow: var(--shadow-card);
+    white-space: nowrap;
 }
 
 .request-times__list li {
@@ -134,12 +110,9 @@
     gap: 10px;
 }
 
-/* Only the mode chosen in the form, not a button */
-.request-mode {
-    justify-content: center;
-    background: var(--color-tertiary);
-    font-family: var(--font-heading);
-    color: var(--color-text-secondary);
+.request-times__list svg {
+    width: 20px;
+    height: 20px;
 }
 
 .matching-heading--results {
@@ -216,16 +189,207 @@
         width: 100%;
     }
 
-    .matching-filters {
-        grid-template-columns: minmax(0, 1fr);
-    }
-
     .matching-filters__skill {
         max-width: none;
         height: 42px;
     }
 
-    .request-box {
+    .no-matches__image {
+        height: 140px;
+    }
+}
+.request-support--flow:has(> .matching-page),
+.matching-page,
+.matching-body,
+.matching-results {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-top + .request-support__body.matching-body {
+    padding-top: var(--space-4);
+}
+
+.matching-heading {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+    font-weight: var(--weight-medium);
+    line-height: 1.4;
+    letter-spacing: normal;
+    color: var(--color-text-primary);
+}
+
+.matching-filters .matching-heading {
+    margin-bottom: var(--space-3);
+}
+
+.matching-filters__skill {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 480px;
+    height: 46px;
+    padding: 0 var(--space-3);
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-secondary);
+    font: inherit;
+    color: var(--color-text-muted-default);
+}
+
+.matching-filters__skill::placeholder {
+    color: var(--color-text-muted-default);
+}
+
+.matching-filters__skill:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+}
+
+.matching-page .date-chip svg,
+.request-times__list svg {
+    flex-shrink: 0;
+    color: var(--color-tertiary);
+}
+
+.request-times {
+    position: relative;
+}
+
+.request-times summary {
+    list-style: none;
+    cursor: pointer;
+}
+
+.request-times summary::-webkit-details-marker {
+    display: none;
+}
+
+.request-times summary:focus-visible {
+    outline: 3px solid rgba(37, 99, 235, 0.35);
+    outline-offset: 2px;
+}
+
+.request-times__more {
+    font-weight: var(--weight-medium);
+    color: var(--color-tertiary);
+}
+
+.request-times__arrow {
+    transition: transform 0.2s ease;
+}
+
+.request-times[open] .request-times__arrow {
+    transform: rotate(180deg);
+}
+
+.request-times__list {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-width: 280px;
+    margin: 0;
+    padding: 12px var(--space-3);
+    list-style: none;
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-secondary);
+    box-shadow: var(--shadow-card);
+    white-space: nowrap;
+}
+
+.request-times__list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.request-times__list svg {
+    width: 20px;
+    height: 20px;
+}
+
+.matching-heading--results {
+    margin-top: var(--space-4);
+}
+
+.matching-results__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin: var(--space-3) 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.matching-results__status {
+    margin: var(--space-3) 0;
+    color: var(--color-text-muted-default);
+}
+
+.matching-results__error {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin: var(--space-3) 0 0;
+    padding: var(--space-3) 20px;
+    border-radius: var(--radius-sm);
+    background: var(--color-status-msg-negative);
+    color: var(--color-text-status-cancelled);
+}
+
+.matching-results__error p {
+    margin: 0;
+}
+
+.no-matches {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: var(--space-5);
+    text-align: center;
+}
+
+.no-matches__image {
+    width: auto;
+    height: 180px;
+}
+
+.no-matches__title {
+    margin: var(--space-2) 0 0;
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+    font-weight: var(--weight-medium);
+    line-height: 1.4;
+    color: var(--color-text-primary);
+}
+
+.no-matches__text {
+    margin: var(--space-1) 0 0;
+    color: var(--color-text-muted-default);
+}
+
+.no-matches__button {
+    min-width: 200px;
+    margin-top: var(--space-4);
+}
+
+@media (max-width: 900px) {
+    .page-top + .request-support__body.matching-body {
+        width: 100%;
+    }
+
+    .matching-filters__skill {
+        max-width: none;
         height: 42px;
     }
 

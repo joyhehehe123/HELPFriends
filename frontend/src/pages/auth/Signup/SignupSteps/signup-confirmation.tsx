@@ -14,7 +14,7 @@ export default function createConfirmationStep({ onLogin }: ConfirmationProps): 
         <h2>Congratulations!</h2>
         <p>You have successfully created your account.<br />You can now login to HELPFriends.</p>
         <div class="signup-actions">
-            <button type="button" class="signup-button">Login</button>
+            <button type="button" class="signup-button">To Dashboard</button>
         </div>
     `;
 

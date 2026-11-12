@@ -13,6 +13,14 @@
     color: var(--color-text-primary);
 }
 
+/* Confirmation step: hide the navbar and use the full viewport height */
+body.on-signup-confirmation .navbar {
+    display: none;
+}
+body.on-signup-confirmation .signup-page {
+    min-height: 100svh;
+}
+
 .signup-content {
     flex: 1;
     display: flex;

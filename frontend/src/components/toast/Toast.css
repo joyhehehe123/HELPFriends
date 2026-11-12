@@ -12,6 +12,7 @@
     background-color: var(--color-primary);
     color: #ffffff;
     box-shadow: var(--shadow-drop);
+    font-family: var(--font-body);
 }
 
 .toast-visible {
