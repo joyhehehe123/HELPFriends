@@ -40,7 +40,7 @@ const getRetryRequest = (record: SupportRequestRecord): ValidSupportRequestDraft
     return allTimesAhead ? toDraft(record) : null;
 };
 
-export default function RequestSupportPage({ visitKey, startFrom }: RequestSupportPageProps) {
+export default function RequestSupportPage({ visitKey, startFrom, onRequestSent }: RequestSupportPageProps) {
     const navigate = useNavigate();
     const currentUserId = useCurrentUserId();
     const [draft, setDraft] = useState<SupportRequestDraft>(() => (startFrom ? toDraft(startFrom) : createEmptyDraft()));
@@ -71,7 +71,7 @@ export default function RequestSupportPage({ visitKey, startFrom }: RequestSuppo
                             request={request}
                             currentUserId={currentUserId}
                             onBack={backToForm}
-                            onRequestSent={(req) => navigate(`/support-requests/${req.requestId}/schedule`)}
+                            onRequestSent={onRequestSent}
                         />
                     ) : (
                         <Navigate to={REQUEST_FORM_PATH} replace state={{ visitKey }} />

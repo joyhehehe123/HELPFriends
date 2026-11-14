@@ -88,39 +88,42 @@ export default function VolunteerMatching({ request, currentUserId, onBack, onRe
         <main className="matching-page">
             <div className="page-top">
                 <BackLink onClick={onBack} label="Back to the support request form" />
-                <span className="category-chip matching-chip">{request.category} Support</span>
-
-                {slotDates.length > 1 ? (
-                    <details ref={timesRef} className="request-times">
-                        <summary className="date-chip">
-                            <Calendar aria-hidden="true" />
-                            {formatSlot(firstSlot)}
-                            <span className="request-times__more">+{slotDates.length - 1}</span>
-                            <ChevronDown className="request-times__arrow" aria-hidden="true" />
-                        </summary>
-                        <ul className="request-times__list">
-                            {slotDates.map((date) => (
-                                <li key={date.getTime()}>
-                                    <Calendar aria-hidden="true" />
-                                    {formatSlot(date)}
-                                </li>
-                            ))}
-                        </ul>
-                    </details>
-                ) : (
-                    <span className="date-chip">
-                        <Calendar aria-hidden="true" />
-                        {firstSlot && formatSlot(firstSlot)}
-                    </span>
-                )}
-                <span className="date-chip">
-                    <ModeIcon aria-hidden="true" />
-                    {request.supportMode}
-                </span>
             </div>
 
             <div className="request-support__body matching-body">
                 <h1 className="visually-hidden">Volunteer Matching</h1>
+
+                <div className="matching-chips">
+                    <span className="category-chip matching-chip">{request.category} Support</span>
+
+                    {slotDates.length > 1 ? (
+                        <details ref={timesRef} className="request-times">
+                            <summary className="date-chip">
+                                <Calendar aria-hidden="true" />
+                                {formatSlot(firstSlot)}
+                                <span className="request-times__more">+{slotDates.length - 1}</span>
+                                <ChevronDown className="request-times__arrow" aria-hidden="true" />
+                            </summary>
+                            <ul className="request-times__list">
+                                {slotDates.map((date) => (
+                                    <li key={date.getTime()}>
+                                        <Calendar aria-hidden="true" />
+                                        {formatSlot(date)}
+                                    </li>
+                                ))}
+                            </ul>
+                        </details>
+                    ) : (
+                        <span className="date-chip">
+                            <Calendar aria-hidden="true" />
+                            {firstSlot && formatSlot(firstSlot)}
+                        </span>
+                    )}
+                    <span className="date-chip">
+                        <ModeIcon aria-hidden="true" />
+                        {request.supportMode}
+                    </span>
+                </div>
 
                 <section className="matching-filters" aria-labelledby="filter-heading">
                     <h2 id="filter-heading" className="matching-heading">Filter Skills</h2>
