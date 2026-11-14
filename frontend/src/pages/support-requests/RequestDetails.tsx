@@ -4,7 +4,6 @@ import Button from '../../components/Button';
 import UserAvatar from '../../components/UserAvatar';
 import { formatClockTime, formatDateWithDay, formatDuration, formatSlot } from '../../utils/dateTime';
 import { RoleChip, StatusDate, StatusPill } from './RequestBadges';
-import ScheduleSessionModal from './ScheduleSessionModal';
 import { updateRequestStatus, type RequestAction } from './supportRequestApi';
 import { type PersonSummary, type RequestRole, type SupportRequestRecord } from './types';
 import './RequestDetails.css';
@@ -58,7 +57,6 @@ export default function RequestDetails({
 }: RequestDetailsProps) {
     const [busyAction, setBusyAction] = useState<RequestAction | null>(null);
     const [errorMessage, setErrorMessage] = useState('');
-    const [isScheduling, setIsScheduling] = useState(false);
 
     const titleId = `request-${request.requestId}-title`;
     const otherPerson = role === 'Volunteer' ? request.seeker : request.volunteer;
@@ -186,19 +184,6 @@ export default function RequestDetails({
                     {actions && <div className="request-details__actions">{actions}</div>}
                 </article>
             </div>
-
-            {isScheduling && (
-                <ScheduleSessionModal
-                    request={request}
-                    otherName={otherPerson.fullName}
-                    onClose={() => setIsScheduling(false)}
-                    onScheduled={(scheduled) => {
-                        setIsScheduling(false);
-                        onChange(scheduled);
-                        onSchedule(scheduled);
-                    }}
-                />
-            )}
         </main>
     );
 }

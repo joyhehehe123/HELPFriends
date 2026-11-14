@@ -49,7 +49,8 @@ export function SupportRequestsRoute() {
             visitKey={key}
             onNewRequest={() => navigate(REQUEST_FORM_PATH)}
             onFindAnotherVolunteer={(request) => navigate(VOLUNTEER_MATCHING_PATH, { state: { startFrom: request } })}
-            onSchedule={() => navigate('/support-sessions/active')}
+            // Scheduling is done on the Session Scheduling page (UC3)
+            onSchedule={(request) => navigate(`${SUPPORT_REQUESTS_PATH}/${request.requestId}/schedule`)}
         />
     );
 }

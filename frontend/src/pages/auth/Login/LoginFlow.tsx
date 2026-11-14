@@ -79,7 +79,6 @@ export default function createLoginFlow({ initialData }: LoginFlowProps = {}): H
 
                     // Step 4: Show OTP screen
                     renderTwoFactorStep();
-
                     return true;
 
                 } catch (error) {
