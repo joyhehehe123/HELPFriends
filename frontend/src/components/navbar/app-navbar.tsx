@@ -1,3 +1,5 @@
+import { collection, query, where, limit, onSnapshot } from "firebase/firestore";
+import { db } from "../../firebase";
 import { useState, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
 import type { User } from "../../types/user";
@@ -10,6 +12,7 @@ import UserAvatar from "../UserAvatar.tsx";
 function AppNavbar() {
     const { pathname } = useLocation();
     const [user, setUser] = useState<User | null>(null);
+    const [hasUnread, setHasUnread] = useState(false);
 
     useEffect(() => {
         const uid = getCurrentUid();
@@ -30,6 +33,25 @@ function AppNavbar() {
     }, []);
 
     const userName = user?.fullName ?? "User";
+
+    useEffect(() => {
+        const uid = getCurrentUid();
+        if (!uid) return;
+
+        const q = query(
+            collection(db, "notifications"),
+            where("userId", "==", uid),
+            where("isRead", "==", false),
+            limit(1)                      // only need to know if one exists
+        );
+
+        const unsubscribe = onSnapshot(q, (snap) => {
+            console.log("unread notifications:", snap.size);
+            setHasUnread(!snap.empty)
+        }, (error) => console.error("Notification listener failed:", error)
+        );
+        return unsubscribe;               // stops listening when the navbar unmounts
+    }, []);
 
     return (
         <nav className="app-navbar-main">
@@ -59,11 +81,20 @@ function AppNavbar() {
                 <Link 
                     to="/notifications" id="bell" 
                     className={`link icon-link ${pathname.startsWith("/notifications") ? "active-icon-link" : ""}`}
-                ><Bell /></Link>
-                {/* <Link to="/profile" id="profile" 
-                    className={`link icon-link ${pathname.startsWith("/profile") ? "active-icon-link" : ""}`}
-                ><UserRound /></Link> */}
-            {/* </div> */}
+                >
+                    <Bell />
+                    {hasUnread && <span className="notification-dot" aria-hidden="true" />}
+                </Link>
+                <Link 
+                    to="/profile" 
+                    className="profile link"
+                    aria-label={`View profile for ${userName}`}
+                >
+                    <span className="app-navbar__user" role="img" aria-label={`Signed in as ${userName}`}>
+                        <UserAvatar name={userName} size="sm" />
+                    </span>
+                </Link>
+            </div>
             <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
                 <defs>
                     <linearGradient id="icon-link-gradient" x1="0" y1="0" x2="1" y2="0">
@@ -72,21 +103,6 @@ function AppNavbar() {
                     </linearGradient>
                 </defs>
             </svg>
-            {/* <div id="bell-and-profile">
-                <Link 
-                    to="/notifications" id="bell" 
-                    className={`bell link ${pathname.startsWith("/notifications") ? "active-bell" : ""}`}
-                ><Bell /></Link> */}
-                <Link 
-                    to="/profile" 
-                    className="profile link"
-                    aria-label={`View profile for ${userName}`}
-                >
-                    <span className="app-navbar__user" role="img" aria-label={`Signed in as ${userName}`}>
-                        <UserAvatar name={userName} size="md" />
-                    </span>
-                </Link>
-            </div>
         </nav>
     )
 }

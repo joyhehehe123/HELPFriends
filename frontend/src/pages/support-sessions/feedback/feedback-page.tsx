@@ -38,16 +38,21 @@ export default function FeedbackPage() {
             setLoading(false);
             return;
         }
+        let cancelled = false;
         setLoading(true);
         
-        getSupportSession(sessionId)
-            .then(setSession)
+        Promise.all([getSupportSession(sessionId), getFeedbackBySession(sessionId)])
+            .then(([s, f]) => {
+                if (cancelled) return;
+                setSession(s);
+                setFeedback(f);
+            })
             .catch(console.error)
-            .finally(() => setLoading(false));
+            .finally(() => {
+                if (!cancelled) setLoading(false);
+            });
 
-        getFeedbackBySession(sessionId)
-            .then(setFeedback)
-            .catch(console.error);
+        return () => { cancelled = true; };
     }, [sessionId]);
 
     if (loading) return <p>Loading...</p>;

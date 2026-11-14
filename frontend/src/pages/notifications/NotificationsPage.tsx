@@ -10,7 +10,7 @@ import './NotificationsPage.css';
 
 interface NotificationsPageProps {
     onViewRequest: (requestId: string) => void;
-    onViewSessions: () => void;
+    onViewSessions: (sessionId: string) => void;
 }
 
 type LoadStatus = 'loading' | 'error' | 'ready';
@@ -97,7 +97,7 @@ export default function NotificationsPage({ onViewRequest, onViewSessions }: Not
                                                 aria-current={item.notificationId === selectedId ? 'true' : undefined}
                                                 onClick={() => select(item)}
                                             >
-                                                <span className="notification-item__date">{formatDayDateTime(item.createdAt)}</span>
+                                                <em><span className="notification-item__date">{formatDayDateTime(item.createdAt)}</span></em>
                                                 <span className="notification-item__title">
                                                     {item.title}
                                                     {!item.isRead && <span className="visually-hidden"> (unread)</span>}
@@ -116,14 +116,19 @@ export default function NotificationsPage({ onViewRequest, onViewSessions }: Not
                                     <p className="notifications__date">{formatDayDateTime(selected.createdAt)}</p>
                                     <h2 className="notifications__title">{selected.title}</h2>
                                     <p className="notifications__message">{selected.message}</p>
-                                    {selected.category === 'Support Session' && (
-                                        <Button className="notifications__button" onClick={onViewSessions}>
+                                    {selected.category === 'Support Session' && referenceId && (
+                                        <Button className="notifications__button" onClick={() => onViewSessions(referenceId)}>
                                             View session details <ArrowIcon />
                                         </Button>
                                     )}
                                     {selected.category === 'Support Request' && referenceId && (
                                         <Button className="notifications__button" onClick={() => onViewRequest(referenceId)}>
                                             View request details <ArrowIcon />
+                                        </Button>
+                                    )}
+                                    {selected.category === 'Feedback' && referenceId && (
+                                        <Button className="notifications__button" onClick={() => onViewSessions(referenceId)}>
+                                            View feedback <ArrowIcon />
                                         </Button>
                                     )}
                                 </>

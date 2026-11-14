@@ -239,13 +239,14 @@ export const fetchFreeTimeSlots = async (request: SupportRequestRecord): Promise
 };
 
 // Tell both students that the session was booked
-const notifyScheduled = async (request: SupportRequestRecord): Promise<void> => {
+const notifyScheduled = async (request: SupportRequestRecord, sessionId: string): Promise<void> => {
     await addNotification({
         userId: request.seeker.userId,
         title: 'Support Session Scheduled',
         message: `Your support session “${request.supportTitle}” with ${request.volunteer.fullName} has been scheduled. `
             + 'You can see it in your support sessions.',
         category: 'Support Session',
+        referenceId: sessionId
     });
     await addNotification({
         userId: request.volunteer.userId,
@@ -253,6 +254,7 @@ const notifyScheduled = async (request: SupportRequestRecord): Promise<void> => 
         message: `Your support session “${request.supportTitle}” with ${request.seeker.fullName} has been scheduled. `
             + 'You can see it in your support sessions.',
         category: 'Support Session',
+        referenceId: sessionId
     });
 };
 
@@ -261,7 +263,7 @@ export const scheduleSession = async (requestId: string, dateTime: Date): Promis
     if (!request) throw new Error(`Support request ${requestId} not found`);
     if (request.status !== 'Accepted') throw new Error(`Can't schedule a request that is ${request.status}`);
 
-    await createSupportSession(request, { dateTime: Timestamp.fromDate(dateTime), duration: DEFAULT_DURATION_MINUTES });
+    const sessionId = await createSupportSession(request, { dateTime: Timestamp.fromDate(dateTime), duration: DEFAULT_DURATION_MINUTES });
     const scheduledAt = Timestamp.now();
     await updateSupportRequestStatus(requestId, 'Scheduled', { scheduledAt });
 
@@ -269,6 +271,6 @@ export const scheduleSession = async (requestId: string, dateTime: Date): Promis
         { ...request, scheduledAt, status: 'Scheduled' },
         await getPeople([request.seekerId, request.volunteerId]),
     );
-    await notifyScheduled(scheduled);
+    await notifyScheduled(scheduled, sessionId);
     return scheduled;
 };

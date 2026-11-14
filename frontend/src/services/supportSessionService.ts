@@ -1,15 +1,17 @@
 import { db } from "../firebase";
-import { serverTimestamp } from "firebase/firestore";
+import { runTransaction, Timestamp, serverTimestamp } from "firebase/firestore";
 import { collection, setDoc, getDoc, getDocs, updateDoc, deleteDoc, doc, query, where } from "firebase/firestore";
 import { type SupportSession } from "../types/supportSession";
 import { type SessionStatus } from "../types/constants";
 import { type SupportRequest } from "../types/supportRequest";
 import { generateNextId } from "./counterService";
 import { getCurrentUid } from "./authService";
+import { createNotification } from "./notificationService";
+import { getUser } from "./userService";
 
 // ─── Create ────────────────────────────────────────────────────────────────────
 
-export const createSupportSession = async (request: SupportRequest, data: Pick<SupportSession, "dateTime" | "duration">): Promise<void> => {
+export const createSupportSession = async (request: SupportRequest, data: Pick<SupportSession, "dateTime" | "duration">): Promise<string> => {
     try {
         const nextId = "S" + String(await generateNextId("session"));
         await setDoc(doc(db, "supportSessions", nextId), { 
@@ -24,9 +26,39 @@ export const createSupportSession = async (request: SupportRequest, data: Pick<S
             seekerId: request.seekerId,
             volunteerId: request.volunteerId
         });
+
+        const session = await getSupportSessionByRequestId(request.uid);
+        if (!session) return;
+
+        const currentUid = await getCurrentUid();
+        const currentUser = currentUid ? (await getUser(currentUid)) : null;
+        const otherUid = currentUid === session.seekerId ? session.volunteerId : session.seekerId;
+
+        const date = session?.dateTime.toDate().toLocaleDateString("en-GB", { 
+            day: "2-digit", 
+            month: "2-digit", 
+            year: "numeric" 
+        });
+        const time = session?.dateTime.toDate().toLocaleTimeString("en-US", { 
+            hour: "2-digit", 
+            minute: "2-digit", 
+            hour12: true
+        });
+
+        await createNotification({
+            title: "Support Session Scheduled",
+            message: `${currentUid === session.seekerId 
+                ? `Support request "${session.title}" accepted by you has been scheduled on ${date} ${time} by ${currentUser?.fullName ?? "unknown user"}.` 
+                : `Your support request "${session.title} has been scheduled on ${date} ${time} by ${otherUser?.fullName ?? "unknown user"}.`
+            }`,
+            category: "Support Session",
+            userId: otherUid,
+            referenceId: session.uid
+        });
+
+        return nextId;
     } catch (error) {
-        console.error("Error creating support session: ", error);
-        throw new Error("Failed to create support session: " + error);
+        console.error("Error generating notification for support session: ", error);
     }
 }
 
@@ -119,13 +151,21 @@ export const markAsCompleted = async (uid: string): Promise<void> => {
         const status = session.status;
         if (status !== "Active") throw new Error("Only active sessions can be marked as completed.");
 
-        const endsAt = session.dateTime.toDate().getTime() + (session.duration * 60_000);
-        if (Date.now() < endsAt) throw new Error("Session has not ended yet");
-
         await updateDoc(doc(db, "supportSessions", uid), {
             status: "Completed",
             completedAt: serverTimestamp() 
         })
+
+        const volunteer = (await getUser(session.volunteerId))?.fullName;
+
+        await createNotification({ 
+            title: "Support Session Completed",
+            message: `Your support session "${session.title}" has been marked as completed by ${volunteer}. You can now provide feedback for the session.`,
+            category: "Support Session",
+            userId: session.seekerId,
+            referenceId: uid
+        });
+
     } catch (error) {
         console.error("Error marking session as completed: ", error);
         throw (error instanceof Error) ? error : new Error("Failed to mark session as completed");
@@ -150,12 +190,79 @@ export const cancelSession = async (uid: string, cancelReason: string): Promise<
             cancelledAt: serverTimestamp(),
             cancelledBy: getCurrentUid(),
             cancelledReason: cancelReason
-        })
+        });
+
+        const currentUid = await getCurrentUid();
+        const currentUser = currentUid ? (await getUser(currentUid)) : null;
+        const otherUid = currentUid === session.seekerId ? session.volunteerId : session.seekerId;
+
+        await createNotification({ 
+            title: "Support Session Cancelled",
+            message: `Your support session "${session.title}" has been cancelled by ${currentUser?.fullName ?? "unknown user"}.`,
+            category: "Support Session",
+            userId: otherUid,
+            referenceId: uid
+        });
+
     } catch (error) {
         console.log("Error cancelling session: ", error);
         throw (error instanceof Error) ? error : new Error("Failed to cancel session");
     }
 }
+
+const endsAt = (s: SupportSession) => s.dateTime.toMillis() + s.duration * 60_000;
+const completeIfEnded = async (uid: string): Promise<boolean> => {
+    const ref = doc(db, "supportSessions", uid);
+    return runTransaction(db, async (tx) => {
+        const snap = await tx.get(ref);
+        if (!snap.exists()) return false;
+
+        const s = snap.data() as SupportSession;
+        if (s.status !== "Active" || Date.now() < endsAt(s)) return false;
+
+        tx.update(ref, {
+            status: "Completed",
+            completedAt: Timestamp.fromMillis(endsAt(s)),   // when it actually ended
+            completedBy: "system",
+        });
+        return true;
+    });
+};
+
+export const autoCompleteEndedSessions = async (uid: string): Promise<number> => {
+    const [asSeeker, asVolunteer] = await Promise.all([
+        getSupportSessionsByStudentAndStatus(uid, false, "Active"),
+        getSupportSessionsByStudentAndStatus(uid, true, "Active"),
+    ]);
+
+    let changed = 0;
+    for (const s of [...asSeeker, ...asVolunteer]) {
+        if (Date.now() < endsAt(s)) continue;
+        if (await completeIfEnded(s.uid)) {
+            changed++;
+            const results = await Promise.allSettled([
+                createNotification({ 
+                    title: "Support Session Completed",
+                    message: `Your support session "${s.title}" has been marked as completed by the system. You can now provide feedback for the session.`,
+                    category: "Support Session",
+                    userId: s.seekerId,
+                    referenceId: s.uid
+                }),
+                createNotification({ 
+                    title: "Support Session Completed",
+                    message: `Your support session "${s.title}" has been marked as completed by the system. Please wait for the support seeker to rate the session.`,
+                    category: "Support Session",
+                    userId: s.volunteerId,
+                    referenceId: s.uid
+                }),
+            ]);
+            results.forEach((r) => {
+                if (r.status === "rejected") console.error("Notification failed for", s.uid, r.reason);
+            });
+        }
+    }
+    return changed;
+};
 
 // ─── Delete ────────────────────────────────────────────────────────────────────
 

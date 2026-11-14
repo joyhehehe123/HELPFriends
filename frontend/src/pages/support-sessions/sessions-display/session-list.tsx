@@ -11,8 +11,6 @@ type Props = { role: Role, status: SessionStatus, refreshKey: number, onUpdated:
 
 function SessionList({ role, status, refreshKey, onUpdated }: Props) {
     const [sessions, setSessions] = useState<SupportSession[]>([]);
-    // const [refreshKey, setRefreshKey] = useState(0);
-    // const refresh = () => setRefreshKey((k) => k + 1);
 
     const sessionContent = (sessions.length === 0)
         ? <>

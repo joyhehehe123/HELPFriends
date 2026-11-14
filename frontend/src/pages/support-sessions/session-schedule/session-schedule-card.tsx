@@ -6,26 +6,30 @@ import { useToast } from "../../../components/toast/Toast";
 import type { User } from "../../../types/user";
 import type { Volunteer } from "../../../types/volunteer";
 import type { SupportRequest } from "../../../types/supportRequest";
+import { getCurrentUid } from "../../../services/authService";
 import { getUser } from "../../../services/userService";
 import { getVolunteer } from "../../../services/volunteerService";
 import { createSupportSession, getSupportSessionByRequestId } from "../../../services/supportSessionService";
-import Button from "../../../components/Button";
-import { ChevronDown } from "lucide-react";
-import "./session-schedule-card.css";
 import { updateSupportRequestStatus } from "../../../services/supportRequestService";
+import { ChevronDown } from "lucide-react";
+import Button from "../../../components/Button";
+import "./session-schedule-card.css";
 
 type Props = { request: SupportRequest };
+type TimeOption = { iso: string; label: string; maxMinutes: number };
 
 export default function SessionScheduleCard({ request }: Props) {
     const navigate = useNavigate();
     const confirm = useConfirm();
     const { showToast } = useToast();
+    const [seeker, setSeeker] = useState<User | null>(null);
     const [volunteer, setVolunteer] = useState<User | null>(null);
     const [volunteerData, setVolunteerData] = useState<Volunteer | null>(null);
     const [date, setDate] = useState("");
     const [time, setTime] = useState("");
     const [duration, setDuration] = useState(0);
     const [showError, setShowError] = useState(false);
+    const currentUid = getCurrentUid();
     const durations = [30, 60, 90, 120];
     const TZ = "Asia/Kuala_Lumpur";
     const STEP = 30;
@@ -46,6 +50,12 @@ export default function SessionScheduleCard({ request }: Props) {
         getVolunteer(request.volunteerId)
             .then((volunteerData) => setVolunteerData(volunteerData ?? null))
             .catch(console.error);
+
+        if (currentUid === request.volunteerId) {
+            getUser(request.seekerId)
+                .then((seeker) => setSeeker(seeker ?? null))
+                .catch(console.error);
+        }
     }, [request, request.volunteerId]);
 
     // 1. Dates: from proposed slots, upcoming, and on a day the volunteer works
@@ -58,20 +68,26 @@ export default function SessionScheduleCard({ request }: Props) {
     ).sort();
 
     // 2. Times: from the volunteer's availability on the chosen date
-    const timeOptions: { iso: string; label: string }[] = [];
-    if (date && duration > 0) {
+    const timeOptions: TimeOption[] = [];
+    if (date) {
         const entry = availability.find((a) => a.day === weekdayOf(date));
         for (const range of entry?.timeSlots ?? []) {
-            for (let t = toMin(range.start); t + duration <= toMin(range.end); t += STEP) {
+            const end = toMin(range.end);
+            for (let t = toMin(range.start); t + STEP <= end; t += STEP) {   // latest start = end - 30
                 const start = new Date(`${date}T${pad(Math.floor(t / 60))}:${pad(t % 60)}:00+08:00`);
                 if (start <= new Date()) continue;
                 timeOptions.push({
                     iso: start.toISOString(),
                     label: start.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: TZ }),
+                    maxMinutes: end - t,          // how long the volunteer is still free from this start
                 });
             }
         }
     }
+
+    // 3. Durations: only the ones that fit before the volunteer's availability ends
+    const selectedTime = timeOptions.find((o) => o.iso === time);
+    const durationOptions = durations.filter((d) => d <= (selectedTime?.maxMinutes ?? 0));
 
     const saveSession = async (): Promise<boolean> => {
         try {
@@ -117,36 +133,17 @@ export default function SessionScheduleCard({ request }: Props) {
                                 <p className="schedule-card-title">Session Scheduling</p>
                                 <p className="schedule-card-subtitle">{request.title}</p>
                             </div>
-                            <p className="schedule-card-note"><em>Note: The available dates below are based on the preferred time slots you proposed in your request and the available times are based on the volunteer's availability.</em></p>
-                            {showError && (<p className="error-msg schedule-error-msg">Please select duration, date, and time.</p>)}
+                            <p className="schedule-card-note"><em>Note: The available dates are based on the proposed time slots in the request and the available times are based on the volunteer's availability.</em></p>
+                            {showError && (<p className="error-msg">Please select a date, time, and duration.</p>)}
                         </div>
                         <div className="schedule-card-info">
                             <div className="schedule-card-info-row">
-                                <p className="schedule-card-element">VOLUNTEER</p>
-                                <p className="schedule-card-info-right">{volunteer?.fullName ?? "Loading..."}</p>
+                                <p className="schedule-card-element">{currentUid === request.seekerId ? "VOLUNTEER" : "SUPPORT SEEKER"}</p>
+                                <p className="schedule-card-info-right">{currentUid === request.seekerId ? volunteer?.fullName ?? "Loading..." : seeker?.fullName ?? "Loading..."}</p>
                             </div>
                             <div className="schedule-card-info-row">
                                 <p className="schedule-card-element">SUPPORT MODE</p>
                                 <p className="schedule-card-info-right">{request.supportMode}</p>
-                            </div>
-                            <div className="schedule-card-info-row">
-                                <p className="schedule-card-element">DURATION</p>
-                                <div className="schedule-card-info-right schedule-card-select">
-                                    <select 
-                                        className="select-drop-down" 
-                                        id="date" 
-                                        value={duration} 
-                                        onChange={(e) => {
-                                            setDuration(Number(e.target.value));
-                                        }}
-                                    >
-                                        <option value="">— Select duration—</option>
-                                        {durations.map((d) => (
-                                            <option key={d} value={d}>{d} min</option>
-                                        ))}
-                                    </select>
-                                    <ChevronDown className="drop-down"/>
-                                </div>
                             </div>
                             <div className="schedule-card-info-row">
                                 <p className="schedule-card-element">DATE</p>
@@ -158,6 +155,7 @@ export default function SessionScheduleCard({ request }: Props) {
                                         onChange={(e) => {
                                             setDate(e.target.value);
                                             setTime("");
+                                            setDuration(0);
                                         }}
                                     >
                                         <option value="">— Select a date —</option>
@@ -172,7 +170,7 @@ export default function SessionScheduleCard({ request }: Props) {
                                     <ChevronDown className="drop-down"/>
                                 </div>
                             </div>
-                            {date && duration !== 0 && (
+                            {date && (
                                 <div className="schedule-card-info-row">
                                     <p className="schedule-card-element">TIME</p>
                                     <div className="schedule-card-info-right schedule-card-select">
@@ -183,19 +181,38 @@ export default function SessionScheduleCard({ request }: Props) {
                                             disabled={!date}
                                             onChange={(e) => {
                                                 setTime(e.target.value);
+                                                setDuration(0);
                                                 setShowError(false);
                                             }}
                                         >
                                             <option value="">— Select a time —</option>
                                             {timeOptions.map((s) => (
-                                                <option key={s.iso} value={s.iso}>
-                                                    {new Date(s.iso).toLocaleTimeString("en-US", {
-                                                        hour: "numeric", minute: "2-digit", hour12: true, timeZone: TZ,
-                                                    })}
-                                                </option>
+                                                <option key={s.iso} value={s.iso}>{s.label}</option>
                                             ))}
                                         </select>
                                         <ChevronDown className="drop-down" />
+                                    </div>
+                                </div>
+                            )}
+                            {date && time && (
+                                <div className="schedule-card-info-row">
+                                    <p className="schedule-card-element">DURATION</p>
+                                    <div className="schedule-card-info-right schedule-card-select">
+                                        <select 
+                                            className="select-drop-down" 
+                                            id="date" 
+                                            value={duration || ""} 
+                                            onChange={(e) => { 
+                                                setDuration(Number(e.target.value));
+                                                setShowError(false);
+                                            }}
+                                        >
+                                            <option value="">— Select duration—</option>
+                                            {durationOptions.map((d) => (
+                                                <option key={d} value={d}>{d} min</option>
+                                            ))}
+                                        </select>
+                                        <ChevronDown className="drop-down"/>
                                     </div>
                                 </div>
                             )}
