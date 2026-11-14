@@ -2,6 +2,9 @@ import { db } from '../firebase';
 import { collection, setDoc, getDoc, getDocs, updateDoc, deleteDoc, doc, query, where, serverTimestamp } from "firebase/firestore";
 import { type Feedback } from "../types/feedback";
 import { generateNextId } from './counterService';
+import { createNotification } from './notificationService';
+import { getSupportSession } from './supportSessionService';
+import { getUser } from './userService';
 
 // ─── Create ────────────────────────────────────────────────────────────────────
 
@@ -9,9 +12,27 @@ export const createFeedback = async (data: Omit<Feedback, 'uid' | 'createdAt'>):
     try {
         const nextId = 'F' + String(await generateNextId('feedback'));
         await setDoc(doc(db, 'feedbacks', nextId), { ...data, uid: nextId, createdAt: serverTimestamp() });
+
     } catch (error) {
         console.error('Error creating feedback: ', error);
         throw new Error('Failed to create feedback: ' + error);
+    }
+
+    try {
+        const session = await getSupportSession(data.sessionId);
+        if (!session) return;
+
+        const seeker = await getUser(session?.seekerId ?? "");
+
+        await createNotification({
+            title: "Feedback Received",
+            message: `You have received a feedback from ${seeker?.fullName ?? "unknown user"} for the support session "${session.title}".`,
+            category: "Feedback",
+            userId: session?.volunteerId,
+            referenceId: data.sessionId
+        })
+    } catch (error) {
+        console.error('Error generating notification for created feedback: ', error);
     }
 }
 
@@ -47,6 +68,21 @@ export const getFeedbackBySession = async (sessionId: string): Promise<Feedback 
 export const updateFeedback = async (uid: string, newData: Partial<Omit<Feedback, 'uid' | 'createdAt'>>): Promise<void> => {
     try {
         await updateDoc(doc(db, 'feedbacks', uid), newData);
+
+        const feedback = await getFeedback(uid);
+        if (!feedback) return;
+
+        const session = await getSupportSession(feedback?.sessionId ?? "");
+        if (!session) return;
+
+        const seeker = await getUser(session?.seekerId ?? "");
+        await createNotification({
+            title: "Feedback Updated",
+            message: `The feedback for support session "${feedback?.sessionId}" has been updated by ${seeker?.fullName ?? "unknown user"}.`,
+            category: "Feedback",
+            userId: session?.volunteerId,
+            referenceId: feedback.sessionId
+        });
     } catch (error) {
         console.error('Error updating feedback: ', error);
         throw new Error('Failed to update feedback: ' + error);
