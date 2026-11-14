@@ -2,6 +2,8 @@ import './login.css';
 import { createAuthFeedback, getAuthErrorMessage } from '../../auth-feedback';
 import { configurePasswordToggle } from '../../password-toggle';
 import { scrollToFirstInvalidField, setAuthFieldError } from '../../auth-validation';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '../../../../firebase';
 
 export interface LoginInfoData {
     email: string;
@@ -68,6 +70,13 @@ export default function createLoginStep({
     const fields = [emailInput, passwordInput];
     const touchedFields = new Set<HTMLInputElement>();
     let hasSubmitted = false;
+
+    const checkEmailExists = async (email: string): Promise<boolean> => {
+        const users = await getDocs(
+            query(collection(db, 'users'), where('email', '==', email)),
+        );
+        return !users.empty;
+    };
 
     const validateEmail = () => {
         const value = emailInput.value.trim();
@@ -151,7 +160,19 @@ export default function createLoginStep({
         submitButton.disabled = true;
         submitButton.textContent = 'Logging in...';
         try {
+            // Step 1: Check whether the email exists in Firestore
+            const emailExists = await checkEmailExists(currentInfo.email);
+
+            if (!emailExists) {
+                showFeedback('Account not found. Please register first.');
+                submitButton.disabled = false;
+                submitButton.textContent = 'Login';
+                return;
+            }
+
+            // Step 2: Continue with the existing login process
             const result = await onNext();
+
             if (result === false) {
                 submitButton.disabled = false;
                 submitButton.textContent = 'Login';
@@ -161,7 +182,7 @@ export default function createLoginStep({
             submitButton.disabled = false;
             submitButton.textContent = 'Login';
         }
-    });
 
+    });
     return container;
 }

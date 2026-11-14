@@ -37,9 +37,10 @@ export function getAuthErrorMessage(error: unknown, fallback: string): string {
         case 'auth/weak-password':
             return 'Choose a stronger password with at least 8 characters.';
         case 'auth/invalid-credential':
+            return 'The email or password is invalid.';
         case 'auth/wrong-password':
         case 'auth/user-not-found':
-            return 'The email or password is incorrect.';
+            return 'The email does not exist, please sign up.';
         case 'auth/too-many-requests':
             return 'Too many attempts. Please wait a while and try again.';
         default:
