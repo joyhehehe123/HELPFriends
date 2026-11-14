@@ -154,7 +154,7 @@ function createDashboard(
 
     // Stat cards
     const stats = el("div", "dash-stats");
-    const requestLabel = role === "student" ? "Support Request" : "Accepted Support Request";
+    const requestLabel = role === "student" ? "Support Request Records" : "Accepted Support Request";
     stats.append(
       createStatCard(requestLabel, data.stats.requests, "/support-requests"),
       createStatCard("Upcoming Sessions", data.stats.upcoming, "/support-sessions"),

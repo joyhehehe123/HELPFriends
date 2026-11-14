@@ -72,22 +72,34 @@ export default function createLoginStep({
     let hasSubmitted = false;
 
     const checkEmailExists = async (email: string): Promise<boolean> => {
+        const value = email.trim().toLowerCase();
+        const normalizedEmail = value.startsWith('b')
+            ? 'B' + value.slice(1)
+            : value;
+
         const users = await getDocs(
-            query(collection(db, 'users'), where('email', '==', email)),
+            query(
+                collection(db, 'users'),
+                where('email', '==', normalizedEmail)
+            )
         );
+
         return !users.empty;
     };
 
     const validateEmail = () => {
         const value = emailInput.value.trim();
+
         const message = !value
             ? 'Enter your email address.'
             : /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
                 ? ''
                 : 'Enter a valid email address.';
+
         setAuthFieldError(emailInput, message);
         return !message;
     };
+
 
     const validatePassword = () => {
         const message = passwordInput.value ? '' : 'Enter your password.';
