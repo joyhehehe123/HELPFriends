@@ -71,7 +71,7 @@ export default function RequestSupportPage({ visitKey, startFrom }: RequestSuppo
                             request={request}
                             currentUserId={currentUserId}
                             onBack={backToForm}
-                            onRequestSent={(req) => navigate(`/support-requests/${req.requestId}/schedule`)}
+                            onRequestSent={(req) => navigate(`/support-requests/${req.requestId}`)}
                         />
                     ) : (
                         <Navigate to={REQUEST_FORM_PATH} replace state={{ visitKey }} />
