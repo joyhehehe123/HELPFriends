@@ -12,7 +12,7 @@ import { type SupportRequest } from '../../types/supportRequest';
 import { type SupportSession } from '../../types/supportSession';
 import { type User } from '../../types/user';
 import { type Volunteer } from '../../types/volunteer';
-import { type DayAvailability, type VolunteerProfile } from '../../types/volunteerProfile';
+import { type BookedTime, type DayAvailability, type VolunteerProfile } from '../../types/volunteerProfile';
 import { combineDateAndTime, WEEK_DAYS } from '../../utils/dateTime';
 import { addNotification } from '../notifications/notificationApi';
 import { DEFAULT_DURATION_MINUTES } from './constants';
@@ -45,12 +45,27 @@ const toVolunteerProfile = (volunteer: Volunteer, user: User): VolunteerProfile 
         WEEK_DAYS.some((day) => day === entry.day)),
 });
 
+// Times the student already has an active session, as a volunteer or a seeker
+const fetchBookedTimes = async (studentId: string): Promise<BookedTime[]> => {
+    const sessions = (await Promise.all([
+        getSupportSessionsByStudentAndStatus(studentId, true, 'Active'),
+        getSupportSessionsByStudentAndStatus(studentId, false, 'Active'),
+    ])).flat();
+    return sessions.map((session) => {
+        const start = session.dateTime.toMillis();
+        return { start, end: start + session.duration * 60_000 };
+    });
+};
+
 export const fetchVolunteerProfiles = async (category: SupportCategory): Promise<VolunteerProfile[]> => {
     const volunteers = (await getAllVolunteers()).filter((volunteer) => volunteer.supportCategories.includes(category));
-    const users = await Promise.all(volunteers.map((volunteer) => getUser(volunteer.uid)));
+    const [users, bookedTimes] = await Promise.all([
+        Promise.all(volunteers.map((volunteer) => getUser(volunteer.uid))),
+        Promise.all(volunteers.map((volunteer) => fetchBookedTimes(volunteer.uid))),
+    ]);
     return volunteers.flatMap((volunteer, index) => {
         const user = users[index];
-        return user ? [toVolunteerProfile(volunteer, user)] : [];
+        return user ? [{ ...toVolunteerProfile(volunteer, user), bookedTimes: bookedTimes[index] }] : [];
     });
 };
 

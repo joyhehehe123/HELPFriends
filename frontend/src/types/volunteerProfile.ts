@@ -8,6 +8,12 @@ export interface AvailabilityTimeSlot {
     end: string; 
 }
 
+// Time someone already has an active session (milliseconds)
+export interface BookedTime {
+    start: number;
+    end: number;
+}
+
 export interface DayAvailability {
     day: DayName;
     timeSlots: AvailabilityTimeSlot[];
@@ -18,4 +24,5 @@ export type VolunteerProfile =
     Pick<Volunteer, 'preferredMode' | 'rating' | 'isActive' | 'supportCategories' | 'skills'> & {
         volunteerId: string; // Volunteer document id (same as the user id)
         availability: DayAvailability[];
+        bookedTimes?: BookedTime[]; // Active sessions, so the same time is not booked twice
     };

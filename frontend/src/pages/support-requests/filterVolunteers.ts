@@ -1,4 +1,4 @@
-import { type VolunteerProfile } from '../../types/volunteerProfile';
+import { type BookedTime, type VolunteerProfile } from '../../types/volunteerProfile';
 import { combineDateAndTime, getDayName } from '../../utils/dateTime';
 import { DEFAULT_DURATION_MINUTES } from './constants';
 import { type ProposedSlotInput, type SupportMode, type ValidSupportRequestDraft, type VolunteerFilters } from './types';
@@ -27,8 +27,15 @@ export const isFreeAt = (availability: { day: string; timeSlots: { start: string
         entry.timeSlots.some((timeSlot) => toMinutes(timeSlot.start) <= start && end <= toMinutes(timeSlot.end)));
 };
 
+const isBooked = (date: Date, bookedTimes: BookedTime[] = []): boolean => {
+    const start = date.getTime();
+    const end = start + DEFAULT_DURATION_MINUTES * 60_000;
+    return bookedTimes.some((booked) => start < booked.end && booked.start < end);
+};
+
 export const isAvailableAt = (volunteer: VolunteerProfile, slot: ProposedSlotInput): boolean => {
     const date = combineDateAndTime(slot.date, slot.time);
+    if (date && isBooked(date, volunteer.bookedTimes)) return false;
     return date !== null && isFreeAt(volunteer.availability, date);
 };
 
