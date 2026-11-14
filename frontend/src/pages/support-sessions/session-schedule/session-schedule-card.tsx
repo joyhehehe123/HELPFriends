@@ -9,7 +9,7 @@ import type { SupportRequest } from "../../../types/supportRequest";
 import { getCurrentUid } from "../../../services/authService";
 import { getUser } from "../../../services/userService";
 import { getVolunteer } from "../../../services/volunteerService";
-import { createSupportSession, getSupportSessionByRequestId } from "../../../services/supportSessionService";
+import { createSupportSession, getSupportSessionByRequestId, getSupportSessionsByStudentAndStatus } from "../../../services/supportSessionService";
 import { updateSupportRequestStatus } from "../../../services/supportRequestService";
 import { ChevronDown } from "lucide-react";
 import Button from "../../../components/Button";
@@ -29,6 +29,7 @@ export default function SessionScheduleCard({ request }: Props) {
     const [time, setTime] = useState("");
     const [duration, setDuration] = useState(0);
     const [showError, setShowError] = useState(false);
+    const [busy, setBusy] = useState<{ start: number; end: number }[]>([]);
     const currentUid = getCurrentUid();
     const durations = [30, 60, 90, 120];
     const TZ = "Asia/Kuala_Lumpur";
@@ -56,7 +57,18 @@ export default function SessionScheduleCard({ request }: Props) {
                 .then((seeker) => setSeeker(seeker ?? null))
                 .catch(console.error);
         }
+        getSupportSessionsByStudentAndStatus(request.volunteerId, true, "Active")
+            .then((sessions) =>
+                setBusy(sessions.map((s) => ({
+                    start: s.dateTime.toMillis(),
+                    end: s.dateTime.toMillis() + s.duration * 60_000,
+                })))
+            )
+            .catch(console.error);
     }, [request, request.volunteerId]);
+
+    const MIN = STEP * 60_000;
+    const overlaps = (s: number, e: number) => busy.some((b) => s < b.end && b.start < e);
 
     // 1. Dates: from proposed slots, upcoming, and on a day the volunteer works
     const availability = volunteerData?.availability ?? [];
@@ -73,33 +85,60 @@ export default function SessionScheduleCard({ request }: Props) {
         const entry = availability.find((a) => a.day === weekdayOf(date));
         for (const range of entry?.timeSlots ?? []) {
             const end = toMin(range.end);
-            for (let t = toMin(range.start); t + STEP <= end; t += STEP) {   // latest start = end - 30
+            for (let t = toMin(range.start); t + STEP <= end; t += STEP) {
                 const start = new Date(`${date}T${pad(Math.floor(t / 60))}:${pad(t % 60)}:00+08:00`);
                 if (start <= new Date()) continue;
+
+                const startMs = start.getTime();
+                if (overlaps(startMs, startMs + MIN)) continue;   // volunteer busy
+
+                const nextBusy = busy
+                    .filter((b) => b.start >= startMs)
+                    .reduce((min, b) => Math.min(min, b.start), Infinity);
+                const freeUntil = Math.min(startMs + (end - t) * 60_000, nextBusy);
+
                 timeOptions.push({
                     iso: start.toISOString(),
                     label: start.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: TZ }),
-                    maxMinutes: end - t,          // how long the volunteer is still free from this start
+                    maxMinutes: Math.floor((freeUntil - startMs) / 60_000),
                 });
             }
         }
     }
+    // const timeOptions: TimeOption[] = [];
+    // if (date) {
+    //     const entry = availability.find((a) => a.day === weekdayOf(date));
+    //     for (const range of entry?.timeSlots ?? []) {
+    //         const end = toMin(range.end);
+    //         for (let t = toMin(range.start); t + STEP <= end; t += STEP) {   // latest start = end - 30
+    //             const start = new Date(`${date}T${pad(Math.floor(t / 60))}:${pad(t % 60)}:00+08:00`);
+    //             if (start <= new Date()) continue;
+    //             timeOptions.push({
+    //                 iso: start.toISOString(),
+    //                 label: start.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: TZ }),
+    //                 maxMinutes: end - t,          // how long the volunteer is still free from this start
+    //             });
+    //         }
+    //     }
+    // }
 
     // 3. Durations: only the ones that fit before the volunteer's availability ends
     const selectedTime = timeOptions.find((o) => o.iso === time);
     const durationOptions = durations.filter((d) => d <= (selectedTime?.maxMinutes ?? 0));
 
-    const saveSession = async (): Promise<boolean> => {
+    const saveSession = async (): Promise<string | null> => {
         try {
             const dateTime = Timestamp.fromDate(new Date(time));
-            await createSupportSession(request, { dateTime, duration });
+            const newId = await createSupportSession(request, { dateTime, duration });
             showToast("Session scheduled.");
-            return true;
+            return newId;
         } catch (error) {
             showToast(error instanceof Error ? error.message : "Could not schedule session.");
-            return false;
+            return null;
         }
-    }
+    };
+
+    
 
     const handleSubmit = async () => {
         if (!date || !time || duration === 0) {
@@ -116,10 +155,10 @@ export default function SessionScheduleCard({ request }: Props) {
 
         if (!confirmed) return;
 
-        if (await saveSession()) {
+        const newId = await saveSession();
+        if (newId) {
             await updateSupportRequestStatus(request.uid, "Scheduled");
-            const session = await getSupportSessionByRequestId(request.uid);
-            navigate(`/support-sessions/${session?.status.toLowerCase()}/${session?.uid}`);
+            navigate(`/support-sessions/active/${newId}`);
         }
     }
 
@@ -200,7 +239,7 @@ export default function SessionScheduleCard({ request }: Props) {
                                     <div className="schedule-card-info-right schedule-card-select">
                                         <select 
                                             className="select-drop-down" 
-                                            id="date" 
+                                            id="duration" 
                                             value={duration || ""} 
                                             onChange={(e) => { 
                                                 setDuration(Number(e.target.value));
