@@ -114,7 +114,11 @@ export default function createTwoFactorStep({
             if (verified === false) {
                 submitButton.disabled = false;
                 submitButton.textContent = 'Verify';
+                showFeedback(
+                    'Incorrect or expired verification code. Please try again.'
+                );
             }
+            
         } catch (error) {
             showFeedback(error instanceof Error ? error.message : 'Unable to verify the code.');
             submitButton.disabled = false;
