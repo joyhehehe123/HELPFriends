@@ -5,6 +5,7 @@ import { REQUEST_FORM_PATH, SUPPORT_REQUESTS_PATH, VOLUNTEER_MATCHING_PATH } fro
 import RequestSupportPage from './RequestSupportPage';
 import SupportRequestsPage from './SupportRequestsPage';
 import { type SupportRequestRecord } from './types';
+import { getSupportSession } from '../../services/supportSessionService';
 
 interface PageState {
     startFrom?: SupportRequestRecord;
@@ -61,7 +62,15 @@ export function NotificationsRoute() {
         <NotificationsPage
             key={key}
             onViewRequest={(requestId) => navigate(`${SUPPORT_REQUESTS_PATH}/${requestId}`)}
-            onViewSessions={() => navigate('/support-sessions')}
+            onViewSessions={async (id) => {
+                try {
+                    const session = await getSupportSession(id);
+                    if (session) navigate(`/support-sessions/${session.status.toLowerCase()}/${id}`);
+                    else console.warn("No session found for notification reference:", id);
+                } catch (error) {
+                    console.error("Failed to open session:", error);
+                }
+            }}
         />
     );
 }
