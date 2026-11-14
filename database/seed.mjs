@@ -557,7 +557,7 @@ const sessions = [
         title: "Git and GitHub Setup",
         description: "Help with setting up Git and GitHub for programming projects.",
         supportMode: "Virtual",
-        dateTime: minutesFromNow(40), // ts("2026-11-16T14:00:00+08:00"),
+        dateTime: minutesFromNow(40),
         duration: 60,
         status: "Active",
         requestId: "R1005",
@@ -1382,7 +1382,7 @@ const notifications = [
         title: "Support Session Scheduled",
         message: "Your accepted support request \"Mobile Apps Tutorial Continuation\" has been scheduled on 2026-11-30 at 2:00 PM by Adrinn Awi Goo.",
         category: "Support Session",
-        isRead: true,
+        isRead: false,
         createdAt: ts("2026-11-18T16:30:00+08:00"),
         receiver: "Joy Lau Xuan",
         referenceId: "S1009"
