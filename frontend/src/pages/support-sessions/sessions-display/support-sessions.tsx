@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getCurrentUid } from "../../../services/authService";
 import { getUser } from "../../../services/userService";
-import { getSupportSessionsByStudentAndStatus } from "../../../services/supportSessionService";
+import { getSupportSessionsByStudentAndStatus, autoCompleteEndedSessions } from "../../../services/supportSessionService";
 import type { SessionStatus, Role } from "../../../types/constants";
 import SessionList from "./session-list";
 import "./support-sessions.css";
@@ -41,6 +41,16 @@ function SupportSessions({ status }: Props) {
         if (!uid) return;
         setUid(uid);
 
+        const sweep = async () => {
+            try {
+                if ((await autoCompleteEndedSessions(uid)) > 0) {
+                    setRefreshKey((k) => k + 1);
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
         const setVolunteer = async () => {
             try {
                 const isVolunteer = (await getUser(uid))?.isVolunteer;
@@ -63,6 +73,11 @@ function SupportSessions({ status }: Props) {
             }
         }
         fetchSessions();
+
+        sweep();
+        const id = window.setInterval(sweep, 60_000);
+        return () => window.clearInterval(id); 
+        
     }, [uid, status, refreshKey])
 
     return (

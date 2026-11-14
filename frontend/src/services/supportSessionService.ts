@@ -210,6 +210,60 @@ export const cancelSession = async (uid: string, cancelReason: string): Promise<
     }
 }
 
+const endsAt = (s: SupportSession) => s.dateTime.toMillis() + s.duration * 60_000;
+const completeIfEnded = async (uid: string): Promise<boolean> => {
+    const ref = doc(db, "supportSessions", uid);
+    return runTransaction(db, async (tx) => {
+        const snap = await tx.get(ref);
+        if (!snap.exists()) return false;
+
+        const s = snap.data() as SupportSession;
+        if (s.status !== "Active" || Date.now() < endsAt(s)) return false;
+
+        tx.update(ref, {
+            status: "Completed",
+            completedAt: Timestamp.fromMillis(endsAt(s)),   // when it actually ended
+            completedBy: "system",
+        });
+        return true;
+    });
+};
+
+export const autoCompleteEndedSessions = async (uid: string): Promise<number> => {
+    const [asSeeker, asVolunteer] = await Promise.all([
+        getSupportSessionsByStudentAndStatus(uid, false, "Active"),
+        getSupportSessionsByStudentAndStatus(uid, true, "Active"),
+    ]);
+
+    let changed = 0;
+    for (const s of [...asSeeker, ...asVolunteer]) {
+        if (Date.now() < endsAt(s)) continue;
+        if (await completeIfEnded(s.uid)) {
+            changed++;
+            const results = await Promise.allSettled([
+                createNotification({ 
+                    title: "Support Session Completed",
+                    message: `Your support session "${s.title}" has been marked as completed by the system. You can now provide feedback for the session.`,
+                    category: "Support Session",
+                    userId: s.seekerId,
+                    referenceId: s.uid
+                }),
+                createNotification({ 
+                    title: "Support Session Completed",
+                    message: `Your support session "${s.title}" has been marked as completed by the system. Please wait for the support seeker to rate the session.`,
+                    category: "Support Session",
+                    userId: s.volunteerId,
+                    referenceId: s.uid
+                }),
+            ]);
+            results.forEach((r) => {
+                if (r.status === "rejected") console.error("Notification failed for", s.uid, r.reason);
+            });
+        }
+    }
+    return changed;
+};
+
 // ─── Delete ────────────────────────────────────────────────────────────────────
 
 export const deleteSupportSession = async (uid: string): Promise<void> => {

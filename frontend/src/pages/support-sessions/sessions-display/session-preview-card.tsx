@@ -127,10 +127,9 @@ function SessionCards({ session, role, status, onUpdated }: Props) {
                         ? <Button size="sm" className="card-button" onClick={handleCancel}>Cancel</Button>
                         : <Button size="sm" className="card-button" disabled>Cancel</Button>
                     )}
-                    {(status === "Active" && role === "Volunteer" && timeDiff <= 0) && (Math.abs(timeDiff) > session.duration
-                        ? <Button size="sm" className="card-button" onClick={handleComplete}>Mark As Completed</Button>
-                        : <Button size="sm" className="card-button" disabled>Mark As Completed</Button>
-                    )}
+                    {(status === "Active" && role === "Volunteer" && timeDiff <= 0) &&
+                        <Button size="sm" className="card-button" onClick={handleComplete}>Mark As Completed</Button>
+                    }
                     {(status === "Completed" && role === "Support Seeker" && !feedbackisExpired) && 
                         <Button size="sm" className="card-button"
                             onClick={() => {navigate(`/support-sessions/completed/${session.uid}/feedback`)}}
