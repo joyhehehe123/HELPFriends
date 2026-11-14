@@ -1,3 +1,5 @@
+import { collection, query, where, limit, onSnapshot } from "firebase/firestore";
+import { db } from "../../firebase";
 import { useState, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
 import type { User } from "../../types/user";
@@ -10,6 +12,7 @@ import UserAvatar from "../UserAvatar.tsx";
 function AppNavbar() {
     const { pathname } = useLocation();
     const [user, setUser] = useState<User | null>(null);
+    const [hasUnread, setHasUnread] = useState(false);
 
     useEffect(() => {
         const uid = getCurrentUid();
@@ -30,6 +33,25 @@ function AppNavbar() {
     }, []);
 
     const userName = user?.fullName ?? "User";
+
+    useEffect(() => {
+        const uid = getCurrentUid();
+        if (!uid) return;
+
+        const q = query(
+            collection(db, "notifications"),
+            where("userId", "==", uid),
+            where("isRead", "==", false),
+            limit(1)                      // only need to know if one exists
+        );
+
+        const unsubscribe = onSnapshot(q, (snap) => {
+            console.log("unread notifications:", snap.size);
+            setHasUnread(!snap.empty)
+        }, (error) => console.error("Notification listener failed:", error)
+        );
+        return unsubscribe;               // stops listening when the navbar unmounts
+    }, []);
 
     return (
         <nav className="app-navbar-main">
@@ -61,6 +83,7 @@ function AppNavbar() {
                     className={`link icon-link ${pathname.startsWith("/notifications") ? "active-icon-link" : ""}`}
                 >
                     <Bell />
+                    {hasUnread && <span className="notification-dot" aria-hidden="true" />}
                 </Link>
                 <Link 
                     to="/profile" 
