@@ -121,7 +121,7 @@ export default function SessionScheduleCard({ request }: Props) {
             return null;
         }
     };
-  
+
     const handleSubmit = async () => {
         if (!date || !time || duration === 0) {
             setShowError(true);

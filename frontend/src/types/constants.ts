@@ -5,5 +5,5 @@ export type Day = typeof DAYS[number];
 export type SupportMode = 'Virtual' | 'Physical';
 export type RequestStatus = 'Pending' | 'Accepted' | 'Rejected' | 'Cancelled' | 'Scheduled';
 export type SessionStatus = 'Active' | 'Completed' | 'Cancelled';
-export type NotificationCategory = 'Support Request' | 'Support Session' | 'Feedback' | 'General';
+export type NotificationCategory = 'Support Request' | 'Support Session' | 'Feedback';
 export type Role = 'Support Seeker' | 'Volunteer';

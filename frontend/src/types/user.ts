@@ -4,7 +4,7 @@ export interface User {
     fullName: string;
     studentId: string;
     isVolunteer: boolean;
-    faculty: string | null; // Users can choose to not provide faculty information
-    program: string | null; // Users can choose to not provide program information
+    faculty: string; // Users can choose to not provide faculty information
+    program: string; // Users can choose to not provide program information
     bio: string | null;
 }
