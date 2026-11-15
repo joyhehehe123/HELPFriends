@@ -70,7 +70,6 @@ export default function FeedbackForm({ session, feedback, apiRef }: Props) {
             setShowError(true);
             return;
         }
-        
         const { confirmed } = await confirm({
             title: `Confirm to save feedback${feedback ? " changes" : ""}?`,
             message: `Do you want to save feedback ${feedback ? "changes" : ""}for session "${session.title}"?`,

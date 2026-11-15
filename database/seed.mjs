@@ -71,6 +71,15 @@ const users = [
         bio: "I love winston"
     },
     {
+        email: "B2600463@helplive.edu.my",
+        fullName: "Jack Lau Tiet",
+        studentId: "B2600463",
+        isVolunteer: false,
+        faculty: "Faculty of Business, Economics, and Accounting",
+        program: "Diploma in Business",
+        bio: "HI"
+    },
+    {
         email: "B2600001@helplive.edu.my",
         fullName: "Iden Geffephuc",
         studentId: "B2600001",
@@ -193,11 +202,11 @@ const volunteers = [
                 day: "Monday",
                 timeSlots: [
                     {start: "08:00", end: "10:00"},
-                    {start: "16:30", end: "18:00"}
+                    {start: "13:30", end: "18:00"}
                 ]
             },
             {
-                day: "Wednesday",
+                day: "Friday",
                 timeSlots: [
                     {start: "09:00", end: "11:00"},
                     {start: "15:00", end: "18:00"}
@@ -214,15 +223,15 @@ const volunteers = [
         skills: ["Stress Management", "Communication", "Psychological Support", "Social Psychology"],
         availability: [
             {
-                day: "Tuesday",
+                day: "Monday",
                 timeSlots: [
-                    {start: "16:00", end: "20:00"}
+                    {start: "13:00", end: "16:00"}
                 ]
             },
             {
-                day: "Wednesday",
+                day: "Tuesday",
                 timeSlots: [
-                    {start: "10:00", end: "12:00"}
+                    {start: "16:00", end: "20:00"}
                 ]
             }
         ]
@@ -235,6 +244,12 @@ const volunteers = [
         supportCategories: ["Academic", "General Student"],
         skills: ["Accounting", "Finance", "Statistics"],
         availability: [
+            {
+                day: "Monday",
+                timeSlots: [
+                    {start: "14:00", end: "18:00"}
+                ]
+            },
             {
                 day: "Saturday",
                 timeSlots: [
@@ -258,10 +273,10 @@ const volunteers = [
         skills: ["Finance", "Statistics", "Mathematics", "Business Concepts"],
         availability: [
             {
-                day: "Friday",
+                day: "Monday",
                 timeSlots: [
-                    {start: "09:00", end: "12:00"},
-                    {start: "16:00", end: "19:00"}
+                    {start: "09:00", end: "11:00"},
+                    {start: "14:00", end: "19:00"}
                 ]
             }
         ]
@@ -275,7 +290,7 @@ const volunteers = [
         skills: ["Economics Concepts", "Statistics", "Mathematics", "Time Management"],
         availability: [
             {
-                day: "Thursday",
+                day: "Monday",
                 timeSlots: [
                     {start: "09:00", end: "11:00"},
                     {start: "20:00", end: "23:00"}
@@ -1363,7 +1378,7 @@ const notifications = [
         message: "You have received a new support request \"Mobile Apps Tutorial Continuation\" from Joy Lau Xuan. Please review and respond to the request.",
         category: "Support Request",
         isRead: true,
-        createdAt: ts("2026-11-18T15:00:00+08:00"),
+        createdAt: ts("2026-11-15T15:00:00+08:00"),
         receiver: "Adrinn Awi Goo",
         referenceId: "R1013"
     },
@@ -1373,7 +1388,7 @@ const notifications = [
         message: "Your support request \"Mobile Apps Tutorial Continuation\" has been accepted by Adrinn Awi Goo. You can now schedule a session with the volunteer.",
         category: "Support Request",
         isRead: true,
-        createdAt: ts("2026-11-18T16:00:00+08:00"),
+        createdAt: ts("2026-11-15T16:00:00+08:00"),
         receiver: "Joy Lau Xuan",
         referenceId: "R1013"
     },
@@ -1383,7 +1398,7 @@ const notifications = [
         message: "Your accepted support request \"Mobile Apps Tutorial Continuation\" has been scheduled on 2026-11-30 at 2:00 PM by Adrinn Awi Goo.",
         category: "Support Session",
         isRead: false,
-        createdAt: ts("2026-11-18T16:30:00+08:00"),
+        createdAt: ts("2026-11-15T16:30:00+08:00"),
         receiver: "Joy Lau Xuan",
         referenceId: "S1009"
     }

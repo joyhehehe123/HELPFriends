@@ -78,7 +78,7 @@ export const updateFeedback = async (uid: string, newData: Partial<Omit<Feedback
         const seeker = await getUser(session?.seekerId ?? "");
         await createNotification({
             title: "Feedback Updated",
-            message: `The feedback for support session "${feedback?.sessionId}" has been updated by ${seeker?.fullName ?? "unknown user"}.`,
+            message: `The feedback for support session "${session.title}" has been updated by ${seeker?.fullName ?? "unknown user"}.`,
             category: "Feedback",
             userId: session?.volunteerId,
             referenceId: feedback.sessionId

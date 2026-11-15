@@ -72,60 +72,6 @@ export const createSupportSession = async (
     return nextId;
 };
 
-// export const createSupportSession = async (request: SupportRequest, data: Pick<SupportSession, "dateTime" | "duration">): Promise<string> => {
-//     try {
-//         const clash = existing.some((s) => start < s.end && s.start < end);
-//         if (clash) throw new Error("The volunteer is no longer available at that time.");
-
-//         const nextId = "S" + String(await generateNextId("session"));
-//         await setDoc(doc(db, "supportSessions", nextId), { 
-//             ...data, 
-//             uid: nextId,
-//             category: request.category,
-//             title: request.title,
-//             description: request.description,
-//             supportMode: request.supportMode,
-//             status: "Active",
-//             requestId: request.uid,
-//             seekerId: request.seekerId,
-//             volunteerId: request.volunteerId
-//         });
-
-//         const session = await getSupportSessionByRequestId(request.uid);
-//         if (!session) return;
-
-//         const currentUid = await getCurrentUid();
-//         const currentUser = currentUid ? (await getUser(currentUid)) : null;
-//         const otherUid = currentUid === session.seekerId ? session.volunteerId : session.seekerId;
-
-//         const date = session?.dateTime.toDate().toLocaleDateString("en-GB", { 
-//             day: "2-digit", 
-//             month: "2-digit", 
-//             year: "numeric" 
-//         });
-//         const time = session?.dateTime.toDate().toLocaleTimeString("en-US", { 
-//             hour: "2-digit", 
-//             minute: "2-digit", 
-//             hour12: true
-//         });
-
-//         await createNotification({
-//             title: "Support Session Scheduled",
-//             message: `${currentUid === session.seekerId 
-//                 ? `Support request "${session.title}" accepted by you has been scheduled on ${date} ${time} by ${currentUser?.fullName ?? "unknown user"}.` 
-//                 : `Your support request "${session.title} has been scheduled on ${date} ${time} by ${otherUser?.fullName ?? "unknown user"}.`
-//             }`,
-//             category: "Support Session",
-//             userId: otherUid,
-//             referenceId: session.uid
-//         });
-
-//         return nextId;
-//     } catch (error) {
-//         console.error("Error generating notification for support session: ", error);
-//     }
-// }
-
 // ─── Read ──────────────────────────────────────────────────────────────────────
 
 // Get support session by uid
@@ -263,7 +209,7 @@ export const cancelSession = async (uid: string, cancelReason: string): Promise<
 
         await createNotification({ 
             title: "Support Session Cancelled",
-            message: `Your support session "${session.title}" has been cancelled by ${currentUser?.fullName ?? "unknown user"}.`,
+            message: `Your support session "${session.title}" has been cancelled by ${currentUser?.fullName ?? "unknown user"}. ${cancelReason ? `Reason: ${cancelReason}` : ""}`,
             category: "Support Session",
             userId: otherUid,
             referenceId: uid

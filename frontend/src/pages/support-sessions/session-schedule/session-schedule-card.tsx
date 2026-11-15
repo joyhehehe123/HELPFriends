@@ -9,7 +9,7 @@ import type { SupportRequest } from "../../../types/supportRequest";
 import { getCurrentUid } from "../../../services/authService";
 import { getUser } from "../../../services/userService";
 import { getVolunteer } from "../../../services/volunteerService";
-import { createSupportSession, getSupportSessionByRequestId, getSupportSessionsByStudentAndStatus } from "../../../services/supportSessionService";
+import { createSupportSession, getSupportSessionsByStudentAndStatus } from "../../../services/supportSessionService";
 import { updateSupportRequestStatus } from "../../../services/supportRequestService";
 import { ChevronDown } from "lucide-react";
 import Button from "../../../components/Button";
@@ -31,7 +31,6 @@ export default function SessionScheduleCard({ request }: Props) {
     const [showError, setShowError] = useState(false);
     const [busy, setBusy] = useState<{ start: number; end: number }[]>([]);
     const currentUid = getCurrentUid();
-    const durations = [30, 60, 90, 120];
     const TZ = "Asia/Kuala_Lumpur";
     const STEP = 30;
 
@@ -105,24 +104,9 @@ export default function SessionScheduleCard({ request }: Props) {
             }
         }
     }
-    // const timeOptions: TimeOption[] = [];
-    // if (date) {
-    //     const entry = availability.find((a) => a.day === weekdayOf(date));
-    //     for (const range of entry?.timeSlots ?? []) {
-    //         const end = toMin(range.end);
-    //         for (let t = toMin(range.start); t + STEP <= end; t += STEP) {   // latest start = end - 30
-    //             const start = new Date(`${date}T${pad(Math.floor(t / 60))}:${pad(t % 60)}:00+08:00`);
-    //             if (start <= new Date()) continue;
-    //             timeOptions.push({
-    //                 iso: start.toISOString(),
-    //                 label: start.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: TZ }),
-    //                 maxMinutes: end - t,          // how long the volunteer is still free from this start
-    //             });
-    //         }
-    //     }
-    // }
 
     // 3. Durations: only the ones that fit before the volunteer's availability ends
+    const durations = [30, 60, 90, 120];
     const selectedTime = timeOptions.find((o) => o.iso === time);
     const durationOptions = durations.filter((d) => d <= (selectedTime?.maxMinutes ?? 0));
 
@@ -137,9 +121,7 @@ export default function SessionScheduleCard({ request }: Props) {
             return null;
         }
     };
-
-    
-
+  
     const handleSubmit = async () => {
         if (!date || !time || duration === 0) {
             setShowError(true);
@@ -150,7 +132,7 @@ export default function SessionScheduleCard({ request }: Props) {
             title: "Confirm to schedule session?",
             message: `Do you want to schedule session for the support request "${request.title}"?`,
             confirmText: "Schedule Session",
-            cancelText: "Continue Editing"
+            cancelText: "Cancel"
         });
 
         if (!confirmed) return;
