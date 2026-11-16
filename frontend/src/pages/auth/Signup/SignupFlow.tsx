@@ -277,7 +277,6 @@ export default function createSignupFlow({ initialData }: SignupFlowProps = {}):
                                 faculty: state.signupInfo.faculty,
                                 program: state.signupInfo.program,
                                 bio: null,
-                                profilePic: null,
                             };
 
                             batch.set(doc(db, 'users', createdUser.uid), {

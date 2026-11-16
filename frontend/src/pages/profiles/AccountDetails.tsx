@@ -121,7 +121,6 @@ export default function createAccountDetailsPage({ navigate }: AccountDetailsPro
         profile.faculty = user.faculty ?? '';
         profile.programme = user.program ?? '';
         profile.aboutMe = user.bio ?? '';
-        profile.avatarUrl = user.profilePic || '';
         renderAvatar(profile.fullName, profile.avatarUrl);
 
         summaryName.textContent = profile.fullName;

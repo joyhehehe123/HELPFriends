@@ -599,7 +599,7 @@ const sessions = [
         description: "Advice on adapting to university life and managing a timetable.",
         supportMode: "Virtual",
         dateTime: minutesFromNow(-20), // ts("2026-11-19T14:00:00+08:00"),
-        duration: 60,
+        duration: 90,
         status: "Active",
         requestId: "R1008",
         seekerName: "Puteri A\'isyah",

@@ -74,7 +74,7 @@ export const getDashboardData = async (
 
   return {
     userName: user?.fullName || fallbackName,
-    avatarUrl: user?.profilePic || fallbackPhoto || "",
+    avatarUrl: fallbackPhoto || "",
     isVolunteer: user?.isVolunteer ?? false,
     role: activeRole,
     stats: {
